@@ -1,6 +1,6 @@
-const Koa = require('koa');
-const { ApolloServer, gql } = require('apollo-server-koa');
-const Hello = require("./schema/hello")
+import Koa  from "koa"
+import {ApolloServer } from "apollo-server-koa"
+import Hello from "./schema/hello"
 
 const server = new ApolloServer(Hello);
  
