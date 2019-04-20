@@ -1,8 +1,15 @@
 import Koa from "koa";
-import { ApolloServer } from "apollo-server-koa";
-import Hello from "./Hello";
+import { ApolloServer, gql } from "apollo-server-koa";
+import { hello } from "./schema/hello";
 
-const server = new ApolloServer(Hello);
+const typeDef = gql`
+  type Query
+`;
+
+const server = new ApolloServer({
+  typeDefs: [typeDef, hello.typeDef],
+  resolvers: [hello.resolvers]
+});
 
 const app = new Koa();
 server.applyMiddleware({ app });

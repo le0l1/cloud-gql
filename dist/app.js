@@ -1,20 +1,29 @@
-"use strict";
+(function (global, factory) {
+  if (typeof define === "function" && define.amd) {
+    define(["koa", "apollo-server-koa", "./Hello"], factory);
+  } else if (typeof exports !== "undefined") {
+    factory(require("koa"), require("apollo-server-koa"), require("./Hello"));
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(global.koa, global.apolloServerKoa, global.Hello);
+    global.app = mod.exports;
+  }
+})(this, function (_koa, _apolloServerKoa, _Hello) {
+  "use strict";
 
-var Koa = require('koa');
+  _koa = _interopRequireDefault(_koa);
+  _Hello = _interopRequireDefault(_Hello);
 
-var _require = require('apollo-server-koa'),
-    ApolloServer = _require.ApolloServer,
-    gql = _require.gql;
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Hello = require("./schema/hello");
-
-var server = new ApolloServer(Hello);
-var app = new Koa();
-server.applyMiddleware({
-  app: app
-});
-app.listen({
-  port: 8080
-}, function () {
-  return console.log("\uD83D\uDE80 Server ready at http://localhost:8080".concat(server.graphqlPath));
+  const server = new _apolloServerKoa.ApolloServer(_Hello.default);
+  const app = new _koa.default();
+  server.applyMiddleware({
+    app
+  });
+  app.listen({
+    port: 8080
+  }, () => console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`));
 });
