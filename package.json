@@ -1,0 +1,28 @@
+{
+  "name": "@cloud-next/graphql",
+  "version": "1.0.0",
+  "description": "#### Description {**When you're done, you can delete the content in this README and update the file with details for others getting started with your repository**}",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src/app.js -d dist",
+    "start": "npm run build && nodemon dist/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitee.com:clound-next/graphql.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server-koa": "^2.4.8",
+    "graphql": "^14.2.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "babel-plugin-import-graphql": "^2.7.0",
+    "graphql-tag": "^2.10.1"
+  }
+}
