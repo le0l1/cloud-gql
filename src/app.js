@@ -38,7 +38,7 @@ const server = new ApolloServer({
     good.typeDef,
     recommend.typeDef
   ],
-  resolvers: [hello.resolvers, merchant.resolvers, dateResolver]
+  resolvers: [merchant.resolvers, dateResolver]
 });
 server.applyMiddleware({ app });
 
