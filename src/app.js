@@ -9,6 +9,7 @@ import { demand } from "./graphql/demand";
 import { good } from "./graphql/good";
 import { recommend } from "./graphql/recommend";
 import { dateResolver } from "./helper/scalar/Date";
+import { businessCircle } from "./graphql/businessCircle";
 
 const app = new Koa();
 const router = new Router();
@@ -36,7 +37,8 @@ const server = new ApolloServer({
     banner.typeDef,
     demand.typeDef,
     good.typeDef,
-    recommend.typeDef
+    recommend.typeDef,
+    businessCircle.typeDef
   ],
   resolvers: [merchant.resolvers, dateResolver]
 });

@@ -1,7 +1,7 @@
 "轮播图结构"
 type Banner {
   "轮播图标识"
-  id: String
+  id: ID
   "轮播图标题"
   title: String
   "轮播图片地址"
