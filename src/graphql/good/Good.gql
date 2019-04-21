@@ -35,6 +35,8 @@ type Goods {
 }
 
 extend type Query {
+  "商品查询 可通过商品id、名称进行查询"
   good(id: ID!, name: String): Good
+  "商品列表查询 可通过页码 页数进行分页处理"
   goodList(page: Int, pageSize: Int): Goods
 }

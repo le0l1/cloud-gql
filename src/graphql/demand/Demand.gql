@@ -20,9 +20,9 @@ type Demand {
   createdAt: Date
 }
 
-"商品列表"
+"需求帖子列表"
 type Demands {
-  "商品列表"
+  "需求帖子列表"
   demands: [Demand!]
   "每页数量"
   pageSize: Int
@@ -33,5 +33,6 @@ type Demands {
 }
 
 extend type Query {
+  "需求贴子列表 支持车系 车型 创建事件过滤"
   demands(vehicleModel: String, vehicleSeries: String, createdAt: Date): Demands
 }

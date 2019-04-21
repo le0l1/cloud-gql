@@ -37,6 +37,8 @@ type Merchants {
 }
 
 extend type Query {
+  "商户查询 可通过商户id、商户名称、商户手机号进行查询"
   merchant(id: ID, name: String, phone: Int): Merchant
+  "商户列表查询 可通过页码 页数进行分页处理"
   merchantList(page: Int, pageSize: Int): Merchants
 }

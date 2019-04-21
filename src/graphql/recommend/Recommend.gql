@@ -7,5 +7,6 @@ type Recommend {
 }
 
 extend type Query {
-  recommand(id: ID!): Recommend
+  "推荐商品查询 通过id可进行查询"
+  recommand(id: ID): Recommend
 }

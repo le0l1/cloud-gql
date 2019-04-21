@@ -11,5 +11,6 @@ type Banner {
 }
 
 extend type Query {
+  "轮播图查询"
   banners: [Banner]
 }
