@@ -1,0 +1,37 @@
+scalar Date
+
+"需求帖子"
+type Demand {
+  "需求帖子id"
+  id: ID
+  "客户姓名"
+  customerName: String
+  "客户手机号"
+  customerPhone: Int
+  "车系"
+  vehicleSeries: String
+  "车型"
+  vehicleModel: String
+  "需求备注"
+  mark: String
+  "需求图片集合"
+  images: [String!]
+  "创建时间"
+  createdAt: Date
+}
+
+"商品列表"
+type Demands {
+  "商品列表"
+  demands: [Demand!]
+  "每页数量"
+  pageSize: Int
+  "页数"
+  page: Int
+  "总页数量"
+  total: Int
+}
+
+extend type Query {
+  demands(vehicleModel: String, vehicleSeries: String, createdAt: Date): Demands
+}

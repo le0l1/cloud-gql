@@ -1,0 +1,42 @@
+"商户schema"
+type Merchant {
+  "商户id"
+  id: ID!
+  "商户名称"
+  name: String
+  "商户QQ"
+  qqchat: Int
+  "商户微信"
+  wechat: String
+  "商户电话"
+  phone: Int
+  "商户介绍"
+  description: String
+  "商户状态"
+  status: MerchantStatus
+}
+
+"商户状态枚举"
+enum MerchantStatus {
+  "在线"
+  ONLINE
+  "离线"
+  OFFLINE
+}
+
+"商户列表"
+type Merchants {
+  "商户列表"
+  merchants: [Merchant!]
+  "每页数量"
+  pageSize: Int
+  "页数"
+  page: Int
+  "总页数量"
+  total: Int
+}
+
+extend type Query {
+  merchant(id: ID, name: String, phone: Int): Merchant
+  merchantList(page: Int, pageSize: Int): Merchants
+}

@@ -1,7 +1,0 @@
-type Hello {
-  name: String
-}
-
-extend type Query {
-  hello: Hello
-}

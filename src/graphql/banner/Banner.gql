@@ -1,0 +1,15 @@
+"轮播图结构"
+type Banner {
+  "轮播图标识"
+  id: String
+  "轮播图标题"
+  title: String
+  "轮播图片地址"
+  path: String
+  "轮播图文本内容"
+  text: String
+}
+
+extend type Query {
+  banners: [Banner]
+}

@@ -1,0 +1,11 @@
+"推荐商品集合"
+type Recommend {
+  "推荐商品集合id"
+  id: ID
+  "推荐的商品"
+  goods: [Good!]
+}
+
+extend type Query {
+  recommand(id: ID!): Recommend
+}

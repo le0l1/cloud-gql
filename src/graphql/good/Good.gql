@@ -1,0 +1,40 @@
+"商品"
+type Good {
+  "商品id"
+  id: ID!
+  "商品名称"
+  name: String
+  "商品图片 默认第一张为封面"
+  images: [String!]
+  "商品描述"
+  description: String
+  "商户id"
+  merchantId: Int
+  "商品状态"
+  status: GOODSTATUS
+}
+
+"商品状态枚举"
+enum GOODSTATUS {
+  "在线"
+  ONLINE
+  "下线"
+  OFFLINE
+}
+
+"商品列表"
+type Goods {
+  "商品列表"
+  goods: [Good!]
+  "每页数量"
+  pageSize: Int
+  "页数"
+  page: Int
+  "总页数量"
+  total: Int
+}
+
+extend type Query {
+  good(id: ID!, name: String): Good
+  goodList(page: Int, pageSize: Int): Goods
+}

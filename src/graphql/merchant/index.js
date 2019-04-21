@@ -1,10 +1,10 @@
-import HelloSchema from "./Hello.gql";
+import Merchant from "./Merchant.gql";
 import resolvers from "./resolver";
 import { gql } from "apollo-server-koa";
 
-export const hello = {
+export const merchant = {
   typeDef: gql`
-    ${HelloSchema}
+    ${Merchant}
   `,
   resolvers
 };
