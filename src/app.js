@@ -10,9 +10,29 @@ import { good } from "./graphql/good";
 import { recommend } from "./graphql/recommend";
 import { dateResolver } from "./helper/scalar/Date";
 import { businessCircle } from "./graphql/businessCircle";
+import parameter from "koa-parameter";
+import bodyparser from "koa-bodyparser";
 
 const app = new Koa();
 const router = new Router();
+
+//body parser
+app.use(bodyparser());
+
+// paramter validate
+parameter(app);
+
+// error handing
+app.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (err) {
+    ctx.status = err.status || 500;
+    ctx.body = {
+      error: err.message
+    };
+  }
+});
 
 // router
 applyAuthRoute(router);
@@ -44,6 +64,7 @@ const server = new ApolloServer({
 });
 server.applyMiddleware({ app });
 
-app.listen({ port: 8080 }, () =>
-  console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`)
-);
+export const startServe = () =>
+  app.listen({ port: 4500 }, () =>
+    console.log(`🚀 Server ready at http://localhost:4500${server.graphqlPath}`)
+  );
