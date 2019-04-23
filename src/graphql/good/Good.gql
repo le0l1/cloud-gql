@@ -3,7 +3,7 @@ type Good {
   "商品id"
   id: ID!
   "商品名称"
-  name: String
+  name: String  @auth
   "商品图片 默认第一张为封面"
   images: [String!]
   "商品描述"

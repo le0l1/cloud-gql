@@ -19,6 +19,7 @@
   "dependencies": {
     "apollo-server-koa": "^2.4.8",
     "graphql": "^14.2.1",
+    "graphql-tools": "^4.0.4",
     "koa-bodyparser": "^4.2.1",
     "koa-parameter": "^3.0.1",
     "pg": "^7.10.0"

@@ -12,6 +12,10 @@ import { dateResolver } from "./helper/scalar/Date";
 import { businessCircle } from "./graphql/businessCircle";
 import parameter from "koa-parameter";
 import bodyparser from "koa-bodyparser";
+import { user } from "./graphql/user";
+import { setGraphqlContext } from "./helper/auth/setContextUser";
+import { AuthDriective } from "./helper/directives/authDirective";
+import { root } from "./graphql/root";
 
 const app = new Koa();
 const router = new Router();
@@ -46,21 +50,22 @@ router.all(
   })
 );
 
-// apollo graphql
-const typeDef = gql`
-  type Query
-`;
 const server = new ApolloServer({
   typeDefs: [
-    typeDef,
+    root.typeDef,
     merchant.typeDef,
     banner.typeDef,
     demand.typeDef,
     good.typeDef,
     recommend.typeDef,
-    businessCircle.typeDef
+    businessCircle.typeDef,
+    user.typeDef
   ],
-  resolvers: [merchant.resolvers, dateResolver]
+  resolvers: [merchant.resolvers, dateResolver, user.resolvers],
+  context: setGraphqlContext,
+  schemaDirectives: {
+    auth: AuthDriective
+  }
 });
 server.applyMiddleware({ app });
 
