@@ -12,6 +12,7 @@ jobs:
             - v1-dependencies-
       - run:
           command: |
+            apk add ca-certificates
             yarn install
             yarn build
 
