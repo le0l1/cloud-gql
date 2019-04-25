@@ -21,16 +21,15 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       - persist_to_workspace:
-          root: ~
+          root: .
           paths:
-            - repo
+            - .
 
   publish docker:
     machine: true
     steps:
       - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: ~/repo/dist
+          at: ~/repo
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker build -t leezzxuan/gql:$CIRCLE_BRANCH .
       - run: docker push company/app:$CIRCLE_TAG
