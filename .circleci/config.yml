@@ -4,15 +4,40 @@ jobs:
     docker:
       - image: node:alpine
     working_directory: ~/repo
-
     steps:
       - checkout
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
-      - run: yarn install
+      - run:
+          command: |
+            yarn install
+            yarn build
+
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+
+      - persist_to_workspace:
+          root: ~
+          paths:
+            - repo
+
+  publish docker:
+    machine: true
+    steps:
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ~/repo/dist
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run: docker build -t leezzxuan/gql:$CIRCLE_BRANCH .
+      - run: docker push company/app:$CIRCLE_BRANCH
+
+workflows:
+  version: 2
+  build-deploy:
+    - build
+    - publish docker:
+        required: build
