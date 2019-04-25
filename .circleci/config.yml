@@ -33,7 +33,7 @@ jobs:
           at: ~/repo/dist
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker build -t leezzxuan/gql:$CIRCLE_BRANCH .
-      - run: docker push company/app:$CIRCLE_BRANCH
+      - run: docker push company/app:$CIRCLE_TAG
 
 workflows:
   version: 2
