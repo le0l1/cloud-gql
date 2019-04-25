@@ -40,4 +40,5 @@ workflows:
   build-deploy:
     - build
     - publish docker:
-        requires: build
+        requires:
+          - build
