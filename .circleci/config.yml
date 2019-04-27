@@ -17,8 +17,6 @@ jobs:
           command: |
             yarn install
             yarn build
-            mv Dockerfile dist/
-            mv package.json dist/
 
       - save_cache:
           paths:
@@ -26,16 +24,18 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       - persist_to_workspace:
-          root: .
+          root: ~
           paths:
-            - dist
+            - repo
 
   publish docker:
     machine: true
     working_directory: ~/repo
     steps:
       - attach_workspace:
-          at: dist
+          at: ~/repo
+      - run: ls
+      - run: cd repo
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker build -t leezzxuan/gql:$CIRCLE_BRANCH dist
       - run: docker push leezzxuan/gql:$CIRCLE_TAG
