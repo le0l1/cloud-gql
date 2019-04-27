@@ -33,16 +33,12 @@ jobs:
     working_directory: ~/repo
     steps:
       - attach_workspace:
-          at: ~/repo
+          at: .
       - run:
           command: |
             ls
-            pwd
-            cd repo
-            ls
-            pwd
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker build -t leezzxuan/gql:$CIRCLE_BRANCH .
+            docker build -t leezzxuan/gql:$CIRCLE_TAG .
             docker push leezzxuan/gql:$CIRCLE_TAG
 
 workflows:
