@@ -30,13 +30,13 @@ jobs:
 
   publish docker:
     machine: true
-    working_directory: ~/repo
+    working_directory: ~/repo/graphql
     steps:
       - attach_workspace:
           at: ~/repo
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker build -t leezzxuan/gql:$CIRCLE_BRANCH .
-      - run: docker push company/app:$CIRCLE_TAG
+      - run: docker push leezzxuan/gql:$CIRCLE_TAG
 
 workflows:
   version: 2
