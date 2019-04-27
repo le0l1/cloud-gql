@@ -1,10 +1,8 @@
+scalar Date
+scalar Number
+
 type Query
 type Mutation
 
-
-
 "auth directive"
-directive @auth(
-  requires: Boolean = true
-) on OBJECT | FIELD_DEFINITION
-
+directive @auth(requires: Boolean = true) on OBJECT | FIELD_DEFINITION

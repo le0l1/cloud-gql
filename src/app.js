@@ -14,10 +14,9 @@ import { dateResolver } from "./helper/scalar/Date";
 import { businessCircle } from "./graphql/businessCircle";
 import { user } from "./graphql/user";
 import { setGraphqlContext } from "./helper/auth/setContextUser";
-import { AuthDriective } from "./helper/directives/authDirective";
+import { AuthDriective } from "./helper/auth/authDirective";
 import { root } from "./graphql/root";
-
-
+import { numberResolver } from "./helper/scalar/Number";
 
 const app = new Koa();
 const router = new Router();
@@ -52,7 +51,6 @@ router.all(
   })
 );
 
-
 const server = new ApolloServer({
   typeDefs: [
     root.typeDef,
@@ -64,16 +62,25 @@ const server = new ApolloServer({
     businessCircle.typeDef,
     user.typeDef
   ],
-  resolvers: [merchant.resolvers, dateResolver, user.resolvers],
+  resolvers: [
+    merchant.resolvers,
+    dateResolver,
+    numberResolver,
+    user.resolvers,
+    banner.resolvers
+  ],
   context: setGraphqlContext,
   schemaDirectives: {
     auth: AuthDriective
-  },
+  }
 });
 server.applyMiddleware({ app });
 
-
 export const startServe = () =>
   app.listen({ port: process.env.PORT }, () =>
-    console.log(`🚀 Server ready at http://localhost:${process.env.PORT}${server.graphqlPath}`)
+    console.log(
+      `🚀 Server ready at http://localhost:${process.env.PORT}${
+        server.graphqlPath
+      }`
+    )
   );

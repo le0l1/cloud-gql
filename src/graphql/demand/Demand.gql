@@ -1,5 +1,3 @@
-scalar Date
-
 "需求帖子"
 type Demand {
   "需求帖子id"

@@ -8,7 +8,7 @@ type User {
   phone: Int
   "用户地址"
   address: String
-  "token"
+  "用户登陆凭证"
   token: String
 }
 
@@ -17,7 +17,7 @@ input UserRegisterInput {
   "用户姓名"
   name: String
   "用户手机号"
-  phone: Int!
+  phone: Number!
   "用户密码"
   password: String!
 }
@@ -25,7 +25,7 @@ input UserRegisterInput {
 "用户登录输入"
 input UserLoginInput {
   "用户手机号"
-  phone: Int!
+  phone: Number!
   "用户密码"
   password: String!
 }
@@ -36,6 +36,20 @@ type UserRegisterResult {
   id: ID!
 }
 
+"用户登陆返回"
+type UserLoginResult {
+  "用户id"
+  id: ID
+  "用户姓名"
+  name: String
+  "用户手机号"
+  phone: Int
+  "用户地址"
+  address: String
+  "用户登陆凭证"
+  token: String
+}
+
 extend type Query {
   user: User! @auth
 }
@@ -44,5 +58,5 @@ extend type Mutation {
   "用户注册"
   register(userRegisterInput: UserRegisterInput!): UserRegisterResult!
   "用户登录"
-  loginIn(userLoginInput: UserLoginInput!): User!
+  loginIn(userLoginInput: UserLoginInput!): UserLoginResult!
 }

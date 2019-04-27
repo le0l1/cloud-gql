@@ -1,15 +1,16 @@
-export const setGraphqlContext = async ({ req }) => {
+import { tradeTokenForUser } from "./encode";
+
+export const setGraphqlContext = ({ ctx: { request } }) => {
   let authToken = null;
   let currentUser = null;
 
   try {
-    authToken = req.headers[HEADER_NAME];
-
+    authToken = request.headers["authorization"];
     if (authToken) {
-      currentUser = await tradeTokenForUser(authToken);
+      currentUser = tradeTokenForUser(authToken);
     }
   } catch (e) {
-    console.warn(`Unable to authenticate using auth token: ${authToken}`);
+    throw e;
   }
 
   return {

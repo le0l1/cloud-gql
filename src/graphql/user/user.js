@@ -1,5 +1,9 @@
 import { formateID } from "../../helper/id";
-import { hashPassword, comparePassword } from "../../helper/auth/encode";
+import {
+  hashPassword,
+  comparePassword,
+  generateToken
+} from "../../helper/auth/encode";
 
 export const createUserModel = db => ({
   async addNewUser({ name, password, phone }) {
@@ -10,6 +14,7 @@ export const createUserModel = db => ({
         "INSERT INTO cloud_user (name, phone, password, salt) VALUES ($1, $2, $3, $4)  RETURNING id",
         [name, phone, hashed, salt]
       );
+
       return {
         id: formateID("user", res.rows[0].id)
       };
@@ -42,7 +47,7 @@ export const createUserModel = db => ({
       return {
         ...rest,
         id: formateID("user", rest.id),
-        token: '123'
+        token: generateToken(rest)
       };
     } finally {
       client.release();
