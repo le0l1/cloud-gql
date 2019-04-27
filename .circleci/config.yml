@@ -30,10 +30,10 @@ jobs:
 
   publish docker:
     machine: true
+    working_directory: ~/repo
     steps:
       - attach_workspace:
-          at: ~/repo
-      - run: ls
+          at: .
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker build -t leezzxuan/gql:$CIRCLE_BRANCH .
       - run: docker push leezzxuan/gql:$CIRCLE_TAG
