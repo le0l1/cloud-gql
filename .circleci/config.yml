@@ -17,7 +17,7 @@ jobs:
           command: |
             yarn install
             yarn build
-            mv Dockferfile dist/
+            mv Dockerfile dist/
             mv package.json dist/
 
       - save_cache:
