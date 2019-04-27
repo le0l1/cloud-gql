@@ -24,9 +24,11 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       - persist_to_workspace:
-          root: ~/
+          root: ~/repo
           paths:
-            - repo
+            - dist
+            - package.json
+            - Dockerfile
 
   publish docker:
     machine: true
@@ -49,3 +51,6 @@ workflows:
       - publish docker:
           requires:
             - build
+          filters:
+            tags:
+              only: /v*.*.*/
