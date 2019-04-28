@@ -38,7 +38,7 @@ jobs:
           at: .
       - run:
           command: |
-            echo $CIRCLE_TAG
+            CIRCLE_TAG="$(git tag -l --points-at HEAD)"
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker build -t leezzxuan/gql:$CIRCLE_TAG .
             docker push leezzxuan/gql:$CIRCLE_TAG
