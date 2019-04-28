@@ -29,6 +29,7 @@ jobs:
           paths:
             - dist
             - package.json
+
             - Dockerfile
 
   publish docker:
@@ -52,5 +53,5 @@ workflows:
           requires:
             - build
           filters:
-            tags:
-              only: /^config-test/
+            branches:
+              ignore: /.*/
