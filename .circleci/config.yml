@@ -39,7 +39,6 @@ jobs:
           at: .
       - run:
           command: |
-            CIRCLE_TAG="$(git tag -l --points-at HEAD)"
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker build -t leezzxuan/gql:$CIRCLE_TAG .
             docker push leezzxuan/gql:$CIRCLE_TAG
@@ -54,4 +53,4 @@ workflows:
             - build
           filters:
             tags:
-              only: /^v.*/
+              only: /^config-test/
