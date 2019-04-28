@@ -17,6 +17,7 @@ jobs:
           command: |
             yarn install
             yarn build
+            echo $CIRCLE_TAG
 
       - save_cache:
           paths:
@@ -53,4 +54,4 @@ workflows:
             - build
           filters:
             tags:
-              only: /v*.*.*/
+              only: /^v.*/
