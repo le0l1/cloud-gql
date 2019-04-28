@@ -10,7 +10,17 @@ type Banner {
   text: String
 }
 
+type BannerEdge {
+  cursor: String!
+  node: Banner
+}
+
+type BannerConnection {
+  pageInfo: PageInfo!
+  edges: [BannerEdge!]
+}
+
 extend type Query {
   "轮播图查询"
-  banners: [Banner!] @auth
+  banners: BannerConnection @auth
 }
