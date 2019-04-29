@@ -42,8 +42,8 @@ jobs:
       - run:
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker build -t leezzxuan/gql:$CIRCLE_COMMIT .
-            docker push leezzxuan/gql:$CIRCLE_COMMIT
+            docker build -t leezzxuan/gql:$CIRCLE_SHA1 .
+            docker push leezzxuan/gql:$CIRCLE_SHA1
 
   publish docker:
     machine: true
