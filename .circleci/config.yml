@@ -33,7 +33,7 @@ jobs:
             - Dockerfile
 
   
-  publish docker:
+  publish pre-realse docker:
     machine: true
     working_directory: ~/repo
     steps:
