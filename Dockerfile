@@ -3,6 +3,7 @@ FROM node:alpine
 ENV NODE_ENV=development
 ENV PORT=80
 
+
 # add file
 ADD dist /home/graphql
 ADD package.json /home/graphql

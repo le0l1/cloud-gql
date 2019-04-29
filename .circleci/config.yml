@@ -32,6 +32,19 @@ jobs:
 
             - Dockerfile
 
+  
+  publish docker:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker build -t leezzxuan/gql:$CIRCLE_COMMIT .
+            docker push leezzxuan/gql:$CIRCLE_COMMIT
+
   publish docker:
     machine: true
     working_directory: ~/repo
@@ -49,6 +62,12 @@ workflows:
   build-deploy:
     jobs:
       - build
+      - publish pre-realse docker:
+          require:
+            - build
+          filters:
+            branches:
+              only: /pre-realse/
       - publish docker:
           requires:
             - build
@@ -57,3 +76,4 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+            
