@@ -61,7 +61,7 @@ jobs:
     steps:
       - run:
           command: |
-            cat << EOF > docker-compose.yml
+            cat << 'EOF' > docker-compose.yml
               version: "3.7"
               services:
                 nodejs:
