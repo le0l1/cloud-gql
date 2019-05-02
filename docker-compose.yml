@@ -15,6 +15,7 @@ services:
       - ".:/home/graphql"
   pgsql:
     image: postgres:alpine
+    restart: always
     container_name: pgsql
   adminer:
     image: adminer:latest

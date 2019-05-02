@@ -20,6 +20,14 @@ input UserRegisterInput {
   phone: Number!
   "用户密码"
   password: String!
+  "汽修厂名称"
+  garage: String
+  "订货城市"
+  city: String
+  "地区"
+  area: String
+  "详细地址"
+  address: String
 }
 
 "用户登录输入"

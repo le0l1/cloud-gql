@@ -4,19 +4,13 @@ scalar Number
 type Query
 type Mutation
 
-
-
 interface Node {
   id: ID!
-} 
+}
 
 type PageInfo {
   hasNextPage: Boolean!
 }
 
-
-"auth directive"
+"鉴权指令"
 directive @auth(requires: Boolean = true) on OBJECT | FIELD_DEFINITION
-
-
-
