@@ -59,7 +59,7 @@ jobs:
   docker pull:
     machine: true
     steps:
-      - run: ssh root@47.104.180.119 "docker pull leezzxuan/gql:$CIRCLE_TAG"
+      - run: ssh root@47.104.180.119 "docker pull leezzxuan/gql:${CIRCLE_TAG}"
 
 workflows:
   version: 2

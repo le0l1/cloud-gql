@@ -1,10 +1,27 @@
 import Banner from "./Banner.gql";
 import { gql } from "apollo-server-koa";
+import { createBannerModel } from "./Banner";
+import { db } from "../../db";
 
 const resolvers = {
   Query: {
-    banners() {
-      return [];
+    banners(_, { tag }) {
+      const banner = createBannerModel(db);
+      return banner.findBannerByTag(tag);
+    }
+  },
+  Mutation: {
+    addBanner(_, { bannerInput }) {
+      const banner = createBannerModel(db);
+      return banner.addBanner(bannerInput);
+    },
+    deleteBanner(_, { id }) {
+      const banner = createBannerModel(db);
+      return banner.deletBanner(id);
+    },
+    updateBanner(_, { bannerUpdateInput }) {
+      const banner = createBannerModel(db);
+      return banner.updateBanner(bannerUpdateInput);
     }
   }
 };

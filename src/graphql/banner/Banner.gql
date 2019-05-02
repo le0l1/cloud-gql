@@ -1,26 +1,57 @@
 "轮播图结构"
-type Banner {
+type Banner implements Node {
   "轮播图标识"
-  id: ID
+  id: ID!
   "轮播图标题"
   title: String
   "轮播图片地址"
   path: String
   "轮播图文本内容"
-  text: String
+  content: String
+  "轮播图标签 用于区别不同页面"
+  tag: String
 }
 
-type BannerEdge {
-  cursor: String!
-  node: Banner
+input BannerInput {
+  "轮播图标题"
+  title: String
+  "轮播图片地址"
+  path: String
+  "轮播图文本内容"
+  content: String
+  "轮播图标签 用于区别不同页面"
+  tag: String
 }
 
-type BannerConnection {
-  pageInfo: PageInfo!
-  edges: [BannerEdge!]
+input BannerUpdateInput {
+  "轮播图标识"
+  id: ID!
+  "轮播图标题"
+  title: String
+  "轮播图片地址"
+  path: String
+  "轮播图文本内容"
+  content: String
+  "轮播图标签 用于区别不同页面"
+  tag: String
+}
+
+"添加/删除 轮播图结果"
+type BannerActionResult {
+  id: ID!
+  status: Boolean!
 }
 
 extend type Query {
   "轮播图查询"
-  banners: BannerConnection @auth
+  banners(tag: String): [Banner!]
+}
+
+extend type Mutation {
+  "添加轮播图"
+  addBanner(bannerInput: BannerInput): BannerActionResult
+  "删除轮播图"
+  deleteBanner(id: ID!): BannerActionResult
+  "修改轮播图"
+  updateBanner(bannerUpdateInput: BannerUpdateInput!): BannerActionResult
 }
