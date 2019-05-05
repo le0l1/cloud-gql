@@ -4,7 +4,21 @@ import { db } from "../../db";
 
 const resolvers = {
   Query: {
-    user: () => ({ name: "123" })
+    user: (_, { userQueryInput }) => {
+      const user = createUserModel(db);
+      return user.fuzzySearchUser(userQueryInput);
+    }
+  },
+  UserConnection: {
+    edges(result) {
+      return result;
+    },
+    pageInfo(result) {
+      return {
+        hasNextPage: result.length > 0,
+        total: result.length > 0 ? result[0].node.total : 0
+      };
+    }
   },
   Mutation: {
     register(obj, { userRegisterInput }) {

@@ -1,4 +1,4 @@
-import { formateID } from "../../helper/id";
+import { formateID, decodeID } from "../../helper/id";
 import {
   hashPassword,
   comparePassword,
@@ -53,6 +53,31 @@ export const createUserModel = db => ({
         id: formateID("user", rest.id),
         token: generateToken(rest)
       };
+    } finally {
+      client.release();
+    }
+  },
+  async fuzzySearchUser({ tsQuery, first = 10, after = null }) {
+    const client = await db.connect();
+    try {
+      const getAfterStamp = () => (after ? new Date(decodeID(after)) : after);
+      console.log(getAfterStamp());
+      const res = await client.query(
+        "SELECT * , COUNT(*) OVER() as total FROM cloud_user WHERE (name LIKE '%' || $1 || '%' OR phone LIKE '%' || $1 || '%') AND created_at > $2 LIMIT $3 ;",
+        [tsQuery, getAfterStamp(), first]
+      );
+      const resFilter = arr =>
+        arr.map(({ id, password, ...rest }) => {
+          return {
+            cursor: formateID("user", rest.created_at),
+            node: {
+              id: formateID("user", id),
+              ...rest
+            }
+          };
+        });
+
+      return res.rows.length ? resFilter(res.rows) : [];
     } finally {
       client.release();
     }

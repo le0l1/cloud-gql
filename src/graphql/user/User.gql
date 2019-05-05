@@ -5,11 +5,9 @@ type User {
   "用户姓名"
   name: String
   "用户手机号"
-  phone: Int
+  phone: Number
   "用户地址"
   address: String
-  "用户登陆凭证"
-  token: String
 }
 
 "用户注册输入"
@@ -38,6 +36,16 @@ input UserLoginInput {
   password: String!
 }
 
+"用户查询输入"
+input UserQueryInput {
+  "分页id"
+  after: ID
+  "分页条数"
+  first: Int
+  "模糊查询文本"
+  tsQuery: String
+}
+
 "用户注册返回"
 type UserRegisterResult {
   "用户id"
@@ -58,8 +66,18 @@ type UserLoginResult {
   token: String
 }
 
+type UserEdge {
+  cursor: String!
+  node: User
+}
+
+type UserConnection {
+  pageInfo: PageInfo!
+  edges: [UserEdge!]
+}
+
 extend type Query {
-  user: User! @auth
+  user(userQueryInput: UserQueryInput): UserConnection! @auth
 }
 
 extend type Mutation {

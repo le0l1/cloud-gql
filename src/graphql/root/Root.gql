@@ -10,6 +10,7 @@ interface Node {
 
 type PageInfo {
   hasNextPage: Boolean!
+  total: Int!
 }
 
 "鉴权指令"
