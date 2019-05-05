@@ -4,15 +4,19 @@ import {
   comparePassword,
   generateToken
 } from "../../helper/auth/encode";
+import { gPlaceholderForPostgres } from "../../helper/util";
 
 export const createUserModel = db => ({
-  async addNewUser({ name, password, phone }) {
+  async addNewUser({ name, password, phone, garage, city, area, address }) {
     const client = await db.connect();
     try {
       const { hashed, salt } = hashPassword(password);
+      const values = [name, phone, hashed, salt, garage, city, area, address];
       const res = await client.query(
-        "INSERT INTO cloud_user (name, phone, password, salt) VALUES ($1, $2, $3, $4)  RETURNING id",
-        [name, phone, hashed, salt]
+        `INSERT INTO cloud_user (name, phone, password, salt, garage, city, area, address) VALUES (${gPlaceholderForPostgres(
+          values.length
+        )})  RETURNING id`,
+        values
       );
 
       return {

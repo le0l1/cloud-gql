@@ -32,7 +32,6 @@ jobs:
 
             - Dockerfile
 
-  
   publish pre-realse docker:
     machine: true
     working_directory: ~/repo
@@ -42,8 +41,8 @@ jobs:
       - run:
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker build -t leezzxuan/gql:$CIRCLE_COMMIT .
-            docker push leezzxuan/gql:$CIRCLE_COMMIT
+            docker build -t leezzxuan/gql:$CIRCLE_SHA1 .
+            docker push leezzxuan/gql:$CIRCLE_SHA1
 
   publish docker:
     machine: true
@@ -56,6 +55,11 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker build -t leezzxuan/gql:$CIRCLE_TAG .
             docker push leezzxuan/gql:$CIRCLE_TAG
+
+  docker pull:
+    machine: true
+    steps:
+      - run: ssh root@47.104.180.119 "docker pull leezzxuan/gql:${CIRCLE_TAG}"
 
 workflows:
   version: 2
@@ -76,4 +80,7 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-            
+
+      - docker pull:
+          requires:
+            - publish pre-realse docker
