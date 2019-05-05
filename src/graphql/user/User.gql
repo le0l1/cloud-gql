@@ -43,7 +43,7 @@ type UserLoginResult {
   "用户姓名"
   name: String
   "用户手机号"
-  phone: Int
+  phone: Number
   "用户地址"
   address: String
   "用户登陆凭证"
