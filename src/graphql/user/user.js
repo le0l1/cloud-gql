@@ -7,17 +7,9 @@ import {
 import {
   gPlaceholderForPostgres,
   isValid,
-  addCondition
+  addCondition,
+  excuteQuery
 } from "../../helper/util";
-
-const excuteQuery = db => async cb => {
-  const client = await db.connect();
-  try {
-    return cb(client);
-  } finally {
-    client.release();
-  }
-};
 
 export const createUserModel = db => ({
   async addNewUser({ name, password, phone, garage, city, area, address, role }) {

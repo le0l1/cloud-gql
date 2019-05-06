@@ -17,6 +17,7 @@ import { setGraphqlContext } from "./helper/auth/setContextUser";
 import { AuthDriective } from "./helper/auth/authDirective";
 import { root } from "./graphql/root";
 import { numberResolver } from "./helper/scalar/Number";
+import { category } from "./graphql/category";
 
 const app = new Koa();
 const router = new Router();
@@ -59,13 +60,15 @@ const server = new ApolloServer({
     good.typeDef,
     recommend.typeDef,
     businessCircle.typeDef,
-    user.typeDef
+    user.typeDef,
+    category.typeDef
   ],
   resolvers: [
     dateResolver,
     numberResolver,
     user.resolvers,
-    banner.resolvers
+    banner.resolvers,
+    category.resolvers
   ],
   context: setGraphqlContext,
   schemaDirectives: {

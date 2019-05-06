@@ -42,8 +42,6 @@ input UserLoginInput {
   phone: Number!
   "用户密码"
   password: String!
-  "用户角色"
-  role: Role!
 }
 
 "用户查询输入"

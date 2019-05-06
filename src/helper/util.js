@@ -10,8 +10,23 @@ export const isValid = val => val !== null && val !== "" && val !== void 0;
 export const addCondition = (sql, condition) => {
   const limitPart = sql.split("limit")[1];
   const queryPart = sql.split("limit")[0];
+  let query = ''
   if (/where/.test(queryPart)) { 
-    return queryPart.split("where").join(`where ${condition} and`) + ' limit' + limitPart;
+    query = queryPart.split("where").join(`where ${condition} and`) 
   }
-  return `${queryPart} where ${condition}` + ' limit' + limitPart;
+  query =  `${queryPart} where ${condition}`
+  
+  return limitPart ? query + ' limit' + limitPart : query;
+};
+
+
+
+// 回调执行sql
+export const excuteQuery = db => async cb => {
+  const client = await db.connect();
+  try {
+    return cb(client);
+  } finally {
+    client.release();
+  }
 };
