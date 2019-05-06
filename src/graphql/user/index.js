@@ -28,6 +28,10 @@ const resolvers = {
     loginIn(obj, { userLoginInput }) {
       const user = createUserModel(db);
       return user.findUserByPhone(userLoginInput);
+    },
+    deleteUser(_, { userDeleteInput }) {
+      const user = createUserModel(db);
+      return user.deleteUserByID(userDeleteInput);
     }
   }
 };

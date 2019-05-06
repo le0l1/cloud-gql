@@ -6,7 +6,17 @@ import {
 } from "../../helper/auth/encode";
 import { gPlaceholderForPostgres } from "../../helper/util";
 
+const excuteQuery = db => async cb => {
+   const client = await db.connect();
+   try {
+     return cb(client)
+   } finally {
+     client.release();
+   }
+}
+
 export const createUserModel = db => ({
+
   async addNewUser({ name, password, phone, garage, city, area, address }) {
     const client = await db.connect();
     try {
@@ -88,5 +98,18 @@ export const createUserModel = db => ({
     } finally {
       client.release();
     }
+  },
+  deleteUserByID({ id }) {
+    const deleteUser = async client => {
+      const res = await client.query(
+        "DELETE FROM cloud_user WHERE id=$1;",
+        [decodeID(id)]
+      )
+      return {
+        id: id,
+        status: true
+      }
+    }
+    return excuteQuery(db)(deleteUser);
   }
 });
