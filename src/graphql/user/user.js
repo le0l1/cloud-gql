@@ -60,11 +60,19 @@ export const createUserModel = db => ({
   async fuzzySearchUser({ tsQuery, first = 10, after = null }) {
     const client = await db.connect();
     try {
-      const getAfterStamp = () => (after ? new Date(decodeID(after)) : after);
+      const getQuery = () =>  {
+        if (after) {
+         return "SELECT * , COUNT(*) OVER() as total FROM cloud_user WHERE (name LIKE '%' || $1 || '%' OR phone LIKE '%' || $1 || '%') AND created_at > $2 LIMIT $3 ;" 
+        } 
+        return "SELECT * , COUNT(*) OVER() as total FROM cloud_user WHERE (name LIKE '%' || $1 || '%' OR phone LIKE '%' || $1 || '%') LIMIT $2 ;"
+      }
+      const getPayload = () => after ? [tsQuery, new Date(decodeID(after)), first] : [tsQuery, first]
+
       const res = await client.query(
-        "SELECT * , COUNT(*) OVER() as total FROM cloud_user WHERE (name LIKE '%' || $1 || '%' OR phone LIKE '%' || $1 || '%') AND created_at > $2 LIMIT $3 ;",
-        [tsQuery, getAfterStamp(), first]
+        getQuery(),
+        getPayload()
       );
+
       const resFilter = arr =>
         arr.map(({ id, password, ...rest }) => {
           return {
