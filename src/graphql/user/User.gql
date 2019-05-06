@@ -6,7 +6,13 @@ type User {
   name: String
   "用户手机号"
   phone: Number
-  "用户地址"
+  "汽修厂名称"
+  garage: String
+  "订货城市"
+  city: String
+  "地区"
+  area: String
+  "详细地址"
   address: String
 }
 
@@ -77,7 +83,7 @@ type UserConnection {
 }
 
 extend type Query {
-  user(userQueryInput: UserQueryInput): UserConnection! @auth
+  user(userQueryInput: UserQueryInput!): UserConnection! @auth
 }
 
 extend type Mutation {
