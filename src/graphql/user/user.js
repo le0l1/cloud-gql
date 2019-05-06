@@ -61,7 +61,6 @@ export const createUserModel = db => ({
     const client = await db.connect();
     try {
       const getAfterStamp = () => (after ? new Date(decodeID(after)) : after);
-      console.log(getAfterStamp());
       const res = await client.query(
         "SELECT * , COUNT(*) OVER() as total FROM cloud_user WHERE (name LIKE '%' || $1 || '%' OR phone LIKE '%' || $1 || '%') AND created_at > $2 LIMIT $3 ;",
         [tsQuery, getAfterStamp(), first]
