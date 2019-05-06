@@ -54,7 +54,6 @@ router.all(
 const server = new ApolloServer({
   typeDefs: [
     root.typeDef,
-    merchant.typeDef,
     banner.typeDef,
     demand.typeDef,
     good.typeDef,
@@ -63,7 +62,6 @@ const server = new ApolloServer({
     user.typeDef
   ],
   resolvers: [
-    merchant.resolvers,
     dateResolver,
     numberResolver,
     user.resolvers,

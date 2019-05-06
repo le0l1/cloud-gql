@@ -4,10 +4,14 @@ import { db } from "../../db";
 
 const resolvers = {
   Query: {
-    user: (_, { userQueryInput }) => {
+    users: (_, { userQueryInput }) => {
       const user = createUserModel(db);
       return user.fuzzySearchUser(userQueryInput);
     }
+  },
+  Role: {
+    CUSTOMER: 1,
+    MERCHANT: 2
   },
   UserConnection: {
     edges(result) {
