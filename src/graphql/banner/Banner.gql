@@ -23,6 +23,11 @@ input BannerInput {
   tag: String
 }
 
+"轮播查询"
+input BannerQueryInput {
+  tag: String!
+}
+
 input BannerUpdateInput {
   "轮播图标识"
   id: ID!
@@ -42,9 +47,10 @@ type BannerActionResult {
   status: Boolean!
 }
 
+
 extend type Query {
   "轮播图查询"
-  banners(tag: String): [Banner!]
+  banners(bannerQueryInput: BannerQueryInput!): [Banner!]
 }
 
 extend type Mutation {

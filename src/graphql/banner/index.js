@@ -5,9 +5,9 @@ import { db } from "../../db";
 
 const resolvers = {
   Query: {
-    banners(_, { tag }) {
+    banners(_, { bannerQueryInput }) {
       const banner = createBannerModel(db);
-      return banner.findBannerByTag(tag);
+      return banner.findBannerByTag(bannerQueryInput);
     }
   },
   Mutation: {
