@@ -76,9 +76,9 @@ export const createUserModel = db => ({
           formate: v => v
         },
         {
-          condition: idx => `created_at > $${idx}`,
+          condition: idx => `created_at::timestamp(0) >  $${idx}::timestamp(0)`,
           val: after,
-          formate: v => new Date(decodeID(after))
+          formate: v => decodeID(after)
         },
         {
           condition: idx => {
@@ -107,7 +107,7 @@ export const createUserModel = db => ({
       const resFilter = arr =>
         arr.map(({ id, password, ...rest }) => {
           return {
-            cursor: formateID("user", rest.created_at),
+            cursor: formateID("user", rest.created_at.toJSON()),
             node: {
               id: formateID("user", id),
               ...rest
