@@ -1,0 +1,4 @@
+extend type Query {
+  "上传凭证"
+  ossToken: String! @auth
+}

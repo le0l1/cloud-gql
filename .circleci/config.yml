@@ -41,7 +41,19 @@ jobs:
       - run:
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker build -t leezzxuan/gql:$CIRCLE_SHA1 .
+            docker build 
+              --tag leezzxuan/gql:$CIRCLE_SHA1 
+              --build-arg 
+                PGUSER
+                PGHOST
+                PGDATABASE
+                PRIVATE_TOKEN_KEY
+                QINIU_AK
+                QINIU_SK
+                QINIU_BUCKET
+              .
+              
+
             docker push leezzxuan/gql:$CIRCLE_SHA1
 
   publish docker:
