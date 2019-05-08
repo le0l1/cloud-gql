@@ -1,0 +1,97 @@
+"店铺"
+type Shop  implements Node {
+  "店铺id"
+  id: ID!
+  "店铺名称"
+  name: String
+  "店铺QQ"
+  qqchat: Number
+  "店铺微信"
+  wechat: String
+  "店铺电话"
+  phone: Number
+  "商户介绍"
+  description: String
+  "店铺详情轮播"
+  shopBanner:[Banner!]
+  "店铺状态"
+  status: ShopStatus
+}
+
+enum ShopStatus {
+  "正常"
+  NORMAL
+  "暂停营业"
+  SUSPEND
+}
+
+input ShopQueryFilter {
+  status: ShopStatus
+}
+
+"店铺查询"
+input ShopQueryInput {
+  "模糊查询"
+  tsQuery: String
+  "筛选条件"
+  filter: ShopQueryFilter
+  "页面size"
+  first: Int
+  "分页游标"
+  after: ID
+}
+
+"新建店铺"
+input ShopCreateInput {
+  "店铺名称"
+  name: String
+  "店铺QQ"
+  qqchat: Number
+  "店铺微信"
+  wechat: String
+  "店铺电话"
+  phone: Number
+  "商户介绍"
+  description: String
+  "店铺状态"
+  status: ShopStatus
+  "商家id"
+  belongto: ID!
+}
+
+"删除店铺输入"
+input ShopDeleteInput {
+  id: ID!
+}
+
+type ShopEdge {
+  cursor: String!
+  node: Shop
+}
+
+"店铺列表"
+type ShopConnection {
+  pageInfo: PageInfo!
+  edges: [ShopEdge!]
+}
+
+"店铺创建结果"
+type ShopResult {
+  id: ID!
+  status: Boolean
+}
+
+extend type Query {
+  "店铺查询 支持模糊查询 筛选条件"
+  shops(query:ShopQueryInput): ShopConnection! @auth 
+}
+
+
+extend type Mutation {
+  "创建店铺"
+  createShop(shopCreateInput: ShopCreateInput!): ShopResult! @auth
+  "删除店铺"
+  deleteShop(shopDeleteInput: ShopDeleteInput!): ShopResult! @auth
+}
+
+

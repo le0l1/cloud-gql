@@ -1,0 +1,59 @@
+"分类"
+type Category {
+  "分类id"
+  id: ID!
+  "名称"
+  name: String!
+  "状态"
+  status: CategoryStatus!
+  "标签"
+  tag: String!
+}
+
+"分类状态"
+enum CategoryStatus {
+  "热门"
+  HOT
+  "正常"
+  NORMAL
+}
+
+"分类操作返回"
+type CategoryResult {
+  id: ID!
+  status: Boolean
+}
+
+"添加分类输入"
+input CategoryCreateInput {
+  "名称"
+  name: String!
+  "状态"
+  status: CategoryStatus!
+  "标签"
+  tag: String!
+}
+
+"删除分类输入"
+input CategoryDeleteInput {
+  id: ID!
+}
+
+"分类查询输入"
+input CategoryQuery {
+  "模糊查询"
+  tsQuery: String
+  "指定查询tag"
+  tag: String
+  "筛选对应的状态"
+  status: CategoryStatus
+}
+
+extend type Query {
+  categorys(query: CategoryQuery): [Category!]
+}
+extend type Mutation {
+  createCategory(category: CategoryCreateInput!): CategoryResult
+  deleteCategory(category: CategoryDeleteInput!): CategoryResult
+}
+

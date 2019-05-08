@@ -21,6 +21,8 @@ services:
     image: adminer:latest
     container_name: adminer
     restart: always
+    extra_hosts:
+      - "outside:172.17.0.1"
     links:
       - pgsql:db
     ports:

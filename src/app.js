@@ -18,6 +18,8 @@ import { AuthDriective } from "./helper/auth/authDirective";
 import { root } from "./graphql/root";
 import { numberResolver } from "./helper/scalar/Number";
 import { qiniu } from "./graphql/qiniu";
+import { category } from "./graphql/category";
+import { shop } from "./graphql/shop";
 
 const app = new Koa();
 const router = new Router();
@@ -55,7 +57,6 @@ router.all(
 const server = new ApolloServer({
   typeDefs: [
     root.typeDef,
-    merchant.typeDef,
     banner.typeDef,
     demand.typeDef,
     good.typeDef,
@@ -63,14 +64,17 @@ const server = new ApolloServer({
     businessCircle.typeDef,
     user.typeDef,
     qiniu.typeDef
+    category.typeDef,
+    shop.typeDef
   ],
   resolvers: [
-    merchant.resolvers,
     dateResolver,
     numberResolver,
     user.resolvers,
     banner.resolvers,
     qiniu.resolvers
+    category.resolvers,
+    shop.resolvers
   ],
   context: setGraphqlContext,
   schemaDirectives: {

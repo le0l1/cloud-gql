@@ -37,7 +37,7 @@ export const createBannerModel = da => ({
       client.release();
     }
   },
-  async findBannerByTag(tag) {
+  async findBannerByTag({tag }) {
     const client = await db.connect();
     try {
       const res = await client.query(

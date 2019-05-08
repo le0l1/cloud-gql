@@ -1,12 +1,18 @@
 "用户"
-type User {
+type User implements Node {
   "用户id"
-  id: ID
+  id: ID!
   "用户姓名"
   name: String
   "用户手机号"
   phone: Number
-  "用户地址"
+  "汽修厂名称"
+  garage: String
+  "订货城市"
+  city: String
+  "地区"
+  area: String
+  "详细地址"
   address: String
 }
 
@@ -26,6 +32,8 @@ input UserRegisterInput {
   area: String
   "详细地址"
   address: String
+  "用户角色"
+  role: Role!
 }
 
 "用户登录输入"
@@ -44,6 +52,24 @@ input UserQueryInput {
   first: Int
   "模糊查询文本"
   tsQuery: String
+  "用户筛选条件"
+  filters: UserQueryFilter
+}
+
+"用户角色"
+enum Role {
+  "顾客"
+  CUSTOMER
+  "商家"
+  MERCHANT
+}
+
+"用户查询筛选条件"
+input UserQueryFilter {
+  "地区"
+  area: String
+  "角色"
+  role: Role
 }
 
 "用户注册返回"
@@ -66,18 +92,33 @@ type UserLoginResult {
   token: String
 }
 
+"用户删除"
+input UserDeleteInput {
+  "指定删除用户id"
+  id: ID!
+}
+
+"删除用户返回"
+type UserDeleteResult {
+  "被删除id"
+  id: ID!
+  "删除结果"
+  status: Boolean
+}
+
 type UserEdge {
   cursor: String!
   node: User
 }
 
+"用户列表"
 type UserConnection {
   pageInfo: PageInfo!
   edges: [UserEdge!]
 }
 
 extend type Query {
-  user(userQueryInput: UserQueryInput): UserConnection! @auth
+  users(userQueryInput: UserQueryInput!): UserConnection! @auth
 }
 
 extend type Mutation {
@@ -85,4 +126,6 @@ extend type Mutation {
   register(userRegisterInput: UserRegisterInput!): UserRegisterResult!
   "用户登录"
   loginIn(userLoginInput: UserLoginInput!): UserLoginResult!
+  "用户删除"
+  deleteUser(userDeleteInput: UserDeleteInput!): UserDeleteResult! @auth
 }
