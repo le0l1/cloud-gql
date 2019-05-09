@@ -63,7 +63,7 @@ const server = new ApolloServer({
     recommend.typeDef,
     businessCircle.typeDef,
     user.typeDef,
-    qiniu.typeDef
+    qiniu.typeDef,
     category.typeDef,
     shop.typeDef
   ],
@@ -72,7 +72,7 @@ const server = new ApolloServer({
     numberResolver,
     user.resolvers,
     banner.resolvers,
-    qiniu.resolvers
+    qiniu.resolvers,
     category.resolvers,
     shop.resolvers
   ],
