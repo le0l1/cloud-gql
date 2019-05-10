@@ -83,7 +83,7 @@ workflows:
             - build
           filters:
             branches:
-              only: /pre-realse/
+              only: /pre-release/
       - publish docker:
           requires:
             - build
@@ -95,4 +95,4 @@ workflows:
 
       - docker pull:
           requires:
-            - publish pre-realse docker
+            - publish pre-release docker
