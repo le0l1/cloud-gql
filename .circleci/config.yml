@@ -78,7 +78,7 @@ workflows:
   build-deploy:
     jobs:
       - build
-      - publish pre-realse docker:
+      - publish pre-release docker:
           requires:
             - build
           filters:
