@@ -8,6 +8,8 @@ type Category {
   status: CategoryStatus!
   "标签"
   tag: String!
+  "路由地址"
+  route: String!
 }
 
 "分类状态"
@@ -32,6 +34,8 @@ input CategoryCreateInput {
   status: CategoryStatus!
   "标签"
   tag: String!
+  "页面"
+  route: String!
 }
 
 "删除分类输入"
@@ -47,6 +51,8 @@ input CategoryQuery {
   tag: String
   "筛选对应的状态"
   status: CategoryStatus
+  "获取指定页面的分类"
+  route: String
 }
 
 extend type Query {

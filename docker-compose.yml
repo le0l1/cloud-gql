@@ -17,13 +17,18 @@ services:
     image: postgres:alpine
     restart: always
     container_name: pgsql
+    extra_hosts:
+      - "remote:172.17.0.1"
   adminer:
-    image: adminer:latest
     container_name: adminer
     restart: always
-    extra_hosts:
-      - "outside:172.17.0.1"
+    image: adminer:latest
+    environment:
+     - ADMINER_DESIGN=nette
     links:
-      - pgsql:db
+      - pgsql
+    extra_hosts:
+      - "remote:172.17.0.1"
     ports:
       - "9999:8080"
+      

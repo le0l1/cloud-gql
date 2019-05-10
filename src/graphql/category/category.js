@@ -28,21 +28,21 @@ export const createCategoryModel = db => ({
     };
     return excuteQuery(db)(deleteFn);
   },
-  searchCategory({ tsQuery, tag , status }) {
+  searchCategory({ tsQuery, tag , status, route }) {
+    // when need equ
+    const equalCondition = (k, v)  => ({
+          condition: idx => `${k} = $${idx}`,
+          val: v
+    })
     const searchFn = async client => {
       const conditionMap = [
         {
           condition: idx => `(name LIKE '%' || $${idx} || '%')`,
           val: tsQuery
         },
-        {
-          condition: idx => `tag = $${idx}`,
-          val: tag
-        },
-        {
-          condition: idx => `status = $${idx}`,
-          val: status
-        }
+        equalCondition('tag', tag),
+        equalCondition('status', status),
+        equalCondition('route', route)
       ];
 
       const query = conditionMap.reduce(
