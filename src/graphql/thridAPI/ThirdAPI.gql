@@ -1,4 +1,6 @@
 extend type Query {
   "上传凭证"
   ossToken: String! @auth
+  "短信验证码"
+  smsCode(phone: Number!): String!
 }
