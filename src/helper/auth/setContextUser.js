@@ -1,6 +1,6 @@
 import { tradeTokenForUser } from "./encode";
 
-export const setGraphqlContext = ({ ctx: { request } }) => {
+export const setGraphqlContext = ({ ctx: { request, session } }) => {
   let authToken = null;
   let currentUser = null;
 
@@ -15,6 +15,7 @@ export const setGraphqlContext = ({ ctx: { request } }) => {
 
   return {
     authToken,
-    currentUser
+    currentUser,
+    session
   };
 };

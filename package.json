@@ -26,6 +26,7 @@
     "jsonwebtoken": "^8.5.1",
     "koa-bodyparser": "^4.2.1",
     "koa-parameter": "^3.0.1",
+    "koa-session": "^5.11.0",
     "pg": "^7.10.0",
     "qiniu": "^7.2.1"
   },

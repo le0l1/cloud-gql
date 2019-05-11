@@ -156,8 +156,8 @@ export const createUserModel = db => ({
         "SELECT 1 from cloud_user where phone = $1",
         [phone]
       );
-      console.log(res);
-      return !res.rows.length;
+
+      return !!res.rows.length;
     };
     return excuteQuery(db)(checkFn);
   }
