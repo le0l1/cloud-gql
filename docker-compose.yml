@@ -24,11 +24,10 @@ services:
     restart: always
     image: adminer:latest
     environment:
-     - ADMINER_DESIGN=nette
+      - ADMINER_DESIGN=pepa-linha
     links:
       - pgsql
     extra_hosts:
       - "remote:172.17.0.1"
     ports:
       - "9999:8080"
-      

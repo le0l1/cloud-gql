@@ -12,11 +12,30 @@ import {
 } from "../../helper/util";
 
 export const createUserModel = db => ({
-  async addNewUser({ name, password, phone, garage, city, area, address, role }) {
+  async addNewUser({
+    name,
+    password,
+    phone,
+    garage,
+    city,
+    area,
+    address,
+    role
+  }) {
     const client = await db.connect();
     try {
       const { hashed, salt } = hashPassword(password);
-      const values = [name, phone, hashed, salt, garage, city, area, address, role];
+      const values = [
+        name,
+        phone,
+        hashed,
+        salt,
+        garage,
+        city,
+        area,
+        address,
+        role
+      ];
       const res = await client.query(
         `INSERT INTO cloud_user (name, phone, password, salt, garage, city, area, address, role) VALUES (${gPlaceholderForPostgres(
           values.length
@@ -94,7 +113,6 @@ export const createUserModel = db => ({
       ];
 
       query = conditionMap.reduce((a, b) => {
-        
         return isValid(b.val)
           ? {
               sql: addCondition(a.sql, b.condition(a.payload.length + 1)),
@@ -130,5 +148,17 @@ export const createUserModel = db => ({
       };
     };
     return excuteQuery(db)(deleteUser);
+  },
+  // check if user has already register
+  checkUserExists(phone) {
+    const checkFn = async client => {
+      const res = await client.query(
+        "SELECT 1 from cloud_user where phone = $1",
+        [phone]
+      );
+      console.log(res);
+      return !res.rows.length;
+    };
+    return excuteQuery(db)(checkFn);
   }
 });

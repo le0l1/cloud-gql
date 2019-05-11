@@ -11,7 +11,7 @@ export const addCondition = (sql, condition) => {
   const limitPart = sql.split(/limit/i)[1];
   const queryPart = sql.split(/limit/i)[0];
   let query = "";
-  
+
   if (/where/i.test(queryPart)) {
     query = queryPart.split(/where/i).join(`where ${condition} and`);
   } else {
@@ -41,4 +41,9 @@ export const withConditions = (conditions, defaultQuery) => {
         }
       : a;
   }, defaultQuery);
+};
+
+// 生成随机验证码
+export const generateSMSCode = () => {
+  return Math.floor(Math.random() * 1000000);
 };

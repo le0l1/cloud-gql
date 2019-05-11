@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@alicloud/pop-core": "^1.7.7",
     "apollo-server-koa": "^2.4.8",
     "dotenv": "^7.0.0",
     "graphql": "^14.2.1",
