@@ -10,6 +10,10 @@ type Category {
   tag: String!
   "路由地址"
   route: String!
+  "分类图片 用作icon展示"
+  image: String
+  "子分类"
+  children: [Category!]
 }
 
 "分类状态"
@@ -36,6 +40,8 @@ input CategoryCreateInput {
   tag: String!
   "页面"
   route: String!
+  "父级分类id 不传 默认为一级分类"
+  parentId: ID
 }
 
 "删除分类输入"
@@ -45,14 +51,10 @@ input CategoryDeleteInput {
 
 "分类查询输入"
 input CategoryQuery {
-  "模糊查询"
-  tsQuery: String
-  "指定查询tag"
-  tag: String
-  "筛选对应的状态"
-  status: CategoryStatus
   "获取指定页面的分类"
   route: String
+  "分类id 不传默认返回为一级分类"
+  id: ID
 }
 
 extend type Query {
@@ -62,4 +64,3 @@ extend type Mutation {
   createCategory(category: CategoryCreateInput!): CategoryResult
   deleteCategory(category: CategoryDeleteInput!): CategoryResult
 }
-
