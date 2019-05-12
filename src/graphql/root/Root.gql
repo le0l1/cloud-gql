@@ -14,4 +14,4 @@ type PageInfo {
 }
 
 "鉴权指令"
-directive @auth(requires: Boolean = true) on OBJECT | FIELD_DEFINITION
+directive @auth(requires: Role = CUSTOMER) on OBJECT | FIELD_DEFINITION

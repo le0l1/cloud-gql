@@ -11,7 +11,8 @@ const resolvers = {
   },
   Role: {
     CUSTOMER: 1,
-    MERCHANT: 2
+    MERCHANT: 2,
+    ROOT: 3
   },
   UserConnection: {
     edges(result) {

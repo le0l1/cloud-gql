@@ -94,6 +94,8 @@ type UserLoginResult {
   address: String
   "用户登陆凭证"
   token: String
+  "用户角色"
+  role: Role!
 }
 
 "用户删除"
@@ -131,5 +133,6 @@ extend type Mutation {
   "用户登录"
   loginIn(userLoginInput: UserLoginInput!): UserLoginResult!
   "用户删除"
-  deleteUser(userDeleteInput: UserDeleteInput!): UserDeleteResult! @auth
+  deleteUser(userDeleteInput: UserDeleteInput!): UserDeleteResult!
+    @auth(requires: ROOT)
 }
