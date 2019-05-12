@@ -64,6 +64,8 @@ enum Role {
   CUSTOMER
   "商家"
   MERCHANT
+  "管理员"
+  ROOT
 }
 
 "用户查询筛选条件"
