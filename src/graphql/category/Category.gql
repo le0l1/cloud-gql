@@ -9,7 +9,7 @@ type Category {
   "标签"
   tag: String!
   "路由地址"
-  route: String!
+  route: String
   "分类图片 用作icon展示"
   image: String
   "子分类"
