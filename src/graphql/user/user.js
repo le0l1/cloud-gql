@@ -22,6 +22,9 @@ export const createUserModel = db => ({
     address,
     role
   }) {
+    if (role === 3) {
+      throw new Error("Root Can`t Be Registerd");
+    }
     const client = await db.connect();
     try {
       const { hashed, salt } = hashPassword(password);
