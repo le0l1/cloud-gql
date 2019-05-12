@@ -1,12 +1,14 @@
 import { formateID, decodeID } from "../../helper/id";
-import { excuteQuery, isValid, addCondition } from "../../helper/util";
+import { excuteQuery, isValid, withConditions } from "../../helper/util";
 
 export const createCategoryModel = db => ({
-  createCategory({ id, name, status, tag }) {
+  createCategory({ name, status, tag, parentId = null, route }) {
     const createFn = async client => {
+      // ignore route when the category not on the first level
+      if (parentId) route = null;
       const res = await client.query(
-        "INSERT INTO cloud_category (name, status, tag) VALUES ($1, $2, $3) RETURNING id; ",
-        [name, status, tag]
+        "INSERT INTO cloud_category (name, status, tag, route, parent_id) VALUES ($1, $2, $3, $4, $5) RETURNING id; ",
+        [name, status, tag, route, parentId ? decodeID(parentId) : parentId]
       );
       return {
         id: formateID("category", res.rows[0].id),
@@ -28,43 +30,49 @@ export const createCategoryModel = db => ({
     };
     return excuteQuery(db)(deleteFn);
   },
-  searchCategory({ tsQuery, tag , status, route }) {
-    // when need equ
-    const equalCondition = (k, v)  => ({
-          condition: idx => `${k} = $${idx}`,
-          val: v
-    })
+  searchCategory({ route, id }) {
     const searchFn = async client => {
-      const conditionMap = [
-        {
-          condition: idx => `(name LIKE '%' || $${idx} || '%')`,
-          val: tsQuery
-        },
-        equalCondition('tag', tag),
-        equalCondition('status', status),
-        equalCondition('route', route)
-      ];
+      const queryStr = `
+        with RECURSIVE cte as (
+          select   * from cloud_category where route = $1
+          union
+          select  c.* from cloud_category c join cte t on c.parent_id = t.id 
+         )
+         
+         select * from cte;
+        `;
 
-      const query = conditionMap.reduce(
-        (a, b) => {
-          return isValid(b.val)
-            ? {
-                sql: addCondition(a.sql, b.condition(a.payload.length + 1)),
-                payload: [...a.payload, b.val]
-              }
-            : a;
-        },
-        {
-          sql: "SELECT * FROM cloud_category",
-          payload: []
-        }
-      );
+      const res = await client.query(queryStr, [route]);
 
-      const res = await client.query(query.sql, query.payload);
-      return res.rows.map(a => ({
-        ...a,
-        id: formateID("category", a.id)
-      }));
+      const flatParent = (arr, a) =>
+        arr.map(b => {
+          if (a.parent_id === b.id) {
+            return {
+              ...b,
+              children: b.children ? [...b.children, a] : [a]
+            };
+          }
+
+          if (b.children) {
+            return {
+              ...b,
+              children: flatParent(b.children, a)
+            };
+          }
+
+          return b;
+        });
+
+      const formateCatID = formateID.bind("", "category");
+
+      const flatResult = arr =>
+        arr.reduce((a, b) => {
+          b.id = formateCatID(b.id);
+          b.parent_id = b.parent_id ? formateCatID(b.parent_id) : null;
+          return !b.parent_id ? [...a, b] : flatParent(a, b);
+        }, []);
+
+      return flatResult(res.rows);
     };
 
     return excuteQuery(db)(searchFn);

@@ -25,9 +25,18 @@ const resolvers = {
     }
   },
   Mutation: {
-    register(obj, { userRegisterInput }) {
+    register(obj, { userRegisterInput }, ctx) {
       const user = createUserModel(db);
-      return user.addNewUser(userRegisterInput);
+      // check smsCode
+      if (userRegisterInput.smsCode !== ctx.session.smsCode) {
+        throw new Error("SMS verification code error");
+      }
+
+      return user.addNewUser(userRegisterInput).then(result => {
+        // clear session after register
+        ctx.session.smsCode = "";
+        return result;
+      });
     },
     loginIn(obj, { userLoginInput }) {
       const user = createUserModel(db);

@@ -11,17 +11,19 @@ const resolvers = {
     ossToken() {
       return generateUploadToken();
     },
-    async smsCode(_, { phone }) {
+    async smsCode(_, { phone }, ctx) {
       const user = createUserModel(db);
-      const isRegistried = user.checkUserExists(phone);
+      const isRegistried = await user.checkUserExists(phone);
 
-      if (!isRegistried) {
-        const smsCode = generateSMSCode();
-        await sendSMS({ phone, smsCode });
-        return smsCode;
-      } else {
+      if (isRegistried) {
         throw new Error("User has alreayd register");
       }
+
+      const smsCode = generateSMSCode();
+      await sendSMS({ phone, smsCode });
+      // set smsCode to session
+      ctx.session.smsCode = smsCode;
+      return true;
     }
   }
 };

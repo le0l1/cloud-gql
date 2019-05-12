@@ -34,6 +34,8 @@ input UserRegisterInput {
   address: String
   "用户角色"
   role: Role!
+  "短信验证码"
+  smsCode: Number!
 }
 
 "用户登录输入"
@@ -62,6 +64,8 @@ enum Role {
   CUSTOMER
   "商家"
   MERCHANT
+  "管理员"
+  ROOT
 }
 
 "用户查询筛选条件"

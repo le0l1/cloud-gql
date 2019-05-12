@@ -2,6 +2,7 @@ import Koa from "koa";
 import Router from "koa-router";
 import parameter from "koa-parameter";
 import bodyparser from "koa-bodyparser";
+import session from "koa-session";
 import { ApolloServer, gql } from "apollo-server-koa";
 import { applyAuthRoute } from "./routes/auth";
 import { merchant } from "./graphql/merchant";
@@ -24,8 +25,13 @@ import { thirdAPI } from "./graphql/thridAPI";
 const app = new Koa();
 const router = new Router();
 
+app.keys = ["asdqwdqwdqqwdqdqwd"];
+
 //body parser
 app.use(bodyparser());
+
+// session
+app.use(session(app));
 
 // paramter validate
 parameter(app);
@@ -79,6 +85,11 @@ const server = new ApolloServer({
   context: setGraphqlContext,
   schemaDirectives: {
     auth: AuthDriective
+  },
+  playground: {
+    settings: {
+      "request.credentials": "include"
+    }
   }
 });
 server.applyMiddleware({ app });
