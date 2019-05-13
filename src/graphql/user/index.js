@@ -38,6 +38,10 @@ const resolvers = {
         throw new Error("Root Can`t Be Registerd");
       }
 
+      if (user.checkUserExists(userRegisterInput.phone)) {
+        throw new Error("User has already register")
+      }
+
       return user.addNewUser(userRegisterInput).then(result => {
         // clear session after register
         ctx.session.smsCode = "";
