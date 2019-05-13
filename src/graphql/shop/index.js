@@ -15,7 +15,6 @@ const resolvers = {
       return result
     },
     pageInfo(result) {
-
       return {
         hasNextPage: result.length > 0,
         total: result.length > 0 ? result[0].node.total : 0
@@ -34,6 +33,10 @@ const resolvers = {
     deleteShop(_, { shopDeleteInput }) {
       const shopModel = createShopModel(db);
       return shopModel.deleteShop(shopDeleteInput);
+    },
+    updateShop(_, { shopUpdateInput }) {
+      const shopModel = createShopModel(db)
+      return shopModel.updateShop(shopUpdateInput)
     }
   }
 };

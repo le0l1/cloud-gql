@@ -16,6 +16,7 @@ type User implements Node {
   address: String
 }
 
+
 "用户注册输入"
 input UserRegisterInput {
   "用户姓名"

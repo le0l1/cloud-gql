@@ -87,9 +87,9 @@ export const createCategoryModel = db => ({
   // update category
   updateCategory({ id, ...rest }) {
     const updateFn = async client => {
-      const updateKeys = Object.keys(rest).reduce((a, b, i) => {
-        return a.concat(`${b}=$${i + 1}`);
-      }, "");
+      const updateKeys = Object.keys(rest).map((b, i) => {
+        return `${b}=$${i + 1}`;
+      }).join(',');
       const queryStr = `update cloud_category set ${updateKeys} where id = $${
         Object.keys(rest).length + 1
       }`;

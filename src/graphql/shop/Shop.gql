@@ -1,21 +1,23 @@
-"店铺"
+"商户"
 type Shop  implements Node {
-  "店铺id"
+  "商户id"
   id: ID!
-  "店铺名称"
+  "商户名称"
   name: String
-  "店铺QQ"
+  "商户QQ"
   qqchat: Number
-  "店铺微信"
+  "商户微信"
   wechat: String
-  "店铺电话"
+  "商户电话"
   phone: Number
   "商户介绍"
   description: String
-  "店铺详情轮播"
+  "商户详情轮播"
   shopBanner:[Banner!]
-  "店铺状态"
+  "商户状态"
   status: ShopStatus
+  "商户审核状态"
+  isPassed: Boolean
 }
 
 enum ShopStatus {
@@ -29,7 +31,7 @@ input ShopQueryFilter {
   status: ShopStatus
 }
 
-"店铺查询"
+"商户查询"
 input ShopQueryInput {
   "模糊查询"
   tsQuery: String
@@ -39,29 +41,51 @@ input ShopQueryInput {
   first: Int
   "分页游标"
   after: ID
+  "商户审核状态"
+  isPassed: Boolean
 }
 
-"新建店铺"
+
+"新建商户"
 input ShopCreateInput {
-  "店铺名称"
+  "商户名称"
   name: String
-  "店铺QQ"
+  "商户QQ"
   qqchat: Number
-  "店铺微信"
+  "商户微信"
   wechat: String
-  "店铺电话"
+  "商户电话"
   phone: Number
   "商户介绍"
   description: String
-  "店铺状态"
+  "商户状态"
   status: ShopStatus
   "商家id"
   belongto: ID!
 }
 
-"删除店铺输入"
+"删除商户输入"
 input ShopDeleteInput {
   id: ID!
+}
+
+"更新商户输入"
+input ShopUpdateInput {
+  id: ID!
+  "商户名称"
+  name: String
+  "商户QQ"
+  qqchat: Number
+  "商户微信"
+  wechat: String
+  "商户电话"
+  phone: Number
+  "商户介绍"
+  description: String
+  "商户状态"
+  status: ShopStatus
+  "商户审核状态"
+  isPassed: Boolean
 }
 
 type ShopEdge {
@@ -69,29 +93,31 @@ type ShopEdge {
   node: Shop
 }
 
-"店铺列表"
+"商户列表"
 type ShopConnection {
   pageInfo: PageInfo!
   edges: [ShopEdge!]
 }
 
-"店铺创建结果"
+"商户创建结果"
 type ShopResult {
   id: ID!
   status: Boolean
 }
 
 extend type Query {
-  "店铺查询 支持模糊查询 筛选条件"
+  "商户查询 支持模糊查询 筛选条件"
   shops(query:ShopQueryInput): ShopConnection! @auth 
 }
 
 
 extend type Mutation {
-  "创建店铺"
-  createShop(shopCreateInput: ShopCreateInput!): ShopResult! @auth
-  "删除店铺"
-  deleteShop(shopDeleteInput: ShopDeleteInput!): ShopResult! @auth
+  "创建商户"
+  createShop(shopCreateInput: ShopCreateInput!): ShopResult! 
+  "删除商户"
+  deleteShop(shopDeleteInput: ShopDeleteInput!): ShopResult! @auth(requires: ROOT)
+  "更新商户信息"
+  updateShop(shopUpdateInput: ShopUpdateInput!): ShopResult! @auth(requires: ROOT)
 }
 
 

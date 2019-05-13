@@ -15,7 +15,7 @@ export class AuthDriective extends SchemaDirectiveVisitor {
 
     field.resolve = function(...args) {
       const context = args[2];
-      if (context.currentUser.role < roles[requires]) {
+      if (context.currentUser && context.currentUser.role < roles[requires]) {
         throw new Error("permissions denied");
       }
 
