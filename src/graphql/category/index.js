@@ -23,6 +23,10 @@ const resolvers = {
       const categoryModel = createCategoryModel(db);
       return categoryModel.deleteCategory(category);
     },
+    updateCategory(_, { category }) {
+      const categoryModel = createCategoryModel(db)
+      return categoryModel.updateCategory(category)
+    }
   }
 };
 

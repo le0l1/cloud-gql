@@ -59,10 +59,30 @@ input CategoryQuery {
   id: ID
 }
 
+"更新分类输入"
+input CategoryUpdateInput {
+  "指定更新的分类id 必填"
+  id: ID!
+  "更新分类名称"
+  name: String
+  "更新指定分类tag"
+  tag: String
+  "更新指定的父级id"
+  parentId: ID
+  "更新路由"
+  route: String
+  "更新图片"
+  image: String
+}
+
 extend type Query {
   categorys(query: CategoryQuery): [Category!]
 }
 extend type Mutation {
+  "创建分类"
   createCategory(category: CategoryCreateInput!): CategoryResult
+  "删除分类"
   deleteCategory(category: CategoryDeleteInput!): CategoryResult
+  "更新分类"
+  updateCategory(category: CategoryUpdateInput!): CategoryResult
 }

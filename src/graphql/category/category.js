@@ -83,5 +83,29 @@ export const createCategoryModel = db => ({
     };
 
     return excuteQuery(db)(searchFn);
+  },
+  // update category
+  updateCategory({ id, ...rest }) {
+    const updateFn = async client => {
+      const updateKeys = Object.keys(rest).reduce((a, b, i) => {
+        return a.concat(`${b}=$${i + 1}`);
+      }, "");
+      const queryStr = `update cloud_category set ${updateKeys} where id = $${
+        Object.keys(rest).length + 1
+      }`;
+      console.log(
+        queryStr
+      )
+      const res = await client.query(queryStr, [
+        ...Object.values(rest),
+        decodeID(id)
+      ]);
+      return {
+        id,
+        status: true
+      };
+    };
+
+    return excuteQuery(db)(updateFn);
   }
 });
