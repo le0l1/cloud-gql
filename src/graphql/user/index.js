@@ -32,6 +32,11 @@ const resolvers = {
       if (userRegisterInput.smsCode !== ctx.session.smsCode) {
         throw new Error("SMS verification code error");
       }
+      
+      // forbid root regsiter
+      if (userRegisterInput.role === 3) {
+        throw new Error("Root Can`t Be Registerd");
+      }
 
       return user.addNewUser(userRegisterInput).then(result => {
         // clear session after register
