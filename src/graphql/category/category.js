@@ -93,9 +93,6 @@ export const createCategoryModel = db => ({
       const queryStr = `update cloud_category set ${updateKeys} where id = $${
         Object.keys(rest).length + 1
       }`;
-      console.log(
-        queryStr
-      )
       const res = await client.query(queryStr, [
         ...Object.values(rest),
         decodeID(id)
