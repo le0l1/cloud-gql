@@ -12,6 +12,8 @@ type Category {
   route: String
   "分类图片 用作icon展示"
   image: String
+  "父级分类id"
+  parentId: ID
   "子分类"
   children: [Category!]
 }
