@@ -2,13 +2,20 @@ import { formateID, decodeID } from "../../helper/id";
 import { excuteQuery, isValid, withConditions } from "../../helper/util";
 
 export const createCategoryModel = db => ({
-  createCategory({ name, status, tag, parentId = null, route }) {
+  createCategory({ name, status, tag, parentId = null, route, image }) {
     const createFn = async client => {
       // ignore route when the category not on the first level
       if (parentId) route = null;
       const res = await client.query(
-        "INSERT INTO cloud_category (name, status, tag, route, parent_id) VALUES ($1, $2, $3, $4, $5) RETURNING id; ",
-        [name, status, tag, route, parentId ? decodeID(parentId) : parentId]
+        "INSERT INTO cloud_category (name, status, tag, route, image, parent_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id; ",
+        [
+          name,
+          status,
+          tag,
+          route,
+          image,
+          parentId ? decodeID(parentId) : parentId
+        ]
       );
       return {
         id: formateID("category", res.rows[0].id),
