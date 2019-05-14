@@ -30,16 +30,16 @@ const resolvers = {
       const user = createUserModel(db);
       // check smsCode
       if (userRegisterInput.smsCode !== ctx.session.smsCode) {
-        throw new Error("SMS verification code error");
+        throw new Error("验证码错误");
       }
 
       // forbid root regsiter
       if (userRegisterInput.role === 3) {
-        throw new Error("Root Can`t Be Registerd");
+        throw new Error("禁止注册ROOT权限账户");
       }
 
       if (user.checkUserExists(userRegisterInput.phone)) {
-        throw new Error("User has already register");
+        throw new Error("该用户已注册");
       }
 
       return user.addNewUser(userRegisterInput).then(result => {

@@ -58,7 +58,7 @@ export const createUserModel = db => ({
         [phone]
       );
       // if no user found throw error
-      if (!res.rows[0]) throw new Error("User is not exists");
+      if (!res.rows[0]) throw new Error("该用户不存在");
 
       // if password is valid throw error
       const { password: hashPassword, salt, ...rest } = res.rows[0];
@@ -69,7 +69,7 @@ export const createUserModel = db => ({
           pwd: password
         })
       ) {
-        throw new Error("Password is valid");
+        throw new Error("密码错误");
       }
 
       return {

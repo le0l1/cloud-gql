@@ -16,7 +16,7 @@ export class AuthDriective extends SchemaDirectiveVisitor {
     field.resolve = function(...args) {
       const context = args[2];
       if (context.currentUser && context.currentUser.role < roles[requires]) {
-        throw new Error("permissions denied");
+        throw new Error("账号权限不足");
       }
 
       return resolve.apply(this, args);

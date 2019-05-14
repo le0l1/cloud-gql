@@ -4,7 +4,6 @@ import parameter from "koa-parameter";
 import bodyparser from "koa-bodyparser";
 import session from "koa-session";
 import { ApolloServer, gql } from "apollo-server-koa";
-import { applyAuthRoute } from "./routes/auth";
 import { merchant } from "./graphql/merchant";
 import { koa as voyagerMiddleware } from "graphql-voyager/middleware";
 import { banner } from "./graphql/banner";
@@ -49,7 +48,6 @@ app.use(async (ctx, next) => {
 });
 
 // router
-applyAuthRoute(router);
 app.use(router.routes()).use(router.allowedMethods());
 
 // graphql voyager
