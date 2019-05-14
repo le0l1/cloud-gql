@@ -49,14 +49,14 @@ input UserLoginInput {
 
 "用户查询输入"
 input UserQueryInput {
-  "分页id"
-  after: ID
-  "分页条数"
-  first: Int
   "模糊查询文本"
   tsQuery: String
   "用户筛选条件"
   filters: UserQueryFilter
+  "偏离值"
+  offset: Int
+  "分页条数"
+  limit: Int
 }
 
 "用户角色"
@@ -113,15 +113,11 @@ type UserDeleteResult {
   status: Boolean
 }
 
-type UserEdge {
-  cursor: String!
-  node: User
-}
 
 "用户列表"
 type UserConnection {
   pageInfo: PageInfo!
-  edges: [UserEdge!]
+  edges: [User!]
 }
 
 extend type Query {

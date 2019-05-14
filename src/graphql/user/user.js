@@ -81,23 +81,19 @@ export const createUserModel = db => ({
       client.release();
     }
   },
-  fuzzySearchUser({ tsQuery, first = 10, after = null, filters }) {
+  fuzzySearchUser({ tsQuery, limit = 10, filters, offset =  0 }) {
     const searchUser = async client => {
       let query = {
-        sql: "SELECT * , COUNT(*) OVER() as total FROM cloud_user limit $1",
-        payload: [first]
+        sql: "SELECT * , COUNT(*) OVER() as total FROM cloud_user limit $1 offset $2",
+        payload: [limit, offset]
       };
+      
       const conditionMap = [
         {
           condition: idx =>
             `(name LIKE '%' || $${idx} || '%' OR phone LIKE '%' || $${idx} || '%')`,
           val: tsQuery,
           formate: v => v
-        },
-        {
-          condition: idx => `created_at::timestamp(0) >  $${idx}::timestamp(0)`,
-          val: after,
-          formate: v => decodeID(after)
         },
         {
           condition: idx => {
@@ -109,7 +105,7 @@ export const createUserModel = db => ({
           },
           val: filters,
           formate: Object.values
-        }
+        },
       ];
 
       query = conditionMap.reduce((a, b) => {
@@ -120,16 +116,13 @@ export const createUserModel = db => ({
             }
           : a;
       }, query);
-
       const res = await client.query(query.sql, query.payload);
+    
       const resFilter = arr =>
         arr.map(({ id, password, ...rest }) => {
           return {
-            cursor: formateID("user", rest.created_at.toJSON()),
-            node: {
               id: formateID("user", id),
               ...rest
-            }
           };
         });
       return res.rows.length ? resFilter(res.rows) : [];

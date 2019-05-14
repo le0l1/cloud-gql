@@ -21,7 +21,7 @@ const resolvers = {
     pageInfo(result) {
       return {
         hasNextPage: result.length > 0,
-        total: result.length > 0 ? result[0].node.total : 0
+        total: result.length > 0 ? result[0].total : 0
       };
     }
   },
