@@ -32,7 +32,7 @@ input ShopQueryFilter {
 }
 
 "商户查询"
-input ShopQueryInput {
+input ShopsQueryInput {
   "模糊查询"
   tsQuery: String
   "筛选条件"
@@ -46,7 +46,7 @@ input ShopQueryInput {
 }
 
 
-"新建商户"
+"创建商户输入"
 input ShopCreateInput {
   "商户名称"
   name: String
@@ -106,8 +106,8 @@ type ShopResult {
 }
 
 extend type Query {
-  "商户查询 支持模糊查询 筛选条件"
-  shops(query:ShopQueryInput): ShopConnection! @auth 
+  "商户列表查询 支持模糊查询 筛选条件"
+  shops(query:ShopsQueryInput): ShopConnection! @auth
 }
 
 
@@ -117,7 +117,7 @@ extend type Mutation {
   "删除商户"
   deleteShop(shopDeleteInput: ShopDeleteInput!): ShopResult! @auth(requires: ROOT)
   "更新商户信息"
-  updateShop(shopUpdateInput: ShopUpdateInput!): ShopResult! @auth(requires: ROOT)
+  updateShop(shopUpdateInput: ShopUpdateInput!): ShopResult! @auth(requires: MERCHANT)
 }
 
 

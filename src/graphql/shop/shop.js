@@ -67,7 +67,7 @@ VALUES (${gPlaceholderForPostgres(6)})  RETURNING id;`,
         payload: [first]
       });
       const res = await client.query(query.sql, query.payload);
-      
+
       return res.rows.map(a => {
         return {
           cursor: formateID("created_at", a.created_at.toJSON()),
@@ -82,25 +82,27 @@ VALUES (${gPlaceholderForPostgres(6)})  RETURNING id;`,
 
     return excuteQuery(db)(searchFn);
   },
-  updateShop({id, isPassed: is_passed, ...payload }) {
+  updateShop({ id, isPassed: is_passed, ...payload }) {
     const updateFn = async client => {
       const rest = {
         ...payload,
         is_passed
-      }
-      const updateKeys = Object.keys(rest).map((b, i) => {
-        return `${b}=$${i + 1}`;
-      }).join(',');
+      };
+      const updateKeys = Object.keys(rest)
+        .map((b, i) => {
+          return `${b}=$${i + 1}`;
+        })
+        .join(",");
 
-      const queryStr = `update cloud_shop set ${updateKeys} where id = $${
-        Object.keys(rest).length + 1
-      }`;
-      console.log(queryStr)
+      const queryStr = `update cloud_shop set ${updateKeys} where id = $${Object.keys(
+        rest
+      ).length + 1}`;
+      console.log(queryStr);
       const res = await client.query(queryStr, [
         ...Object.values(rest),
         decodeID(id)
       ]);
-      console.log(res)
+      console.log(res);
       return {
         id,
         status: true
