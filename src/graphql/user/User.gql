@@ -14,8 +14,9 @@ type User implements Node {
   area: String
   "详细地址"
   address: String
+  "用户角色"
+  role: Role
 }
-
 
 "用户注册输入"
 input UserRegisterInput {
@@ -112,7 +113,6 @@ type UserDeleteResult {
   "删除结果"
   status: Boolean
 }
-
 
 "用户列表"
 type UserConnection {

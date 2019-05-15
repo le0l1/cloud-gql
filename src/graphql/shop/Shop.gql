@@ -1,5 +1,5 @@
 "商户"
-type Shop  implements Node {
+type Shop implements Node {
   "商户id"
   id: ID!
   "商户名称"
@@ -13,11 +13,13 @@ type Shop  implements Node {
   "商户介绍"
   description: String
   "商户详情轮播"
-  shopBanner:[Banner!]
+  shopBanner: [Banner!]
   "商户状态"
   status: ShopStatus
   "商户审核状态"
   isPassed: Boolean
+  "商户的用户id 可用于查询商户的用户信息"
+  belongto: ID!
 }
 
 enum ShopStatus {
@@ -38,13 +40,14 @@ input ShopsQueryInput {
   "筛选条件"
   filter: ShopQueryFilter
   "页面size"
-  first: Int
-  "分页游标"
-  after: ID
+  limit: Int
+  "页数"
+  offset: Int
   "商户审核状态"
   isPassed: Boolean
+  "商户id"
+  id: ID
 }
-
 
 "创建商户输入"
 input ShopCreateInput {
@@ -88,15 +91,10 @@ input ShopUpdateInput {
   isPassed: Boolean
 }
 
-type ShopEdge {
-  cursor: String!
-  node: Shop
-}
-
 "商户列表"
 type ShopConnection {
   pageInfo: PageInfo!
-  edges: [ShopEdge!]
+  edges: [Shop!]
 }
 
 "商户创建结果"
@@ -107,17 +105,16 @@ type ShopResult {
 
 extend type Query {
   "商户列表查询 支持模糊查询 筛选条件"
-  shops(query:ShopsQueryInput): ShopConnection! @auth
+  shops(query: ShopsQueryInput): ShopConnection! @auth
 }
-
 
 extend type Mutation {
   "创建商户"
-  createShop(shopCreateInput: ShopCreateInput!): ShopResult! 
+  createShop(shopCreateInput: ShopCreateInput!): ShopResult!
   "删除商户"
-  deleteShop(shopDeleteInput: ShopDeleteInput!): ShopResult! @auth(requires: ROOT)
+  deleteShop(shopDeleteInput: ShopDeleteInput!): ShopResult!
+    @auth(requires: ROOT)
   "更新商户信息"
-  updateShop(shopUpdateInput: ShopUpdateInput!): ShopResult! @auth(requires: MERCHANT)
+  updateShop(shopUpdateInput: ShopUpdateInput!): ShopResult!
+    @auth(requires: MERCHANT)
 }
-
-

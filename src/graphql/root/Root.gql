@@ -12,6 +12,6 @@ type PageInfo {
   hasNextPage: Boolean!
   total: Int!
 }
-
+##asd
 "鉴权指令"
 directive @auth(requires: Role = CUSTOMER) on OBJECT | FIELD_DEFINITION

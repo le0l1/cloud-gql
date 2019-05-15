@@ -1,5 +1,9 @@
 import { SchemaDirectiveVisitor } from "graphql-tools";
-import { defaultFieldResolver } from "graphql";
+import {
+  defaultFieldResolver,
+  GraphQLDirective,
+  DirectiveLocation
+} from "graphql";
 
 const roles = {
   CUSTOMER: 0,
@@ -12,7 +16,7 @@ export class AuthDriective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
     const { resolve = defaultFieldResolver } = field;
     const { requires } = this.args;
-
+    field.description += "(需要权限)";
     field.resolve = function(...args) {
       const context = args[2];
       if (context.currentUser && context.currentUser.role < roles[requires]) {

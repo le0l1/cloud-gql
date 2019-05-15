@@ -8,16 +8,16 @@ const resolvers = {
     shops(_, { query = {} }) {
       const shopModel = createShopModel(db);
       return shopModel.searchShop(query);
-    },
+    }
   },
   ShopConnection: {
     edges(result) {
-      return result
+      return result;
     },
     pageInfo(result) {
       return {
         hasNextPage: result.length > 0,
-        total: result.length > 0 ? result[0].node.total : 0
+        total: result.length > 0 ? result[0].total : 0
       };
     }
   },
@@ -35,8 +35,8 @@ const resolvers = {
       return shopModel.deleteShop(shopDeleteInput);
     },
     updateShop(_, { shopUpdateInput }) {
-      const shopModel = createShopModel(db)
-      return shopModel.updateShop(shopUpdateInput)
+      const shopModel = createShopModel(db);
+      return shopModel.updateShop(shopUpdateInput);
     }
   }
 };

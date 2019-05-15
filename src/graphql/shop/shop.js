@@ -40,7 +40,7 @@ VALUES (${gPlaceholderForPostgres(6)})  RETURNING id;`,
     return excuteQuery(db)(deleteFn);
   },
   // 查询店铺
-  searchShop({ tsQuery, filter, first = 10, after, isPassed }) {
+  searchShop({ tsQuery, filter, limit = 10, offset = 0, isPassed, id }) {
     const searchFn = async client => {
       const conditionMap = [
         {
@@ -53,29 +53,28 @@ VALUES (${gPlaceholderForPostgres(6)})  RETURNING id;`,
           condition: idx => `(status = $${idx})`
         },
         {
-          val: after ? decodeID(after) : null,
-          condition: idx => `(created_at::timestamp(0) > $${idx}::timestamp(0))`
-        },
-        {
           val: isPassed,
           condition: idx => `(is_passed = $${idx})`
+        },
+        {
+          val: id ? decodeID(id) : null,
+          condition: idx => `(id = $${idx})`
         }
       ];
       const query = withConditions(conditionMap, {
         sql:
-          "SELECT  * , COUNT(*) OVER () as total FROM cloud_shop WHERE delete_at IS NULL LIMIT $1",
-        payload: [first]
+          "SELECT  * , COUNT(*) OVER () as total FROM cloud_shop WHERE delete_at IS NULL LIMIT $1 OFFSET $2",
+        payload: [limit, offset]
       });
+
+      console.log(query.sql);
       const res = await client.query(query.sql, query.payload);
 
       return res.rows.map(a => {
         return {
-          cursor: formateID("created_at", a.created_at.toJSON()),
-          node: {
-            ...a,
-            id: formateID("shop", a.id),
-            isPassed: a.is_passed
-          }
+          ...a,
+          id: formateID("shop", a.id),
+          isPassed: a.is_passed
         };
       });
     };
@@ -94,15 +93,24 @@ VALUES (${gPlaceholderForPostgres(6)})  RETURNING id;`,
         })
         .join(",");
 
-      const queryStr = `update cloud_shop set ${updateKeys} where id = $${Object.keys(
+      let queryStr = `update cloud_shop set ${updateKeys} where id = $${Object.keys(
         rest
-      ).length + 1}`;
-      console.log(queryStr);
-      const res = await client.query(queryStr, [
-        ...Object.values(rest),
-        decodeID(id)
-      ]);
-      console.log(res);
+      ).length + 1} returning belongto`;
+
+      let queryPayload = [...Object.values(rest), decodeID(id)];
+
+      // 审核时应当同时改变对应的用户角色
+      if (is_passed) {
+        // user role
+        const role = is_passed ? 2 : 1;
+        queryStr = `
+        with update_shop as (${queryStr})
+        update cloud_user set role = $${queryPayload.length + 1} 
+        where id = (select belongto from update_shop)
+       `;
+        queryPayload.push(role);
+      }
+      const res = await client.query(queryStr, queryPayload);
       return {
         id,
         status: true
