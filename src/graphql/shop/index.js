@@ -1,7 +1,7 @@
 import ShopSchema from "./Shop.gql";
 import { gql } from "apollo-server-koa";
 import { createShopModel } from "./shop";
-import { db } from "../../db";
+import { db } from "../../helper/database/db";
 
 const resolvers = {
   Query: {

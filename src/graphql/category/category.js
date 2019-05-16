@@ -39,17 +39,27 @@ export const createCategoryModel = db => ({
   },
   searchCategory({ route, id }) {
     const searchFn = async client => {
+      const payloads = [route, id];
+      const equal = (key, val) => idx => (val ? `${key} = $${idx}` : null);
+
+      const whereCondition = [equal("route", route), equal("id", id)]
+        .map((a, i) => a(i + 1))
+        .filter(isValid);
+
+      const mergeWhereCondition = v => "where " + v.join(" and");
+
       const queryStr = `
         with RECURSIVE cte as (
-          select   * from cloud_category where route = $1
+          select   * from cloud_category  ${mergeWhereCondition(whereCondition)}
           union
           select  c.* from cloud_category c join cte t on c.parent_id = t.id 
          )
-         
          select * from cte;
         `;
 
-      const res = await client.query(queryStr, [route]);
+      console.log(queryStr);
+
+      const res = await client.query(queryStr, payloads.filter(isValid));
 
       const flatParent = (arr, a) =>
         arr.map(b => {
@@ -87,12 +97,14 @@ export const createCategoryModel = db => ({
   // update category
   updateCategory({ id, ...rest }) {
     const updateFn = async client => {
-      const updateKeys = Object.keys(rest).map((b, i) => {
-        return `${b}=$${i + 1}`;
-      }).join(',');
-      const queryStr = `update cloud_category set ${updateKeys} where id = $${
-        Object.keys(rest).length + 1
-      }`;
+      const updateKeys = Object.keys(rest)
+        .map((b, i) => {
+          return `${b}=$${i + 1}`;
+        })
+        .join(",");
+      const queryStr = `update cloud_category set ${updateKeys} where id = $${Object.keys(
+        rest
+      ).length + 1}`;
       const res = await client.query(queryStr, [
         ...Object.values(rest),
         decodeID(id)

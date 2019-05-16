@@ -1,13 +1,13 @@
 import Category from "./Category.gql";
 import { gql } from "apollo-server-koa";
 import { createCategoryModel } from "./category";
-import { db } from "../../db";
+import { db } from "../../helper/database/db";
 
 const resolvers = {
   Query: {
-    categorys(_, { query = {}}) {
+    categorys(_, { query = {} }) {
       const categoryModel = createCategoryModel(db);
-      return  categoryModel.searchCategory(query)
+      return categoryModel.searchCategory(query);
     }
   },
   CategoryStatus: {
@@ -24,8 +24,8 @@ const resolvers = {
       return categoryModel.deleteCategory(category);
     },
     updateCategory(_, { category }) {
-      const categoryModel = createCategoryModel(db)
-      return categoryModel.updateCategory(category)
+      const categoryModel = createCategoryModel(db);
+      return categoryModel.updateCategory(category);
     }
   }
 };

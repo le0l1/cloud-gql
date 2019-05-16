@@ -11,4 +11,5 @@ const getEnvPath = () => path.resolve(process.cwd(), `.env`);
 
 dotenv.config({ path: getEnvPath() });
 
+import "./helper/database/sql";
 startServe();

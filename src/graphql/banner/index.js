@@ -1,7 +1,7 @@
 import Banner from "./Banner.gql";
 import { gql } from "apollo-server-koa";
 import { createBannerModel } from "./Banner";
-import { db } from "../../db";
+import { db } from "../../helper/database/db";
 
 const resolvers = {
   Query: {

@@ -1,4 +1,4 @@
-import { db } from "../../db";
+import { db } from "../../helper/database/db";
 import { gPlaceholderForPostgres } from "../../helper/util";
 import { formateID, decodeID } from "../../helper/id";
 
@@ -37,7 +37,7 @@ export const createBannerModel = da => ({
       client.release();
     }
   },
-  async findBannerByTag({tag }) {
+  async findBannerByTag({ tag }) {
     const client = await db.connect();
     try {
       const res = await client.query(

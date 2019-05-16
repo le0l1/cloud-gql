@@ -1,6 +1,6 @@
 import User from "./User.gql";
 import { createUserModel } from "./user";
-import { db } from "../../db";
+import { db } from "../../helper/database/db";
 
 const resolvers = {
   Query: {
