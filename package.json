@@ -24,7 +24,6 @@
     "graphql-tools": "^4.0.4",
     "graphql-voyager": "^1.0.0-rc.27",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.16.5",
     "koa-bodyparser": "^4.2.1",
     "koa-parameter": "^3.0.1",
     "koa-session": "^5.11.0",

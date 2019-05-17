@@ -39,25 +39,24 @@ export const createCategoryModel = db => ({
   },
   searchCategory({ route, id }) {
     const searchFn = async client => {
-      const payloads = [route, id];
-      const equal = (key, val) => idx => (val ? `${key} = $${idx}` : null);
+      const payloads = [route, id ? decodeID(id) : null];
+      const equal = (key, val) => (val ? idx => `${key} = $${idx}` : null);
 
       const whereCondition = [equal("route", route), equal("id", id)]
-        .map((a, i) => a(i + 1))
-        .filter(isValid);
+        .filter(isValid)
+        .map((a, i) => a(i + 1));
 
-      const mergeWhereCondition = v => "where " + v.join(" and");
+      const mergeWhereCondition = v =>
+        v.length ? "where " + v.join(" and") : "";
 
       const queryStr = `
         with RECURSIVE cte as (
           select   * from cloud_category  ${mergeWhereCondition(whereCondition)}
           union
-          select  c.* from cloud_category c join cte t on c.parent_id = t.id 
+          select  c.* from cloud_category c join cte t on c.parent_id = t.id
          )
          select * from cte;
         `;
-
-      console.log(queryStr);
 
       const res = await client.query(queryStr, payloads.filter(isValid));
 
@@ -83,9 +82,13 @@ export const createCategoryModel = db => ({
       const formateCatID = formateID.bind("", "category");
 
       const flatResult = arr =>
-        arr.reduce((a, b) => {
+        arr.reduce((a, b, i) => {
           b.id = formateCatID(b.id);
           b.parent_id = b.parent_id ? formateCatID(b.parent_id) : null;
+
+          if (i === 0) {
+            return [...a, b];
+          }
           return !b.parent_id ? [...a, b] : flatParent(a, b);
         }, []);
 
