@@ -10,6 +10,12 @@ const resolvers = {
       return shopModel.searchShop(query);
     }
   },
+  Shop(v) {
+    return {
+      ...v,
+      coreBussiness: v.core_bussiness
+    };
+  },
   ShopConnection: {
     edges(result) {
       return result;

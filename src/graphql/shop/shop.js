@@ -8,11 +8,12 @@ import { formateID, decodeID } from "../../helper/id";
 
 export const createShopModel = db => ({
   // 创建店铺
-  createShop(shop) {
+  createShop({ belongto, coreBusiness: core_business, ...shop }) {
     const createFn = async client => {
       const currentShop = {
         ...shop,
-        belongto: decodeID(belongto)
+        belongto: decodeID(belongto),
+        core_business
       };
       const keys = Object.keys(currentShop);
 
