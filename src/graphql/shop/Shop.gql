@@ -20,6 +20,10 @@ type Shop implements Node {
   isPassed: Boolean
   "商户的用户id 可用于查询商户的用户信息"
   belongto: ID!
+  "主营业务"
+  coreBusiness: String
+  "商家地址"
+  address: String
 }
 
 enum ShopStatus {
@@ -65,6 +69,10 @@ input ShopCreateInput {
   status: ShopStatus
   "商家id"
   belongto: ID!
+  "主营业务"
+  coreBusiness: String
+  "商家地址"
+  address: String
 }
 
 "删除商户输入"
@@ -89,6 +97,10 @@ input ShopUpdateInput {
   status: ShopStatus
   "商户审核状态"
   isPassed: Boolean
+  "主营业务"
+  coreBusiness: String
+  "商家地址"
+  address: String
 }
 
 "商户列表"

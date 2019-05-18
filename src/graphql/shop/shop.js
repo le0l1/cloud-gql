@@ -8,12 +8,18 @@ import { formateID, decodeID } from "../../helper/id";
 
 export const createShopModel = db => ({
   // 创建店铺
-  createShop({ name, qqchat, wechat, phone, description, belongto }) {
+  createShop(shop) {
     const createFn = async client => {
+      const currentShop = {
+        ...shop,
+        belongto: decodeID(belongto)
+      };
+      const keys = Object.keys(currentShop);
+
       const res = await client.query(
-        `INSERT INTO "cloud_shop" ( "name", "qqchat", "wechat", "phone", "description", "belongto")
-VALUES (${gPlaceholderForPostgres(6)})  RETURNING id;`,
-        [name, qqchat, wechat, phone, description, decodeID(belongto)]
+        `INSERT INTO "cloud_shop" ( ${keys.join(",")})
+VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`,
+        Object.values(currentShop)
       );
 
       return {
@@ -67,7 +73,6 @@ VALUES (${gPlaceholderForPostgres(6)})  RETURNING id;`,
         payload: [limit, offset]
       });
 
-      console.log(query.sql);
       const res = await client.query(query.sql, query.payload);
 
       return res.rows.map(a => {
@@ -83,10 +88,13 @@ VALUES (${gPlaceholderForPostgres(6)})  RETURNING id;`,
   },
   updateShop({ id, isPassed: is_passed, ...payload }) {
     const updateFn = async client => {
-      const rest = {
-        ...payload,
-        is_passed
-      };
+      const rest = is_passed
+        ? {
+            ...payload,
+            is_passed
+          }
+        : payload;
+
       const updateKeys = Object.keys(rest)
         .map((b, i) => {
           return `${b}=$${i + 1}`;
