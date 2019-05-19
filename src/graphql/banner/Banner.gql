@@ -10,6 +10,8 @@ type Banner implements Node {
   content: String
   "轮播图标签 用于区别不同页面"
   tag: String
+  "banner 跳转链接"
+  link: String
 }
 
 input BannerInput {
@@ -21,6 +23,8 @@ input BannerInput {
   content: String
   "轮播图标签 用于区别不同页面"
   tag: String
+  "banner 跳转链接"
+  link: String
 }
 
 "轮播查询"
@@ -39,6 +43,8 @@ input BannerUpdateInput {
   content: String
   "轮播图标签 用于区别不同页面"
   tag: String
+  "banner 跳转链接"
+  link: String
 }
 
 "添加/删除 轮播图结果"
@@ -46,7 +52,6 @@ type BannerActionResult {
   id: ID!
   status: Boolean!
 }
-
 
 extend type Query {
   "轮播图查询"
