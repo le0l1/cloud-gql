@@ -22,8 +22,7 @@ export const createUserModel = db => ({
     address,
     role
   }) {
-    const client = await db.connect();
-    try {
+    const createFn = async client => {
       const { hashed, salt } = hashPassword(password);
       const values = [
         name,
@@ -46,9 +45,8 @@ export const createUserModel = db => ({
       return {
         id: formateID("user", res.rows[0].id)
       };
-    } finally {
-      client.release();
-    }
+    };
+    return excuteQuery(db)(createFn);
   },
   async findUserByPhone({ phone, password }) {
     const client = await db.connect();
@@ -81,13 +79,14 @@ export const createUserModel = db => ({
       client.release();
     }
   },
-  fuzzySearchUser({ tsQuery, limit = 10, filters, offset =  0 }) {
+  fuzzySearchUser({ tsQuery, limit = 10, filters, offset = 0 }) {
     const searchUser = async client => {
       let query = {
-        sql: "SELECT * , COUNT(*) OVER() as total FROM cloud_user limit $1 offset $2",
+        sql:
+          "SELECT * , COUNT(*) OVER() as total FROM cloud_user limit $1 offset $2",
         payload: [limit, offset]
       };
-      
+
       const conditionMap = [
         {
           condition: idx =>
@@ -105,7 +104,7 @@ export const createUserModel = db => ({
           },
           val: filters,
           formate: Object.values
-        },
+        }
       ];
 
       query = conditionMap.reduce((a, b) => {
@@ -117,12 +116,12 @@ export const createUserModel = db => ({
           : a;
       }, query);
       const res = await client.query(query.sql, query.payload);
-    
+
       const resFilter = arr =>
         arr.map(({ id, password, ...rest }) => {
           return {
-              id: formateID("user", id),
-              ...rest
+            id: formateID("user", id),
+            ...rest
           };
         });
       return res.rows.length ? resFilter(res.rows) : [];

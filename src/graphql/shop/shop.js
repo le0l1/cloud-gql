@@ -2,7 +2,8 @@ import {
   gPlaceholderForPostgres,
   excuteQuery,
   isValid,
-  withConditions
+  withConditions,
+  mergeIfValid
 } from "../../helper/util";
 import { formateID, decodeID } from "../../helper/id";
 
@@ -10,13 +11,15 @@ export const createShopModel = db => ({
   // 创建店铺
   createShop({ belongto, coreBusiness: core_business, ...shop }) {
     const createFn = async client => {
-      const currentShop = {
-        ...shop,
-        belongto: decodeID(belongto),
-        core_business
-      };
-      const keys = Object.keys(currentShop);
+      const currentShop = mergeIfValid(
+        {
+          core_business,
+          belongto: decodeID(belongto)
+        },
+        shop
+      );
 
+      const keys = Object.keys(currentShop);
       const res = await client.query(
         `INSERT INTO "cloud_shop" ( ${keys.join(",")})
 VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`,
@@ -79,23 +82,21 @@ VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`,
       return res.rows.map(a => {
         return {
           ...a,
-          id: formateID("shop", a.id),
-          isPassed: a.is_passed
+          id: formateID("shop", a.id)
         };
       });
     };
 
     return excuteQuery(db)(searchFn);
   },
-  updateShop({ id, isPassed: is_passed, ...payload }) {
+  updateShop({
+    id,
+    isPassed: is_passed,
+    coreBusiness: core_business,
+    ...payload
+  }) {
     const updateFn = async client => {
-      const rest = is_passed
-        ? {
-            ...payload,
-            is_passed
-          }
-        : payload;
-
+      const rest = mergeIfValid({ is_passed, core_business }, payload);
       const updateKeys = Object.keys(rest)
         .map((b, i) => {
           return `${b}=$${i + 1}`;

@@ -47,3 +47,14 @@ export const withConditions = (conditions, defaultQuery) => {
 export const generateSMSCode = () => {
   return Math.floor(Math.random() * 1000000);
 };
+
+// 合并多个属性到对象
+export const mergeIfValid = (obj, target) =>
+  Object.keys(obj).reduce((a, b) => {
+    return obj[b] ? { ...a, [b]: obj[b] } : a;
+  }, target);
+
+// map alias
+export const mapAlias = (rules, obj) => {
+  return Object.keys(obj).reduce((a, b) => {}, a);
+};

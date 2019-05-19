@@ -10,12 +10,6 @@ const resolvers = {
       return shopModel.searchShop(query);
     }
   },
-  Shop(v) {
-    return {
-      ...v,
-      coreBussiness: v.core_bussiness
-    };
-  },
   ShopConnection: {
     edges(result) {
       return result;
@@ -25,6 +19,11 @@ const resolvers = {
         hasNextPage: result.length > 0,
         total: result.length > 0 ? result[0].total : 0
       };
+    }
+  },
+  Shop: {
+    coreBusiness(v) {
+      return v.core_business;
     }
   },
   ShopStatus: {
