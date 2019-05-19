@@ -24,6 +24,12 @@ const resolvers = {
   Shop: {
     coreBusiness(v) {
       return v.core_business;
+    },
+    shopBanner(v) {
+      return v.shopBanner || [];
+    },
+    isPassed(v) {
+      return v.is_passed;
     }
   },
   ShopStatus: {
