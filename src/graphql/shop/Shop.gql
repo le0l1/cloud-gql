@@ -81,6 +81,8 @@ input ShopCreateInput {
   area: String
   "商家所在城市"
   city: String
+  "商家banner"
+  shopBanner: [ID!]
 }
 
 "删除商户输入"

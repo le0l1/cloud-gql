@@ -9,7 +9,7 @@ import { formateID, decodeID } from "../../helper/id";
 
 export const createShopModel = db => ({
   // 创建店铺
-  createShop({ belongto, coreBusiness: core_business, ...shop }) {
+  createShop({ belongto, coreBusiness: core_business, shopBanner, ...shop }) {
     const createFn = async client => {
       const currentShop = mergeIfValid(
         {
@@ -18,11 +18,14 @@ export const createShopModel = db => ({
         },
         shop
       );
-
+      
+      const shopSql = `INSERT INTO "cloud_shop" ( ${keys.join(",")})
+VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`,
+      const withAlias = (alias, sql) => `with ${alias} as( ${ sql })`
+      
       const keys = Object.keys(currentShop);
       const res = await client.query(
-        `INSERT INTO "cloud_shop" ( ${keys.join(",")})
-VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`,
+        shopSql,
         Object.values(currentShop)
       );
 
@@ -128,5 +131,9 @@ VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`,
     };
 
     return excuteQuery(db)(updateFn);
+  },
+
+  createShopBanner(id, shopBanner) {
+  
   }
 });
