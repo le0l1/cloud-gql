@@ -24,6 +24,10 @@ type Shop implements Node {
   coreBusiness: String
   "商家地址"
   address: String
+  "商家地区"
+  area: String
+  "商家所在城市"
+  city: String
 }
 
 enum ShopStatus {
@@ -73,6 +77,10 @@ input ShopCreateInput {
   coreBusiness: String
   "商家地址"
   address: String
+  "商家地区"
+  area: String
+  "商家所在城市"
+  city: String
 }
 
 "删除商户输入"
