@@ -9,21 +9,26 @@ import { formateID, decodeID } from "../../helper/id";
 import { Shop } from "./shop.entity";
 import { where, pipe, getMany, getQB } from "../../helper/database/sql";
 import { Category } from "../category/category.entity";
+import { Banner } from "../banner/banner.entity";
+import { decode } from "punycode";
 
-const getCategories = arr =>
+const transform = type => arr =>
   arr.map(a => {
-    const cate = new Category();
+    const cate = type.create();
     cate.id = decodeID(a);
     return cate;
   });
 
+const getCategories = transform(Category);
+const getBanners = transform(Banner);
+
 export const createShopModel = db => ({
   // 创建店铺
-  async createShop({ belongto, coreBusiness = [], ...rest }) {
-    console.log(coreBusiness);
+  async createShop({ belongto, coreBusiness = [], shopBanners = [], ...rest }) {
     const currentShop = Shop.create({
       belongto: decodeID(belongto),
       coreBusiness: getCategories(coreBusiness),
+      shopBanners: getBanners(shopBanners),
       ...rest
     });
     const { id } = await currentShop.save();
@@ -60,13 +65,14 @@ export const createShopModel = db => ({
     const formateResID = async query => {
       const res = await query;
       return res.map(a => ({
-        ...a,
-        id: formateID(a.id)
+        ...a
       }));
     };
 
     const withRelation = query => {
-      return query.leftJoinAndSelect("shop.coreBusiness", "category");
+      return query
+        .leftJoinAndSelect("shop.coreBusiness", "category")
+        .leftJoinAndSelect("shop.shopBanners", "banner");
     };
 
     return await pipe(
@@ -78,19 +84,21 @@ export const createShopModel = db => ({
       where("shop.is_passed = :isPassed", { isPassed }),
       where("shop.id =:id", { id: decodeID(id) }),
       withRelation,
-      getMany,
-      formateResID
+      getMany
     )(Shop);
   },
-  async updateShop({ id, isPassed, coreBusiness, ...payload }) {
-    await Shop.update(
-      { id: decodeID(id) },
-      {
-        coreBuisness: getCategories(coreBusiness),
-        isPassed,
-        ...payload
-      }
-    );
+  async updateShop({ id, ...payload }) {
+    const updatePayload = payload;
+    if (updatePayload.coreBusiness) {
+      updatePayload.coreBusiness = getCategories(updatePayload.coreBusiness);
+    }
+    if (updatePayload.shopBanners) {
+      updatePayload.shopBanners = getBanners(updatePayload.shopBanners);
+    }
+    const currentShop = await Shop.findOne(decodeID(id));
+
+    await mergeIfValid(updatePayload, currentShop).save();
+
     return {
       id,
       status: true

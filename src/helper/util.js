@@ -51,7 +51,10 @@ export const generateSMSCode = () => {
 // 合并多个属性到对象
 export const mergeIfValid = (obj, target) =>
   Object.keys(obj).reduce((a, b) => {
-    return obj[b] ? { ...a, [b]: obj[b] } : a;
+    if (isValid(obj[b])) {
+      a[b] = obj[b];
+    }
+    return a;
   }, target);
 
 // map alias

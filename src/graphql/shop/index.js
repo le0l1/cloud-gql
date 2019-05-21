@@ -23,11 +23,8 @@ const resolvers = {
     }
   },
   Shop: {
-    shopBanner(v) {
-      return v.shopBanner || [];
-    },
     id(v) {
-      return formateID('shop', v.id);
+      return formateID("shop", v.id);
     }
   },
   ShopStatus: {

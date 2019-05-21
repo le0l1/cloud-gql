@@ -13,7 +13,7 @@ type Shop implements Node {
   "商户介绍"
   description: String
   "商户详情轮播"
-  shopBanner: [Banner!]
+  shopBanners: [Banner!]
   "商户状态"
   status: ShopStatus
   "商户审核状态"
@@ -82,7 +82,7 @@ input ShopCreateInput {
   "商家所在城市"
   city: String
   "商家banner"
-  shopBanner: [ID!]
+  shopBanners: [ID!]
 }
 
 "删除商户输入"
@@ -108,9 +108,11 @@ input ShopUpdateInput {
   "商户审核状态"
   isPassed: Boolean
   "主营业务"
-  coreBusiness: String
+  coreBusiness: [ID!]
   "商家地址"
   address: String
+  "商家banner"
+  shopBanners: [ID!]
 }
 
 "商户列表"

@@ -5,11 +5,13 @@ import {
   CreateDateColumn,
   BaseEntity,
   JoinTable,
-  ManyToMany
+  ManyToMany,
+  OneToMany
 } from "typeorm";
 import { isValid } from "../../helper/util";
 import { Category } from "../category/category.entity";
 import { decodeID, formateID } from "../../helper/id";
+import { Banner } from "../banner/banner.entity";
 
 @Entity()
 export class Shop extends BaseEntity {
@@ -77,4 +79,7 @@ export class Shop extends BaseEntity {
   @ManyToMany(type => Category, category => category.shops)
   @JoinTable()
   coreBusiness;
+
+  @OneToMany(type => Banner, banner => banner.shop)
+  shopBanners;
 }
