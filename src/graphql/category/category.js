@@ -34,7 +34,21 @@ export const createCategoryModel = db => ({
     return excuteQuery(db)(deleteFn);
   },
   searchCategorys({ route, id }) {
-    return Category.getCategoryTree(id, route);
+    const parentCategory = new Category();
+    if (isValid(id)) {
+      parentCategory.id = decodeID(id);
+    }
+    if (isValid(route)) {
+      parentCategory.route = route;
+    }
+    
+    if (!parentCategory.id && !parentCategory.route) {
+      return getTreeRepository(Category).findTrees();
+    }
+    
+    return getTreeRepository(Category)
+      .findDescendantsTree(parentCategory)
+      .then(({ children }) => children);
   },
   // update category
   updateCategory({ id, ...rest }) {
