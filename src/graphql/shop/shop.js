@@ -48,7 +48,7 @@ export const createShopModel = db => ({
     return excuteQuery(db)(deleteFn);
   },
   // 查询店铺
-  searchShop({
+ async searchShop({
     tsQuery,
     filter = { status: null },
     limit = 10,
@@ -64,8 +64,13 @@ export const createShopModel = db => ({
         id: formateID
       }));
     };
+    
 
-    return pipe(
+    const withRelation = query => {
+      return query.leftJoinAndSelect('shop.coreBusiness', 'category')
+    }
+
+    return await pipe(
       getQB("shop"),
       where("(shop.name like :tsQuery or shop.phone like :tsQuery)", {
         tsQuery: tsQuery ? `%${tsQuery}%` : null
@@ -73,6 +78,7 @@ export const createShopModel = db => ({
       where("shop.status = :status", { status: filter.status }),
       where("shop.is_passed = :isPassed", { isPassed }),
       where("shop.id =:id", { id }),
+      withRelation,
       getMany,
       formateResID
     )(Shop);
