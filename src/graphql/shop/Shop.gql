@@ -115,7 +115,7 @@ input ShopUpdateInput {
 
 "商户列表"
 type ShopConnection {
-  pageInfo: PageInfo!
+  pageInfo: PageInfo
   edges: [Shop!]
 }
 
