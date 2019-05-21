@@ -3,14 +3,10 @@ import { excuteQuery, isValid, withConditions } from "../../helper/util";
 import { Category } from "./category.entity";
 
 export const createCategoryModel = db => ({
-  async createCategory({ name, status, tag, parentId = null, route, image }) {
-    const currentCategory = new Category();
-    currentCategory.name = name;
-    currentCategory.status = status;
-    currentCategory.tag = tag;
-    currentCategory.route = route;
-    currentCategory.image = image;
-  
+  async createCategory({ parentId = null, ...rest}) {
+    const currentCategory = Category.create({
+      ...rest
+    });
 
     if (isValid(parentId)) {
       const parentCategory = new Category();
