@@ -6,6 +6,8 @@ import {
   mergeIfValid
 } from "../../helper/util";
 import { formateID, decodeID } from "../../helper/id";
+import { Shop } from "./shop.entity";
+import { where, pipe, getMany, getQB } from "../../helper/database/sql";
 
 export const createShopModel = db => ({
   // 创建店铺
@@ -18,16 +20,12 @@ export const createShopModel = db => ({
         },
         shop
       );
-      
-      const shopSql = `INSERT INTO "cloud_shop" ( ${keys.join(",")})
-VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`,
-      const withAlias = (alias, sql) => `with ${alias} as( ${ sql })`
-      
       const keys = Object.keys(currentShop);
-      const res = await client.query(
-        shopSql,
-        Object.values(currentShop)
-      );
+
+      const shopSql = `INSERT INTO "cloud_shop" ( ${keys.join(",")})
+VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`;
+
+      const res = await client.query(shopSql, Object.values(currentShop));
 
       return {
         id: formateID("shop", res.rows[0].id),
@@ -53,44 +51,33 @@ VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`,
     return excuteQuery(db)(deleteFn);
   },
   // 查询店铺
-  searchShop({ tsQuery, filter, limit = 10, offset = 0, isPassed, id }) {
-    const searchFn = async client => {
-      const conditionMap = [
-        {
-          val: tsQuery,
-          condition: idx =>
-            `(name like '%' || $${idx} || '%' or phone like '%' || $${idx} || '%')`
-        },
-        {
-          val: filter ? filter.status : null,
-          condition: idx => `(status = $${idx})`
-        },
-        {
-          val: isPassed,
-          condition: idx => `(is_passed = $${idx})`
-        },
-        {
-          val: id ? decodeID(id) : null,
-          condition: idx => `(id = $${idx})`
-        }
-      ];
-      const query = withConditions(conditionMap, {
-        sql:
-          "SELECT  * , COUNT(*) OVER () as total FROM cloud_shop WHERE delete_at IS NULL LIMIT $1 OFFSET $2",
-        payload: [limit, offset]
-      });
-
-      const res = await client.query(query.sql, query.payload);
-
-      return res.rows.map(a => {
-        return {
-          ...a,
-          id: formateID("shop", a.id)
-        };
-      });
+  searchShop({
+    tsQuery,
+    filter = { status: null },
+    limit = 10,
+    offset = 0,
+    isPassed,
+    id
+  }) {
+    const queryBuilder = Shop.createQueryBuilder("shop");
+    const formateResID = async query => {
+      const res = await query;
+      return res.map(a => ({
+        ...a,
+        id: formateID
+      }))
     };
-
-    return excuteQuery(db)(searchFn);
+    return pipe(
+      getQB("shop"),
+      where("(shop.name like :tsQuery or shop.phone like :tsQuery)", {
+        tsQuery: tsQuery ?  `%${tsQuery}%` : null
+      }),
+      where("shop.status = :status", { status: filter.status }),
+      where("shop.is_passed = :isPassed", { isPassed }),
+      where("shop.id =:id", { id }),
+      getMany,
+      formateResID
+    )(Shop);
   },
   updateShop({
     id,
@@ -133,7 +120,5 @@ VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`,
     return excuteQuery(db)(updateFn);
   },
 
-  createShopBanner(id, shopBanner) {
-  
-  }
+  createShopBanner(id, shopBanner) {}
 });

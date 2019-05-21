@@ -1,6 +1,8 @@
+import "reflect-metadata";
 import dotenv from "dotenv";
 import path from "path";
 import { startServe } from "./app";
+import {createConnection} from "typeorm";
 import {
   getOperationDefinition,
   argumentsObjectFromField
@@ -11,4 +13,7 @@ const getEnvPath = () => path.resolve(process.cwd(), `.env`);
 
 dotenv.config({ path: getEnvPath() });
 
-startServe();
+// orm connection
+createConnection().then(() => {
+  startServe();
+})

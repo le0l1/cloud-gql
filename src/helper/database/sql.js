@@ -1,30 +1,14 @@
 import { isValid } from "../util";
 
-export class Sql {
-  constructor(table) {
-    this.table = table
-  }
-  of(table) {
-    return new Sql(table)   
-  }
-  select(...args) {
-    const params = args.length > 0 ? args.join(', ') : '*'
-    this.sql = `select ${params} from ${this.table}`;
-    return this;
-  }
-  with(alias, cb) {
-    const newSql = Sql.of(this.table);
-    this.sql = `with ${alias} as (${ cb(newSql) });`
-    return this;
-  },
-  // {key, values}
-  insert(...values, returnKey = 'id') {
-    const validObj = Object.keys(values).reduce((a, b) => {
-      return isValid(b) ? {...a, [b]: values[b]} : a;
-    }, {})
-    this.sql = `
-      insert into ${this.table} (${validObj.join(' ,')})
-      values ()
-    `
-  }
-}
+export const addIfValid = cb => (val, orm) =>
+  isValid(val) ? cb(val, orm) : val;
+
+export const limit = addIfValid((val, orm) => orm.limit(val));
+
+export const pipe = (...fns) => val => fns.reduce((a, b) => b(a), val);
+export const where = (sql, val) => orm => {
+  return isValid(Object.values(val)[0]) ? orm.andWhere(sql, val) : orm;
+};
+
+export const getQB = alias => orm => orm.createQueryBuilder(alias);
+export const getMany = orm => orm.getMany();
