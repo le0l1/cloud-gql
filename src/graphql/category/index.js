@@ -2,12 +2,18 @@ import Category from "./Category.gql";
 import { gql } from "apollo-server-koa";
 import { createCategoryModel } from "./category";
 import { db } from "../../helper/database/db";
+import { formateID } from "../../helper/id";
 
 const resolvers = {
   Query: {
     categorys(_, { query = {} }) {
       const categoryModel = createCategoryModel(db);
       return categoryModel.searchCategory(query);
+    }
+  },
+  Category: {
+    id(v) {
+      return formateID('category', v.id)
     }
   },
   CategoryStatus: {

@@ -8,6 +8,7 @@ import {
 import { formateID, decodeID } from "../../helper/id";
 import { Shop } from "./shop.entity";
 import { where, pipe, getMany, getQB } from "../../helper/database/sql";
+import { Category } from "../category/category.entity";
 
 export const createShopModel = db => ({
   // 创建店铺
@@ -57,7 +58,7 @@ VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`;
     limit = 10,
     offset = 0,
     isPassed,
-    id
+    id,
   }) {
     const queryBuilder = Shop.createQueryBuilder("shop");
     const formateResID = async query => {
@@ -65,12 +66,13 @@ VALUES (${gPlaceholderForPostgres(keys.length)})  RETURNING id;`;
       return res.map(a => ({
         ...a,
         id: formateID
-      }))
+      }));
     };
+
     return pipe(
       getQB("shop"),
       where("(shop.name like :tsQuery or shop.phone like :tsQuery)", {
-        tsQuery: tsQuery ?  `%${tsQuery}%` : null
+        tsQuery: tsQuery ? `%${tsQuery}%` : null
       }),
       where("shop.status = :status", { status: filter.status }),
       where("shop.is_passed = :isPassed", { isPassed }),

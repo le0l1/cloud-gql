@@ -3,9 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  BaseEntity
+  BaseEntity,
+  JoinTable,
+  ManyToMany
 } from "typeorm";
 import { isValid } from "../../helper/util";
+import { Category } from "../category/category.entity";
 
 @Entity()
 export class Shop extends BaseEntity {
@@ -70,4 +73,8 @@ export class Shop extends BaseEntity {
   })
   address;
 
+  @ManyToMany(type => Category)
+  @JoinTable()
+  coreBuisness;
+  
 }

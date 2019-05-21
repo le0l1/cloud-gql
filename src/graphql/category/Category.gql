@@ -54,7 +54,7 @@ input CategoryDeleteInput {
 }
 
 "分类查询输入"
-input CategoryQuery {
+input CategorysQuery {
   "获取指定页面的分类"
   route: String
   "分类id 不传默认返回为一级分类"
@@ -77,8 +77,33 @@ input CategoryUpdateInput {
   image: String
 }
 
+"通过分类查询对应的店铺"
+type CategoryQueryResult {
+  id: ID!
+  "名称"
+  name: String!
+  "状态"
+  status: CategoryStatus!
+  "标签"
+  tag: String!
+  "路由地址"
+  route: String
+  "分类图片 用作icon展示"
+  image: String
+  "父级分类id"
+  parentId: ID
+  "分类下的店铺"
+  shops: [Shop!]
+}
+
+input CategoryQuery {
+  "分类id"
+  id: ID!
+}
+
 extend type Query {
-  categorys(query: CategoryQuery): [Category!]
+  categorys(query: CategorysQuery): [Category!]
+  category(query: CategoryQuery): CategoryQueryResult!
 }
 extend type Mutation {
   "创建分类"
