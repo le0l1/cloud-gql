@@ -20,7 +20,7 @@ const getCategories = arr =>
 export const createShopModel = db => ({
   // 创建店铺
   async createShop({ belongto, coreBusiness = [], ...rest }) {
-    console.log(coreBusiness)
+    console.log(coreBusiness);
     const currentShop = Shop.create({
       belongto: decodeID(belongto),
       coreBusiness: getCategories(coreBusiness),
@@ -48,7 +48,7 @@ export const createShopModel = db => ({
     return excuteQuery(db)(deleteFn);
   },
   // 查询店铺
- async searchShop({
+  async searchShop({
     tsQuery,
     filter = { status: null },
     limit = 10,
@@ -61,14 +61,13 @@ export const createShopModel = db => ({
       const res = await query;
       return res.map(a => ({
         ...a,
-        id: formateID
+        id: formateID(a.id)
       }));
     };
-    
 
     const withRelation = query => {
-      return query.leftJoinAndSelect('shop.coreBusiness', 'category')
-    }
+      return query.leftJoinAndSelect("shop.coreBusiness", "category");
+    };
 
     return await pipe(
       getQB("shop"),
@@ -77,7 +76,7 @@ export const createShopModel = db => ({
       }),
       where("shop.status = :status", { status: filter.status }),
       where("shop.is_passed = :isPassed", { isPassed }),
-      where("shop.id =:id", { id }),
+      where("shop.id =:id", { id: decodeID(id) }),
       withRelation,
       getMany,
       formateResID

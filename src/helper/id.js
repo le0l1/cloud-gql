@@ -5,7 +5,9 @@ export const formateID = (type, id) => {
 
 // decode id
 export const decodeID = str => {
-  return Buffer.from(str, "base64")
-    .toString("binary")
-    .split("/")[1];
+  return str
+    ? Buffer.from(str, "base64")
+        .toString("binary")
+        .split("/")[1]
+    : "";
 };
