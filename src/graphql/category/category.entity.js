@@ -7,7 +7,8 @@ import {
   TreeParent,
   TreeChildren,
   Tree,
-  getTreeRepository
+  getTreeRepository,
+  JoinTable
 } from "typeorm";
 import { Shop } from "../shop/shop.entity";
 import { pipe, getQB, where, getMany, getOne } from "../../helper/database/sql";
@@ -50,7 +51,7 @@ export class Category extends BaseEntity {
   @TreeChildren()
   children;
 
-  @ManyToMany(type => Shop)
+  @ManyToMany(type => Shop, shop => shop.coreBusiness)
   shops;
 
   static async getCategoryTree(id, route) {

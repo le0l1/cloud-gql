@@ -21,7 +21,7 @@ type Shop implements Node {
   "商户的用户id 可用于查询商户的用户信息"
   belongto: ID!
   "主营业务"
-  coreBusiness: String
+  coreBusiness: [String!]
   "商家地址"
   address: String
   "商家地区"
@@ -74,7 +74,7 @@ input ShopCreateInput {
   "商家id"
   belongto: ID!
   "主营业务"
-  coreBusiness: String
+  coreBusiness: [ID!]
   "商家地址"
   address: String
   "商家地区"

@@ -79,13 +79,13 @@ input CategoryUpdateInput {
 
 "通过分类查询对应的店铺"
 type CategoryQueryResult {
-  id: ID!
+  id: ID
   "名称"
-  name: String!
+  name: String
   "状态"
-  status: CategoryStatus!
+  status: CategoryStatus
   "标签"
-  tag: String!
+  tag: String
   "路由地址"
   route: String
   "分类图片 用作icon展示"

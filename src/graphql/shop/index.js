@@ -2,6 +2,7 @@ import ShopSchema from "./Shop.gql";
 import { gql } from "apollo-server-koa";
 import { createShopModel } from "./shop";
 import { db } from "../../helper/database/db";
+import { formateID } from "../../helper/id";
 
 const resolvers = {
   Query: {
@@ -22,14 +23,11 @@ const resolvers = {
     }
   },
   Shop: {
-    coreBusiness(v) {
-      return v.core_business;
-    },
     shopBanner(v) {
       return v.shopBanner || [];
     },
-    isPassed(v) {
-      return v.is_passed;
+    id(v) {
+      return formateID('shop', v.id);
     }
   },
   ShopStatus: {

@@ -10,6 +10,7 @@ export const createCategoryModel = db => ({
     currentCategory.tag = tag;
     currentCategory.route = route;
     currentCategory.image = image;
+  
 
     if (isValid(parentId)) {
       const parentCategory = new Category();
@@ -36,8 +37,8 @@ export const createCategoryModel = db => ({
     };
     return excuteQuery(db)(deleteFn);
   },
-  searchCategory({ route, id }) {
-    return  Category.getCategoryTree(id, route);
+  searchCategorys({ route, id }) {
+    return Category.getCategoryTree(id, route);
   },
   // update category
   updateCategory({ id, ...rest }) {
@@ -61,5 +62,17 @@ export const createCategoryModel = db => ({
     };
 
     return excuteQuery(db)(updateFn);
+  },
+  async searchCategory({ id }) {
+    if (!isValid(id)) {
+      return {};
+    }
+    const res = await Category.findOne({
+      where: {
+        id: decodeID(id)
+      },
+      relations: ["shops"]
+    });
+    return res
   }
 });

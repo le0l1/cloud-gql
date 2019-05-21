@@ -8,7 +8,11 @@ const resolvers = {
   Query: {
     categorys(_, { query = {} }) {
       const categoryModel = createCategoryModel(db);
-      return categoryModel.searchCategory(query);
+      return categoryModel.searchCategorys(query);
+    },
+    category(_, { query = {}}) {
+     const categoryModel = createCategoryModel(db);
+     return categoryModel.searchCategory(query); 
     }
   },
   Category: {

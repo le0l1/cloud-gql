@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { isValid } from "../../helper/util";
 import { Category } from "../category/category.entity";
+import { decodeID, formateID } from "../../helper/id";
 
 @Entity()
 export class Shop extends BaseEntity {
@@ -73,8 +74,7 @@ export class Shop extends BaseEntity {
   })
   address;
 
-  @ManyToMany(type => Category)
+  @ManyToMany(type => Category, category => category.shops)
   @JoinTable()
-  coreBuisness;
-  
+  coreBusiness;
 }
