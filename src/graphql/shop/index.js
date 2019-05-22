@@ -3,6 +3,7 @@ import { gql } from "apollo-server-koa";
 import { createShopModel } from "./shop";
 import { db } from "../../helper/database/db";
 import { formateID } from "../../helper/id";
+import { Shop } from "./shop.entity";
 
 const resolvers = {
   Query: {
@@ -25,6 +26,12 @@ const resolvers = {
   Shop: {
     id(v) {
       return formateID("shop", v.id);
+    },
+    shopBanners(v) {
+      return Shop.find({
+        where: { id: v.id },
+        relations: ["shopBanners"]
+      });
     }
   },
   ShopStatus: {

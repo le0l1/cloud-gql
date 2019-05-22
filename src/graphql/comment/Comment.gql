@@ -1,0 +1,34 @@
+"评论"
+type Comment implements Node {
+  "评论id"
+  id: ID!
+  "评论用户"
+  belongto: User!
+  "评论内容"
+  comment: String
+  "评论最新时间"
+  updatedAt: String
+}
+
+input CreateCommentInput {
+  "用户id"
+  belongto: ID!
+  "商户id"
+  shopId: ID
+  "评论内容 最大长度为60个字符"
+  comment: String
+}
+
+type CommentResult {
+ "操作的评论id"
+ id: ID
+ "执行结果"
+ status: Boolean
+}
+
+extend type Mutation {
+  "创建评论"
+  createComment(createCommentInput: CreateCommentInput!): CommentResult
+}
+
+

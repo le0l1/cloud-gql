@@ -72,7 +72,6 @@ export const createShopModel = db => ({
     const withRelation = query => {
       return query
         .leftJoinAndSelect("shop.coreBusiness", "category")
-        .leftJoinAndSelect("shop.shopBanners", "banner");
     };
 
     return await pipe(

@@ -20,6 +20,7 @@ import { numberResolver } from "./helper/scalar/Number";
 import { category } from "./graphql/category";
 import { shop } from "./graphql/shop";
 import { thirdAPI } from "./graphql/thridAPI";
+import { comment } from "./graphql/comment";
 
 const app = new Koa();
 const router = new Router();
@@ -69,7 +70,8 @@ const server = new ApolloServer({
     user.typeDef,
     category.typeDef,
     shop.typeDef,
-    thirdAPI.typeDef
+    thirdAPI.typeDef,
+    comment.typeDef
   ],
   resolvers: [
     dateResolver,
@@ -78,7 +80,8 @@ const server = new ApolloServer({
     banner.resolvers,
     category.resolvers,
     shop.resolvers,
-    thirdAPI.resolvers
+    thirdAPI.resolvers,
+    comment.resolvers
   ],
   context: setGraphqlContext,
   schemaDirectives: {

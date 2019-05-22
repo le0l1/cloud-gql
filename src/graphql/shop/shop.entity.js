@@ -12,6 +12,7 @@ import { isValid } from "../../helper/util";
 import { Category } from "../category/category.entity";
 import { decodeID, formateID } from "../../helper/id";
 import { Banner } from "../banner/banner.entity";
+import { Comment } from "../comment/comment.entity";
 
 @Entity()
 export class Shop extends BaseEntity {
@@ -82,4 +83,7 @@ export class Shop extends BaseEntity {
 
   @OneToMany(type => Banner, banner => banner.shop)
   shopBanners;
+
+  @OneToMany(type => Comment, comment => comment.shop)
+  shopComments;
 }

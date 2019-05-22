@@ -28,6 +28,8 @@ type Shop implements Node {
   area: String
   "商家所在城市"
   city: String
+  "商家评论列表"
+  shopComments: [Comment!]
 }
 
 enum ShopStatus {
