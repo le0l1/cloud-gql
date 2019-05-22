@@ -1,37 +1,30 @@
 import ShopSchema from "./Shop.gql";
-import { gql } from "apollo-server-koa";
-import { createShopModel } from "./shop";
-import { db } from "../../helper/database/db";
 import { formateID } from "../../helper/id";
 import { Shop } from "./shop.entity";
 
 const resolvers = {
   Query: {
     shops(_, { query = {} }) {
-      const shopModel = createShopModel(db);
-      return shopModel.searchShop(query);
+      return Shop.searchShopList(query);
+    },
+    shop(_, { query }) {
+      return Shop.searchShop(query);
     }
   },
   ShopConnection: {
     edges(result) {
-      return result;
+      return result[0];
     },
     pageInfo(result) {
       return {
-        hasNextPage: result.length > 0,
-        total: result.length > 0 ? result[0].total : 0
+        hasNextPage: result[1] > 0,
+        total: result[1]
       };
     }
   },
   Shop: {
     id(v) {
       return formateID("shop", v.id);
-    },
-    shopBanners(v) {
-      return Shop.find({
-        where: { id: v.id },
-        relations: ["shopBanners"]
-      });
     }
   },
   ShopStatus: {
@@ -40,23 +33,18 @@ const resolvers = {
   },
   Mutation: {
     createShop(_, { shopCreateInput }) {
-      const shopModel = createShopModel(db);
-      return shopModel.createShop(shopCreateInput);
+      return Shop.createShop(shopCreateInput);
     },
     deleteShop(_, { shopDeleteInput }) {
-      const shopModel = createShopModel(db);
-      return shopModel.deleteShop(shopDeleteInput);
+      return Shop.deleteShop(shopDeleteInput);
     },
     updateShop(_, { shopUpdateInput }) {
-      const shopModel = createShopModel(db);
-      return shopModel.updateShop(shopUpdateInput);
+      return Shop.updateShop(shopUpdateInput);
     }
   }
 };
 
 export const shop = {
-  typeDef: gql`
-    ${ShopSchema}
-  `,
+  typeDef: ShopSchema,
   resolvers
 };

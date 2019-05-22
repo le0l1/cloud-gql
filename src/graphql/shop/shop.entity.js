@@ -6,16 +6,37 @@ import {
   BaseEntity,
   JoinTable,
   ManyToMany,
-  OneToMany
+  OneToMany,
+  Index,
+  ManyToOne
 } from "typeorm";
 import { isValid } from "../../helper/util";
 import { Category } from "../category/category.entity";
 import { decodeID, formateID } from "../../helper/id";
 import { Banner } from "../banner/banner.entity";
 import { Comment } from "../comment/comment.entity";
+import {
+  where,
+  getQB,
+  pipe,
+  getMany,
+  getManyAndCount,
+  withPagination
+} from "../../helper/database/sql";
+
+const transform = type => arr =>
+  arr.map(a => {
+    const cate = type.create();
+    cate.id = decodeID(a);
+    return cate;
+  });
+
+const getCategories = transform(Category);
+const getBanners = transform(Banner);
 
 @Entity()
 export class Shop extends BaseEntity {
+  @Index()
   @PrimaryGeneratedColumn()
   id;
 
@@ -86,4 +107,93 @@ export class Shop extends BaseEntity {
 
   @OneToMany(type => Comment, comment => comment.shop)
   shopComments;
+
+  static createShop({
+    belongto,
+    coreBusiness = [],
+    shopBanners = [],
+    ...rest
+  }) {
+    const currentShop = Shop.create({
+      belongto: decodeID(belongto),
+      coreBusiness: getCategories(coreBusiness),
+      shopBanners: getBanners(shopBanners),
+      ...rest
+    });
+    return currentShop.save().then(({ id }) => ({
+      id: formateID("shop", id),
+      status: true
+    }));
+  }
+
+  static deleteShop({ id }) {
+    return Shop.update(id, {
+      deletedAt: new Datate()
+    }).then(() => ({
+      id,
+      status: true
+    }));
+  }
+
+  static searchShopList({
+    tsQuery,
+    filter = { status: null },
+    limit = 10,
+    offset = 0,
+    isPassed
+  }) {
+    const queryBuilder = Shop.createQueryBuilder("shop");
+    const formateResID = async query => {
+      const res = await query;
+      return res.map(a => ({
+        ...a
+      }));
+    };
+
+    const withRelation = query => {
+      return query.leftJoinAndSelect("shop.coreBusiness", "category");
+    };
+
+    return pipe(
+      getQB("shop"),
+      where("(shop.name like :tsQuery or shop.phone like :tsQuery)", {
+        tsQuery: tsQuery ? `%${tsQuery}%` : null
+      }),
+      where("shop.status = :status", { status: filter.status }),
+      where("shop.is_passed = :isPassed", { isPassed }),
+      withRelation,
+      withPagination(limit, offset),
+      getManyAndCount
+    )(Shop);
+  }
+
+  static searchShop({ id }) {
+    return Shop.findOne({
+      where: {
+        id: decodeID(id)
+      },
+      relations: ["shopBanners", "coreBusiness", "shopComments"]
+    }).then(res => ({
+      ...res,
+      id
+    }));
+  }
+
+  static async updateShop({ id, ...payload }) {
+    const updatePayload = payload;
+    if (updatePayload.coreBusiness) {
+      updatePayload.coreBusiness = getCategories(updatePayload.coreBusiness);
+    }
+    if (updatePayload.shopBanners) {
+      updatePayload.shopBanners = getBanners(updatePayload.shopBanners);
+    }
+    const currentShop = await Shop.findOne(decodeID(id));
+
+    await mergeIfValid(updatePayload, currentShop).save();
+
+    return {
+      id,
+      status: true
+    };
+  }
 }

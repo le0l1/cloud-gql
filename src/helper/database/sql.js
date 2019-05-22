@@ -14,3 +14,8 @@ export const getQB = alias => orm => orm.createQueryBuilder(alias);
 export const getMany = orm => orm.getMany();
 
 export const getOne = orm => orm.getOne();
+
+export const getManyAndCount = query => query.getManyAndCount();
+
+export const withPagination = (limit, offset) => query =>
+  query.take(limit).skip(offset);

@@ -12,8 +12,6 @@ type Shop implements Node {
   phone: Number
   "商户介绍"
   description: String
-  "商户详情轮播"
-  shopBanners: [Banner!]
   "商户状态"
   status: ShopStatus
   "商户审核状态"
@@ -30,6 +28,8 @@ type Shop implements Node {
   city: String
   "商家评论列表"
   shopComments: [Comment!]
+  "商户详情轮播"
+  shopBanners: [Banner!]
 }
 
 enum ShopStatus {
@@ -55,6 +55,9 @@ input ShopsQueryInput {
   offset: Int
   "商户审核状态"
   isPassed: Boolean
+}
+
+input ShopQueryInput {
   "商户id"
   id: ID
 }
@@ -132,6 +135,8 @@ type ShopResult {
 extend type Query {
   "商户列表查询 支持模糊查询 筛选条件"
   shops(query: ShopsQueryInput): ShopConnection! @auth
+  "单一商户查询"
+  shop(query: ShopQueryInput): Shop!
 }
 
 extend type Mutation {
