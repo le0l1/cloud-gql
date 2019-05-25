@@ -76,6 +76,7 @@ const server = new ApolloServer({
   resolvers: [
     dateResolver,
     numberResolver,
+    root.resolvers,
     user.resolvers,
     banner.resolvers,
     category.resolvers,

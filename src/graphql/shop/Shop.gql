@@ -26,8 +26,6 @@ type Shop implements Node {
   area: String
   "商家所在城市"
   city: String
-  "商家评论列表"
-  shopComments: [Comment!]
   "商户详情轮播"
   shopBanners: [Banner!]
 }
@@ -121,7 +119,7 @@ input ShopUpdateInput {
 }
 
 "商户列表"
-type ShopConnection {
+type ShopConnection implements Connection {
   pageInfo: PageInfo
   edges: [Shop!]
 }

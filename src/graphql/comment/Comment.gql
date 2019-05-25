@@ -20,15 +20,28 @@ input CreateCommentInput {
 }
 
 type CommentResult {
- "操作的评论id"
- id: ID
- "执行结果"
- status: Boolean
+  "操作的评论id"
+  id: ID
+  "执行结果"
+  status: Boolean
+}
+
+input getCommentInput {
+  "商户id"
+  shopId: ID
+}
+
+"评论列表"
+type CommentConnection {
+  pageInfo: PageInfo
+  edges: [Comment!]
+}
+
+extend type Query {
+  comments(query: getCommentInput): CommentConnection!
 }
 
 extend type Mutation {
   "创建评论"
   createComment(createCommentInput: CreateCommentInput!): CommentResult
 }
-
-

@@ -15,11 +15,8 @@ const resolvers = {
     edges(result) {
       return result[0];
     },
-    pageInfo(result) {
-      return {
-        hasNextPage: result[1] > 0,
-        total: result[1]
-      };
+    pageInfo(v) {
+      return v;
     }
   },
   Shop: {

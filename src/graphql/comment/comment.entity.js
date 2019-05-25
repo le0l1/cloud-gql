@@ -4,11 +4,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   UpdateDateColumn,
-  ManyToOne
+  ManyToOne,
+  OneToMany
 } from "typeorm";
-import { Shop } from "../shop/shop.entity";
 import { UserInputError } from "apollo-server-koa";
 import { decodeID } from "../../helper/id";
+import { User } from "../user/user.entity";
 
 @Entity()
 export class Comment extends BaseEntity {
@@ -21,19 +22,37 @@ export class Comment extends BaseEntity {
   @UpdateDateColumn()
   updatedAt;
 
-  @ManyToOne(type => Shop, shop => shop.shopComments)
-  shop;
+  @Column({
+    type: "character varying",
+    comment: "which shop has this comment",
+    nullable: true
+  })
+  shopId;
 
-  @Column({ type: "character varying", comment: "评论的用户" })
+  @ManyToOne(type => User, user => user.comments)
   belongto;
 
-  static createComment({ shopId, ...rest }) {
-    const newComment = Comment.create(rest);
+  static createComment({ shopId, belongto, ...rest }) {
+    return Comment.create({
+      shopId: decodeID(shopId),
+      belongto: User.create({ id: decodeID(belongto) }),
+      ...rest
+    }).save();
+  }
+
+  // 通过条件查找对应的评论
+  static getCommentList({ shopId }) {
+    const findCommentWithWhere = condition =>
+      Comment.findAndCount({
+        where: condition,
+        relations: ["belongto"]
+      });
+
+    // 查找商户评论
     if (shopId) {
-      newComment.shop = Shop.create({
-        id: decodeID(shopId)
+      return findCommentWithWhere({
+        shopId: decodeID(shopId)
       });
     }
-    return newComment.save();
   }
 }
