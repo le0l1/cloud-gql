@@ -10,6 +10,7 @@ import {
   addCondition,
   excuteQuery
 } from "../../helper/util";
+import { User } from "./user.entity";
 
 export const createUserModel = db => ({
   async addNewUser({
@@ -140,17 +141,5 @@ export const createUserModel = db => ({
       };
     };
     return excuteQuery(db)(deleteUser);
-  },
-  // check if user has already register
-  checkUserExists(phone) {
-    const checkFn = async client => {
-      const res = await client.query(
-        "SELECT 1 from cloud_user where phone = $1",
-        [phone]
-      );
-
-      return !!res.rows.length;
-    };
-    return excuteQuery(db)(checkFn);
   }
 });

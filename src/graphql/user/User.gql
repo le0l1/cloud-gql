@@ -106,8 +106,27 @@ input UserDeleteInput {
   id: ID!
 }
 
+"找回密码输入"
+input RetrievePasswordInput {
+  "手机号码"
+  phone: Number!
+
+  "短信验证码"
+  smsCode: Number!
+
+  "重新设置的密码"
+  password: String!
+}
+
 "删除用户返回"
 type UserDeleteResult {
+  "被删除id"
+  id: ID!
+  "删除结果"
+  status: Boolean
+}
+"找回密码结果"
+type RetrievePasswordResult {
   "被删除id"
   id: ID!
   "删除结果"
@@ -132,4 +151,9 @@ extend type Mutation {
   "用户删除"
   deleteUser(userDeleteInput: UserDeleteInput!): UserDeleteResult!
     @auth(requires: ROOT)
+
+  "找回密码"
+  retrievePassword(
+    retrievePasswordInput: RetrievePasswordInput!
+  ): RetrievePasswordResult!
 }

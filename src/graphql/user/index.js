@@ -1,6 +1,8 @@
-import User from "./User.gql";
+import UserSchema from "./User.gql";
 import { createUserModel } from "./user";
 import { db } from "../../helper/database/db";
+import { User } from "./user.entity";
+import { formateID } from "../../helper/id";
 
 const resolvers = {
   Query: {
@@ -26,10 +28,11 @@ const resolvers = {
     }
   },
   Mutation: {
-    register(obj, { userRegisterInput }, ctx) {
+    async register(obj, { userRegisterInput }, ctx) {
       const user = createUserModel(db);
+      const { phone } = userRegisterInput;
       // check smsCode
-      if (userRegisterInput.smsCode !== ctx.session.smsCode) {
+      if (userRegisterInput.smsCode !== ctx.session[phone]) {
         throw new Error("验证码错误");
       }
 
@@ -38,13 +41,13 @@ const resolvers = {
         throw new Error("禁止注册ROOT权限账户");
       }
 
-      if (user.checkUserExists(userRegisterInput.phone)) {
+      if (await User.checkIfExists(phone)) {
         throw new Error("该用户已注册");
       }
 
       return user.addNewUser(userRegisterInput).then(result => {
         // clear session after register
-        ctx.session.smsCode = "";
+        ctx.session[phone] = "";
         return result;
       });
     },
@@ -55,11 +58,21 @@ const resolvers = {
     deleteUser(_, { userDeleteInput }) {
       const user = createUserModel(db);
       return user.deleteUserByID(userDeleteInput);
+    },
+    async retrievePassword(_, { retrievePasswordInput }, ctx) {
+      if (retrievePasswordInput.smsCode !== ctx.session.smsCode) {
+        throw new Error("验证码错误");
+      }
+      const { id } = await User.retrievePassword(retrievePasswordInput);
+      return {
+        id: formateID("user", id),
+        status: true
+      };
     }
   }
 };
 
 export const user = {
-  typeDef: `${User}`,
+  typeDef: UserSchema,
   resolvers
 };

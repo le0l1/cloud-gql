@@ -13,7 +13,7 @@ const resolvers = {
       const smsCode = generateSMSCode();
       await sendSMS({ phone, smsCode });
       // set smsCode to session
-      ctx.session.smsCode = smsCode;
+      ctx.session[phone] = smsCode;
       return true;
     }
   }

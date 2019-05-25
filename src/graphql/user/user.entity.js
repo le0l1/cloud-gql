@@ -8,6 +8,8 @@ import {
   OneToMany
 } from "typeorm";
 import { Comment } from "../comment/comment.entity";
+import { hashPassword } from "../../helper/auth/encode";
+import { formateID } from "../../helper/id";
 
 @Entity()
 export class User extends BaseEntity {
@@ -74,4 +76,25 @@ export class User extends BaseEntity {
 
   @OneToMany(type => Comment, comment => comment.belongto)
   comments;
+
+  static retrievePassword({ phone, password }) {
+    return User.findOne({
+      where: { phone }
+    }).then(currentUser => {
+      if (!currentUser) throw new Error("用户不存在");
+
+      const { hashed, salt } = hashPassword(password);
+      currentUser.salt = salt;
+      currentUser.password = hashed;
+      return currentUser.save();
+    });
+  }
+
+  static checkIfExists(phone) {
+    return User.findOne({
+      where: {
+        phone
+      }
+    }).then(res => !!res);
+  }
 }

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const createSalt = () => crypto.randomBytes(256).toString("base64");
 
-const hashTo = ({ pwd, salt }) => {
+export const hashTo = ({ pwd, salt }) => {
   const hmac = crypto.createHmac("sha256", salt);
   return hmac.update(pwd).digest("hex");
 };

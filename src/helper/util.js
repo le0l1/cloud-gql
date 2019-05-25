@@ -45,7 +45,7 @@ export const withConditions = (conditions, defaultQuery) => {
 
 // 生成随机验证码
 export const generateSMSCode = () => {
-  return Math.floor(Math.random() * 1000000);
+  return parseInt(Math.random() * 1000000);
 };
 
 // 合并多个属性到对象
