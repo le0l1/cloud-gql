@@ -13,6 +13,7 @@ import {
 import { Shop } from "../shop/shop.entity";
 import { pipe, getQB, where, getMany, getOne } from "../../helper/database/sql";
 import { isValid } from "../../helper/util";
+import { decodeID } from "../../helper/id";
 
 @Entity()
 @Tree("closure-table")
@@ -54,4 +55,21 @@ export class Category extends BaseEntity {
   @ManyToMany(type => Shop, shop => shop.coreBusiness)
   shops;
 
+  static searchCategorys({ route, id }) {
+    const parentCategory = new Category();
+    if (isValid(id)) {
+      parentCategory.id = decodeID(id);
+    }
+    if (isValid(route)) {
+      parentCategory.route = route;
+    }
+
+    if (!parentCategory.id && !parentCategory.route) {
+      return getTreeRepository(Category).findTrees();
+    }
+
+    return getTreeRepository(Category)
+      .findDescendantsTree(parentCategory)
+      .then(({ children }) => children);
+  }
 }

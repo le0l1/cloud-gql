@@ -3,7 +3,7 @@ import { excuteQuery, isValid, withConditions } from "../../helper/util";
 import { Category } from "./category.entity";
 
 export const createCategoryModel = db => ({
-  async createCategory({ parentId = null, ...rest}) {
+  async createCategory({ parentId = null, ...rest }) {
     const currentCategory = Category.create({
       ...rest
     });
@@ -34,21 +34,7 @@ export const createCategoryModel = db => ({
     return excuteQuery(db)(deleteFn);
   },
   searchCategorys({ route, id }) {
-    const parentCategory = new Category();
-    if (isValid(id)) {
-      parentCategory.id = decodeID(id);
-    }
-    if (isValid(route)) {
-      parentCategory.route = route;
-    }
-    
-    if (!parentCategory.id && !parentCategory.route) {
-      return getTreeRepository(Category).findTrees();
-    }
-    
-    return getTreeRepository(Category)
-      .findDescendantsTree(parentCategory)
-      .then(({ children }) => children);
+    return Category.searchCategorys({ route, id });
   },
   // update category
   updateCategory({ id, ...rest }) {
@@ -83,6 +69,6 @@ export const createCategoryModel = db => ({
       },
       relations: ["shops"]
     });
-    return res
+    return res;
   }
 });
