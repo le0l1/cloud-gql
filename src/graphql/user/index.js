@@ -60,7 +60,8 @@ const resolvers = {
       return user.deleteUserByID(userDeleteInput);
     },
     async retrievePassword(_, { retrievePasswordInput }, ctx) {
-      if (retrievePasswordInput.smsCode !== ctx.session.smsCode) {
+      const { phone } = retrievePasswordInput;
+      if (retrievePasswordInput.smsCode !== ctx.session[phone]) {
         throw new Error("验证码错误");
       }
       const { id } = await User.retrievePassword(retrievePasswordInput);
