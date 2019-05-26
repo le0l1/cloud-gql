@@ -1,8 +1,20 @@
-import Recommend from "./Recommend.gql";
-import { gql } from "apollo-server-koa";
+import RecommendSchema from "./Recommend.gql";
+import { Recommend } from "./recommend.entity";
+
+const resolvers = {
+  Mutation: {
+    createRecommend(_, { createRecommendInput }) {
+      console.log(createRecommendInput);
+      return Recommend.createRecommend(createRecommendInput);
+    }
+  },
+  RecommendType: {
+    SHOP: 1,
+    GOOD: 2
+  }
+};
 
 export const recommend = {
-  typeDef: gql`
-    ${Recommend}
-  `
+  typeDef: RecommendSchema,
+  resolvers
 };

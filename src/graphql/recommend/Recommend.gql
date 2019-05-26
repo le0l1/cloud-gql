@@ -1,12 +1,40 @@
-"推荐商品集合"
-type Recommend {
-  "推荐商品集合id"
-  id: ID
-  "推荐的商品"
-  goods: [Good!]
+type RecommendConnection implements Connection {
+  pageInfo: PageInfo!
+  edges: [Node!]
 }
 
 extend type Query {
   "推荐商品查询 通过id可进行查询"
-  recommand(id: ID): Recommend
+  recommands(id: ID): RecommendConnection!
+}
+
+"推荐类型"
+enum RecommendType {
+  "商户"
+  SHOP
+  "商品"
+  GOOD
+}
+
+"创建推荐输入"
+input CreateRecommendInput {
+  "推荐列表对应的路由"
+  path: String
+  "推荐类型"
+  type: RecommendType!
+  "推荐的id"
+  recommends: [ID!]
+}
+
+"创建推荐返回"
+type CreateRecommendResult {
+  id: ID
+  status: Boolean
+}
+
+extend type Mutation {
+  "创建推荐列表"
+  createRecommend(
+    createRecommendInput: CreateRecommendInput!
+  ): CreateRecommendResult
 }
