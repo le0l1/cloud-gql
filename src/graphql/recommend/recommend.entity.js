@@ -1,5 +1,6 @@
 import { BaseEntity, Entity, Column, Index, PrimaryColumn } from "typeorm";
 import { decodeID, formateID } from "../../helper/id";
+import { Shop } from "../shop/shop.entity";
 
 @Entity()
 export class Recommend extends BaseEntity {
@@ -10,7 +11,11 @@ export class Recommend extends BaseEntity {
   @Column({ type: "int", default: 1, comment: "1. shop 2. good" })
   type;
 
-  @Column({ type: "int", comment: "the id of recommend thing" })
+  @Column({
+    type: "int",
+    comment: "the id of recommend thing",
+    name: "recommend_id"
+  })
   recommendId;
 
   static createRecommend({ path, type, recommends }) {
@@ -28,5 +33,20 @@ export class Recommend extends BaseEntity {
         };
       }
     );
+  }
+
+  static searchRecommend({ path, type }) {
+    // if type is shop
+    if (type === 1) {
+      return Shop.createQueryBuilder("shop")
+        .leftJoinAndSelect(
+          Recommend,
+          "recommend",
+          "recommend.recommend_id = shop.id"
+        )
+        .where("recommend.path = :path")
+        .setParameter("path", path)
+        .getManyAndCount();
+    }
   }
 }

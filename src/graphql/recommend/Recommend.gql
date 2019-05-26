@@ -3,11 +3,6 @@ type RecommendConnection implements Connection {
   edges: [Node!]
 }
 
-extend type Query {
-  "推荐商品查询 通过id可进行查询"
-  recommands(id: ID): RecommendConnection!
-}
-
 "推荐类型"
 enum RecommendType {
   "商户"
@@ -17,7 +12,7 @@ enum RecommendType {
 }
 
 "创建推荐输入"
-input CreateRecommendInput {
+input RecommendCreateInput {
   "推荐列表对应的路由"
   path: String
   "推荐类型"
@@ -26,8 +21,16 @@ input CreateRecommendInput {
   recommends: [ID!]
 }
 
+"查询推荐输入"
+input RecommendSearchInput {
+  "推荐类型"
+  type: RecommendType!
+  "推荐列表对应路径"
+  path: String!
+}
+
 "创建推荐返回"
-type CreateRecommendResult {
+type RecommendCreateResult {
   id: ID
   status: Boolean
 }
@@ -35,6 +38,11 @@ type CreateRecommendResult {
 extend type Mutation {
   "创建推荐列表"
   createRecommend(
-    createRecommendInput: CreateRecommendInput!
-  ): CreateRecommendResult
+    createRecommendInput: RecommendCreateInput!
+  ): RecommendCreateResult
+}
+
+extend type Query {
+  "推荐商品查询 通过id可进行查询"
+  recommends(searchRecommendInput: RecommendSearchInput!): RecommendConnection!
 }

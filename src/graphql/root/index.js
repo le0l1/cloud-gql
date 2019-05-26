@@ -8,6 +8,11 @@ const resolvers = {
     hasNextPage(v) {
       return v[1] > 0;
     }
+  },
+  Node: {
+    __resolveType(data) {
+      return data.constructor.name;
+    }
   }
 };
 
