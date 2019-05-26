@@ -1,11 +1,20 @@
-import { BaseEntity, Entity, Column, Index, PrimaryColumn } from "typeorm";
+import {
+  BaseEntity,
+  Entity,
+  Column,
+  Index,
+  PrimaryGeneratedColumn
+} from "typeorm";
 import { decodeID, formateID } from "../../helper/id";
 import { Shop } from "../shop/shop.entity";
 
 @Entity()
 export class Recommend extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id;
+
   @Index()
-  @PrimaryColumn({ type: "character varying" })
+  @Column({ type: "character varying", comment: "the path of recommend" })
   path;
 
   @Column({ type: "int", default: 1, comment: "1. shop 2. good" })
@@ -14,39 +23,60 @@ export class Recommend extends BaseEntity {
   @Column({
     type: "int",
     comment: "the id of recommend thing",
-    name: "recommend_id"
+    name: "node"
   })
-  recommendId;
+  recommendNodeId;
 
-  static createRecommend({ path, type, recommends }) {
-    const recommendFactory = (type, path) => recommendId =>
-      Recommend.create({
-        recommendId: decodeID(recommendId),
-        type,
-        path
-      });
-    return Recommend.save(recommends.map(recommendFactory(type, path))).then(
-      ({ id }) => {
-        return {
-          id: formateID("recommend", id),
-          status: true
-        };
-      }
-    );
+  @Column({
+    type: "timestamp",
+    comment: "when the record has been deleted",
+    name: "delete_at",
+    nullable: true
+  })
+  deletedAt;
+
+  static createRecommend({ path, type, recommendNodeId }) {
+    return Recommend.save({
+      path,
+      type,
+      recommendNodeId: decodeID(recommendNodeId)
+    }).then(({ id }) => {
+      return {
+        id: formateID("recommend", id),
+        status: true
+      };
+    });
   }
 
   static searchRecommend({ path, type }) {
-    // if type is shop
-    if (type === 1) {
-      return Shop.createQueryBuilder("shop")
-        .leftJoinAndSelect(
-          Recommend,
-          "recommend",
-          "recommend.recommend_id = shop.id"
-        )
-        .where("recommend.path = :path")
-        .setParameter("path", path)
-        .getManyAndCount();
-    }
+    return Recommend.createQueryBuilder("recommend")
+      .leftJoinAndMapOne(
+        "recommend.recommendNode",
+        Shop,
+        "shop",
+        "shop.id = recommend.node"
+      )
+      .where("recommend.path = :path and recommend.delete_at is null")
+      .setParameter("path", path)
+      .getManyAndCount();
+  }
+  static updateRecommend({ id, path, type, recommendNodeId }) {
+    return Recommend.update(decodeID(id), {
+      path,
+      type,
+      recommendNodeId: decodeID(recommendNodeId)
+    }).then(() => ({
+      id,
+      status: true
+    }));
+  }
+
+  static deleteRecommend({ id }) {
+    return Recommend.update(decodeID(id), { deletedAt: new Date() }).then(
+      () => ({
+        id,
+        status: true
+      })
+    );
   }
 }

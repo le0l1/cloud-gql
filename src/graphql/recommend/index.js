@@ -18,6 +18,12 @@ const resolvers = {
   Mutation: {
     createRecommend(_, { createRecommendInput }) {
       return Recommend.createRecommend(createRecommendInput);
+    },
+    updateRecommend(_, { updateRecommendInput }) {
+      return Recommend.updateRecommend(updateRecommendInput);
+    },
+    deleteRecommend(_, { deleteRecommendInput }) {
+      return Recommend.deleteRecommend(deleteRecommendInput);
     }
   },
   RecommendType: {

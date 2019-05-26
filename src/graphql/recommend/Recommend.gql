@@ -1,6 +1,19 @@
+"推荐类型"
+type Recommend implements Node {
+  "推荐id"
+  id: ID!
+  "推荐的类型"
+  type: RecommendType
+  "推荐对应的路径"
+  path: String
+  "推荐的节点"
+  recommendNode: Node
+}
+
+"推荐集合"
 type RecommendConnection implements Connection {
   pageInfo: PageInfo!
-  edges: [Node!]
+  edges: [Recommend!]
 }
 
 "推荐类型"
@@ -14,11 +27,11 @@ enum RecommendType {
 "创建推荐输入"
 input RecommendCreateInput {
   "推荐列表对应的路由"
-  path: String
+  path: String!
   "推荐类型"
   type: RecommendType!
   "推荐的id"
-  recommends: [ID!]
+  recommendNodeId: ID!
 }
 
 "查询推荐输入"
@@ -29,20 +42,45 @@ input RecommendSearchInput {
   path: String!
 }
 
+"更新推荐输入"
+input RecommendUpdateInput {
+  "推荐id"
+  id: ID!
+  "推荐列表对应的路由"
+  path: String!
+  "推荐类型"
+  type: RecommendType!
+  "推荐的id"
+  recommendNodeId: ID!
+}
+
 "创建推荐返回"
-type RecommendCreateResult {
+type RecommendActionResult {
   id: ID
   status: Boolean
 }
 
-extend type Mutation {
-  "创建推荐列表"
-  createRecommend(
-    createRecommendInput: RecommendCreateInput!
-  ): RecommendCreateResult
+"删除推荐输入"
+input RecommendDeleteInput {
+  id: ID!
 }
 
 extend type Query {
-  "推荐商品查询 通过id可进行查询"
+  "推荐列表查询"
   recommends(searchRecommendInput: RecommendSearchInput!): RecommendConnection!
+}
+
+extend type Mutation {
+  "创建推荐"
+  createRecommend(
+    createRecommendInput: RecommendCreateInput!
+  ): RecommendActionResult
+  "更新推荐"
+  updateRecommend(
+    updateRecommendInput: RecommendUpdateInput!
+  ): RecommendActionResult
+  "删除推荐"
+  deleteRecommend(
+    deleteRecommendInput: RecommendDeleteInput!
+  ): RecommendActionResult
 }
