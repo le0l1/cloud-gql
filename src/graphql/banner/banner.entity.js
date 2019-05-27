@@ -7,6 +7,7 @@ import {
   BaseEntity
 } from "typeorm";
 import { Shop } from "../shop/shop.entity";
+import { Good } from "../good/good.entity";
 
 @Entity()
 export class Banner extends BaseEntity {
@@ -50,4 +51,11 @@ export class Banner extends BaseEntity {
 
   @ManyToOne(type => Shop, shop => shop.shopBanners)
   shop;
+
+  @Column({
+    type: 'character varying',
+    nullable: true,
+    comment: '轮播图所属商品id',
+  })
+  goodId;
 }

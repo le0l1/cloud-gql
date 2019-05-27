@@ -3,13 +3,13 @@ type Good {
   "商品id"
   id: ID!
   "商品名称"
-  name: String  @auth
+  name: String
   "商品图片 默认第一张为封面"
-  images: [String!]
+  goodBanners: [Banner!]
   "商品描述"
   description: String
   "商户id"
-  merchantId: Int
+  shopId: ID
   "商品状态"
   status: GOODSTATUS
 }
@@ -34,9 +34,32 @@ type Goods {
   total: Int
 }
 
+type GoodActionInput {
+  
+}
+
+input GoodCreateInput {
+  "商品名称"
+  name: String
+  "商品的轮播图id 可通过创建轮播图得到"
+  goodBanners: [ID!]
+  "商品描述"
+  description: String
+  "商户id"
+  shopId: ID!
+  "商品状态"
+  status: GOODSTATUS
+}
+
 extend type Query {
   "商品查询 可通过商品id、名称进行查询"
   good(id: ID!, name: String): Good
   "商品列表查询 可通过页码 页数进行分页处理"
   goodList(page: Int, pageSize: Int): Goods
+}
+
+
+
+extend type Mutation {
+  createGood(createGoodInput: GoodCreateInput): 
 }
