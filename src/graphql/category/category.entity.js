@@ -58,6 +58,7 @@ export class Category extends BaseEntity {
 
   static searchCategorys({ route, id }) {
     if (isValid(id)) {
+      console.log(id);
       return getTreeRepository(Category)
         .findDescendantsTree(
           Category.create({
@@ -65,6 +66,7 @@ export class Category extends BaseEntity {
           })
         )
         .then(({ children }) => {
+          console.log(children)
           return children
         });
     }
@@ -85,7 +87,7 @@ export class Category extends BaseEntity {
 
     if (isValid(parentId)) {
       currentCategory.parent = Category.create({
-        id: Number(decodeID(parentId))
+        id: decodeNumberId(parentId)
       })
     }
 

@@ -9,7 +9,6 @@ export class GoodAttribute extends BaseEntity {
   @PrimaryGeneratedColumn()
   id
 
-  
   @Column({
     type: 'character varying',
     name: 'attr_value'

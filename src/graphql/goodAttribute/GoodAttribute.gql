@@ -16,3 +16,7 @@ type SKU {
   skuPrice: Float
 }
 
+
+extend type Query {
+  goodAttribute():
+}

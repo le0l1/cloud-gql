@@ -8,7 +8,7 @@ import {
   Index
 } from "typeorm";
 import { Banner } from "../banner/banner.entity";
-import { decodeID, formateID } from "../../helper/id";
+import { decodeID, formateID, decodeNumberId } from "../../helper/id";
 import { mergeIfValid } from "../../helper/util";
 
 @Entity()
@@ -128,7 +128,7 @@ export class Good extends BaseEntity {
         "banner.good_id = good.id"
       )
       .where({
-        id: decodeID(id)
+        id: decodeNumberId(id)
       })
       .getOne()
       .then(res => {
