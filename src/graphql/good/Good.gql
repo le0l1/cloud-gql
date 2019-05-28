@@ -1,7 +1,7 @@
 "商品"
-type Good {
+type Good  implements Node{
   "商品id"
-  id: ID
+  id: ID!
   "商品名称"
   name: String
   "商品图片 默认第一张为封面"
@@ -103,9 +103,26 @@ input GoodSearchInput {
   id: ID!
 }
 
+
+input GoodsSearchInput {
+  "商户id"
+  shopId: ID!
+  "偏离值"
+  offset: Int
+  "分页条数"
+  limit: Int
+}
+
+type GoodConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [Node!]
+}
+
 extend type Query {
   "商品查询 可通过商品id、名称进行查询"
   good(query: GoodSearchInput!): Good
+  "商品列表查询"
+  goods(query: GoodsSearchInput!): GoodConnection
 }
 
 
