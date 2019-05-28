@@ -3,11 +3,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
-  Entity
+  OneToMany
 } from "typeorm";
 import { Banner } from "../banner/banner.entity";
-import { decodeID } from "../../helper/id";
+import { decodeID, formateID } from "../../helper/id";
 
 @Entity()
 export class Good extends BaseEntity {
@@ -17,7 +16,7 @@ export class Good extends BaseEntity {
   @Column({ type: "character varying", nullable: true })
   name;
 
-  @Column({ type: "decimal(12, 2)" })
+  @Column({ type: "numeric", default: 9999 })
   price;
 
   @Column({ type: "character varying", nullable: true })
@@ -37,7 +36,14 @@ export class Good extends BaseEntity {
   })
   status;
 
-  static createGood({ shopBanners, name, price, description, shopId }) {
+  static createGood({
+    shopBanners = [],
+    name,
+    subTitle,
+    price,
+    description,
+    shopId
+  }) {
     const bannerFactory = goodId => id =>
       Banner.create({
         id: decodeID(id),
@@ -54,7 +60,7 @@ export class Good extends BaseEntity {
       .then(({ id: goodId }) => {
         Banner.save(shopBanners.map(bannerFactory(goodId)));
         return {
-          id: decodeID("good", id),
+          id: formateID("good", goodId),
           status: true
         };
       });

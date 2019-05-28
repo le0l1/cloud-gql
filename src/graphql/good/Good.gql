@@ -1,7 +1,7 @@
 "商品"
 type Good {
   "商品id"
-  id: ID!
+  id: ID
   "商品名称"
   name: String
   "商品图片 默认第一张为封面"
@@ -12,6 +12,10 @@ type Good {
   shopId: ID
   "商品状态"
   status: GOODSTATUS
+  "商品价格"
+  price: Float
+  "商品副标题"
+  subTitle: String
 }
 
 "商品状态枚举"
@@ -33,9 +37,12 @@ type Goods {
   "总页数量"
   total: Int
 }
-
-type GoodActionInput {
-  
+"商品操作结果"
+type GoodActionResult {
+  "操作的商品id"
+  id: ID
+  "操作状态"
+  status: Boolean
 }
 
 input GoodCreateInput {
@@ -49,6 +56,10 @@ input GoodCreateInput {
   shopId: ID!
   "商品状态"
   status: GOODSTATUS
+  "商品价格"
+  price: Float
+  "商品副标题"
+  subTitle: String
 }
 
 extend type Query {
@@ -61,5 +72,5 @@ extend type Query {
 
 
 extend type Mutation {
-  createGood(createGoodInput: GoodCreateInput): 
+  createGood(createGoodInput: GoodCreateInput!): GoodActionResult
 }

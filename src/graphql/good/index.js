@@ -1,8 +1,14 @@
-import Good from "./Good.gql";
-import { gql } from "apollo-server-koa";
+import GoodSchema from "./Good.gql";
+import { Good } from "./good.entity";
 
+const resolvers =  {
+  Mutation: {
+    createGood(_, { createGoodInput }) {
+      return Good.createGood(createGoodInput)
+    }
+  }
+}
 export const good = {
-  typeDef: gql`
-    ${Good}
-  `
+  typeDef: GoodSchema,
+  resolvers
 };

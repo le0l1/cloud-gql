@@ -83,7 +83,8 @@ const server = new ApolloServer({
     shop.resolvers,
     thirdAPI.resolvers,
     comment.resolvers,
-    recommend.resolvers
+    recommend.resolvers,
+    good.resolvers
   ],
   context: setGraphqlContext,
   schemaDirectives: {
