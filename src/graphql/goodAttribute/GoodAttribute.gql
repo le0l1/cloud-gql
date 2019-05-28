@@ -1,0 +1,18 @@
+"商品属性"
+type AttributeSpec {
+  "属性值"
+  attrValue: String
+  "当前属性下的子属性"
+  specs: [AttributeSpec!]
+}
+
+"商品sku"
+type SKU {
+  "商品sku id"
+  skuId: ID
+  "商品sku code 通过属性值拼接获得"
+  skuCode: [String!]
+  "商品sku 价格"
+  skuPrice: Float
+}
+

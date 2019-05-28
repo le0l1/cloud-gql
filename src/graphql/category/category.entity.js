@@ -14,7 +14,7 @@ import {
 import { Shop } from "../shop/shop.entity";
 import { pipe, getQB, where, getMany, getOne } from "../../helper/database/sql";
 import { isValid } from "../../helper/util";
-import { decodeID } from "../../helper/id";
+import { decodeID, formateID } from "../../helper/id";
 
 @Entity()
 @Tree("closure-table")
@@ -57,12 +57,18 @@ export class Category extends BaseEntity {
   shops;
 
   static searchCategorys({ route, id }) {
+    console.log(id);
     if (isValid(id)) {
-      return getTreeRepository(Category).findDescendantsTree(
-        Category.create({
-          id: decodeID(id)
-        })
-      ).then(({ children }) => children)
+      return getTreeRepository(Category)
+        .findDescendantsTree(
+          Category.create({
+            id: Number(decodeID(id))
+          })
+        )
+        .then(({ children }) => {
+          console.log(children)
+          return children
+        });
     }
     if (isValid(route)) {
       return Category.find({
@@ -72,5 +78,22 @@ export class Category extends BaseEntity {
     if (!parentCategory.id && !parentCategory.route) {
       return getTreeRepository(Category).findTrees();
     }
+  }
+
+  static createCategory({ parentId = null, ...rest }) {
+    const currentCategory = Category.create({
+      ...rest
+    });
+
+    if (isValid(parentId)) {
+      currentCategory.parent = Category.create({
+        id: Number(decodeID(parentId))
+      })
+    }
+
+    return currentCategory.save().then(({ id }) => ({
+      id: formateID("category", id),
+      status: true
+    }));
   }
 }

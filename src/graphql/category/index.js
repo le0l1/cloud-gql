@@ -1,14 +1,13 @@
-import Category from "./Category.gql";
-import { gql } from "apollo-server-koa";
+import CategorySchema from "./Category.gql";
 import { createCategoryModel } from "./category";
 import { db } from "../../helper/database/db";
 import { formateID } from "../../helper/id";
+import { Category } from "./category.entity";
 
 const resolvers = {
   Query: {
     categorys(_, { query = {} }) {
-      const categoryModel = createCategoryModel(db);
-      return categoryModel.searchCategorys(query);
+      return Category.searchCategorys(query)
     },
     category(_, { query = {}}) {
      const categoryModel = createCategoryModel(db);
@@ -26,8 +25,7 @@ const resolvers = {
   },
   Mutation: {
     createCategory(_, { category }) {
-      const categoryModel = createCategoryModel(db);
-      return categoryModel.createCategory(category);
+      return Category.createCategory(category);
     },
     deleteCategory(_, { category }) {
       const categoryModel = createCategoryModel(db);
@@ -42,7 +40,5 @@ const resolvers = {
 
 export const category = {
   resolvers,
-  typeDef: gql`
-    ${Category}
-  `
+  typeDef: CategorySchema
 };
