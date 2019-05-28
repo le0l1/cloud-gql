@@ -10,7 +10,7 @@ import {
   Index,
   ManyToOne
 } from "typeorm";
-import { isValid } from "../../helper/util";
+import { isValid, mergeIfValid } from "../../helper/util";
 import { Category } from "../category/category.entity";
 import { decodeID, formateID } from "../../helper/id";
 import { Banner } from "../banner/banner.entity";
