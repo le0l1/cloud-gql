@@ -8,7 +8,8 @@ import {
   TreeChildren,
   Tree,
   getTreeRepository,
-  JoinTable
+  JoinTable,
+  Repository
 } from "typeorm";
 import { Shop } from "../shop/shop.entity";
 import { pipe, getQB, where, getMany, getOne } from "../../helper/database/sql";
@@ -56,20 +57,20 @@ export class Category extends BaseEntity {
   shops;
 
   static searchCategorys({ route, id }) {
-    const parentCategory = new Category();
     if (isValid(id)) {
-      parentCategory.id = decodeID(id);
+      return getTreeRepository(Category).findDescendantsTree(
+        Category.create({
+          id: decodeID(id)
+        })
+      ).then(({ children }) => children)
     }
     if (isValid(route)) {
-      parentCategory.route = route;
+      return Category.find({
+        route
+      });
     }
-
     if (!parentCategory.id && !parentCategory.route) {
       return getTreeRepository(Category).findTrees();
     }
-
-    return getTreeRepository(Category)
-      .findDescendantsTree(parentCategory)
-      .then(({ children }) => children);
   }
 }
