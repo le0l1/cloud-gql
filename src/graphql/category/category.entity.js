@@ -14,7 +14,7 @@ import {
 import { Shop } from "../shop/shop.entity";
 import { pipe, getQB, where, getMany, getOne } from "../../helper/database/sql";
 import { isValid } from "../../helper/util";
-import { decodeID, formateID } from "../../helper/id";
+import { decodeID, formateID, decodeNumberId } from "../../helper/id";
 
 @Entity()
 @Tree("closure-table")
@@ -57,16 +57,14 @@ export class Category extends BaseEntity {
   shops;
 
   static searchCategorys({ route, id }) {
-    console.log(id);
     if (isValid(id)) {
       return getTreeRepository(Category)
         .findDescendantsTree(
           Category.create({
-            id: Number(decodeID(id))
+            id: decodeNumberId(id)
           })
         )
         .then(({ children }) => {
-          console.log(children)
           return children
         });
     }
