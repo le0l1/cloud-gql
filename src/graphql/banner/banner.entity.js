@@ -53,9 +53,10 @@ export class Banner extends BaseEntity {
   shop;
 
   @Column({
-    type: 'character varying',
+    type: 'int',
     nullable: true,
     comment: '轮播图所属商品id',
+    name: 'good_id'
   })
   goodId;
 }

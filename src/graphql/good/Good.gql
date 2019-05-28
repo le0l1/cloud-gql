@@ -16,6 +16,10 @@ type Good {
   price: Float
   "商品副标题"
   subTitle: String
+  "商品销量"
+  goodsSales: Int
+  "商品库存"
+  goodsStocks: Int
 }
 
 "商品状态枚举"
@@ -53,24 +57,64 @@ input GoodCreateInput {
   "商品描述"
   description: String
   "商户id"
-  shopId: ID!
+  shopId: ID! 
   "商品状态"
   status: GOODSTATUS
   "商品价格"
   price: Float
   "商品副标题"
   subTitle: String
+  "商品销量"
+  goodsSales: Int
+  "商品库存"
+  goodsStocks: Int
+}
+
+input GoodUpdateInput {
+  "商品id"
+  id: ID!
+  "商品名称"
+  name: String
+  "商品的轮播图id 可通过创建轮播图得到"
+  goodBanners: [ID!]
+  "商品描述"
+  description: String
+  "商户id"
+  shopId: ID
+  "商品状态"
+  status: GOODSTATUS
+  "商品价格"
+  price: Float
+  "商品副标题"
+  subTitle: String
+  "商品销量"
+  goodsSales: Int
+  "商品库存"
+  goodsStocks: Int
+}
+
+input GoodDeleteInput {
+  "商品id"
+  id: ID!
+}
+
+input GoodSearchInput {
+  "商品id"
+  id: ID!
 }
 
 extend type Query {
   "商品查询 可通过商品id、名称进行查询"
-  good(id: ID!, name: String): Good
-  "商品列表查询 可通过页码 页数进行分页处理"
-  goodList(page: Int, pageSize: Int): Goods
+  good(query: GoodSearchInput!): Good
 }
 
 
 
 extend type Mutation {
+  "创建商品"
   createGood(createGoodInput: GoodCreateInput!): GoodActionResult
+  "更新商品"
+  updateGood(updateGoodInput: GoodUpdateInput!):GoodActionResult
+  "删除商品"
+  deleteGood(deleteGoodInput: GoodDeleteInput!): GoodActionResult
 }
