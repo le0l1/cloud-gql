@@ -1,5 +1,7 @@
 "商品属性"
 type AttributeSpec {
+  "属性ID"
+  id: ID
   "属性值"
   attrValue: String
   "当前属性下的子属性"
@@ -16,7 +18,33 @@ type SKU {
   skuPrice: Float
 }
 
+input GoodAttributeSearchInput {
+  "商品id"
+  goodId: ID!
+}
+
+input GoodAttributeCreateInput {
+  "商品属性值"
+  attrValue: String!
+  "商品父属性"
+  parentId: ID
+  "商品id"
+  goodId: ID!
+}
+
+type GoodAttributeActionResult {
+  "属性ID"
+  id: ID
+  "操作回执状态"
+  status: Boolean
+}
 
 extend type Query {
-  goodAttribute():
+  goodAttribute(query: GoodAttributeSearchInput!): [AttributeSpec!]
+}
+
+extend type Mutation {
+  createGoodAttribute(
+    createGoodAttributeInput: GoodAttributeCreateInput!
+  ): GoodAttributeActionResult
 }

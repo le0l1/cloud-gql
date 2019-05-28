@@ -16,7 +16,7 @@ const resolvers = {
   },
   Good: {
     id(v) {
-      return v.id ? formateID('good', id) : null
+      return v.id ? formateID("good", v.id) : null;
     }
   },
   Query: {
@@ -29,10 +29,10 @@ const resolvers = {
   },
   GoodConnection: {
     edges(v) {
-      return v[0]
+      return v[0];
     },
     pageInfo(v) {
-      return v
+      return v;
     }
   },
   GOODSTATUS: {
