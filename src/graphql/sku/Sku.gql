@@ -1,0 +1,39 @@
+type Sku implements Node {
+  id: ID!
+  "sku属性集合"
+  skuAttrs: [ID!]
+  "skuCode"
+  skuCode: ID
+  "商品 id"
+  goodId: ID
+  "sku 价格"
+  skuPrice: Float
+}
+
+input SkuCreateInput {
+  "sku属性集合"
+  skuAttrs: [ID!]
+  "商品 id"
+  goodId: ID
+  "sku 价格"
+  skuPrice: Float
+}
+
+type SkuActionResult {
+  id: ID
+  "回执结果"
+  status: Boolean
+}
+
+input SkuQueryInput {
+  "商品id"
+  goodId: ID!
+}
+
+extend type Query {
+  sku(query: SkuQueryInput!): [Sku!]
+}
+
+extend type Mutation {
+  createSku(createSkuInput: SkuCreateInput!): SkuActionResult
+}
