@@ -8,7 +8,7 @@ import {
   TreeParent,
   getTreeRepository
 } from "typeorm";
-import { isValid } from "../../helper/util";
+import { isValid, flatEntitiesTree } from "../../helper/util";
 import { decode } from "punycode";
 import { formateID, decodeID, decodeNumberId } from "../../helper/id";
 import { goodAttribute } from ".";
@@ -75,6 +75,15 @@ export class GoodAttribute extends BaseEntity {
         return "goodAttributeClosure.id_ancestor IN" + subQuery;
       })
       .setParameter("goodId", decodeNumberId(goodId))
-      .getMany();
+      .getRawAndEntities()
+      .then(res => {
+        const relationMap = res.raw.map(
+          ({ goodAttribute_id: id, goodAttribute_parentId: parent }) => ({
+            id,
+            parent
+          })
+        );
+        return flatEntitiesTree(res.entities, relationMap);
+      });
   }
 }

@@ -61,3 +61,27 @@ export const mergeIfValid = (obj, target) =>
 export const mapAlias = (rules, obj) => {
   return Object.keys(obj).reduce((a, b) => {}, a);
 };
+
+// transform entities to tree struct
+export const flatEntitiesTree = (entities, relationMap) => {
+  const findParent = node =>
+    relationMap.find(({ id }) => id === node.id).parent;
+  const flatFn = (arr, child) =>
+    arr.forEach(item => {
+      if (findParent(child) === item.id) {
+        item.specs = item.specs ? [...item.specs, child] : [child];
+      } else if (item.specs) {
+        flatFn(item.specs, child);
+      }
+    });
+  return entities.reduce((a, b) => {
+    if (findParent(b) === null) {
+      a.push(b);
+    } else {
+      flatFn(a, b);
+    }
+    return a;
+  }, []);
+};
+
+export const prop = key => obj => obj[key];

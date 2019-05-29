@@ -1,4 +1,5 @@
 import { pipe } from "./database/sql";
+import { isValid, prop } from "./util";
 
 // base64 id
 export const formateID = (type, id) => {
@@ -15,4 +16,7 @@ export const decodeID = str => {
 };
 
 // decode Id and transform to type Number
-export const decodeNumberId = pipe(decodeID, Number);
+export const decodeNumberId = pipe(
+  decodeID,
+  Number
+);
