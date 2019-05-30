@@ -25,6 +25,9 @@ input BannerInput {
   tag: String
   "banner 跳转链接"
   link: String
+
+  "商品id"
+  goodId: ID
 }
 
 "轮播查询"
