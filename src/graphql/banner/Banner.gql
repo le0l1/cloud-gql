@@ -60,7 +60,7 @@ extend type Query {
 
 extend type Mutation {
   "添加轮播图"
-  addBanner(bannerInput: BannerInput): BannerActionResult
+  createBanner(bannerInput: BannerInput): BannerActionResult
   "删除轮播图"
   deleteBanner(id: ID!): BannerActionResult
   "修改轮播图"
