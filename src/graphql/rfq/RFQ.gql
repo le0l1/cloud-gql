@@ -1,0 +1,52 @@
+type RFQ implements Node {
+  id: ID!
+
+  "询价单所属车系"
+  vehicleSeries: String
+
+  "询价单所属车型"
+  vehicleModel: String
+
+  "询价单描述"
+  descripition: String
+
+  "发布人"
+  announcer: User
+
+  "发布日期"
+  announceAt: String
+}
+
+input RFQCreateInput {
+  "询价单所属车系"
+  vehicleSeries: String
+
+  "询价单所属车型"
+  vehicleModel: String
+
+  "询价单配件id"
+  vechicleAccessories: ID
+
+  "询价单描述"
+  descripition: String
+
+  "询价单图片"
+  RFQImages: [String]
+
+  "发布人 id"
+  announcerId: ID!
+}
+
+type RFQActionResult {
+  id: ID
+  status: Boolean
+}
+
+type RFQConnection implements Conneciton {
+  pageInfo: PageInfo
+  edges: [RFQ!]
+}
+
+extend type Mutation {
+  createRFQ(createRFQInput: RFQCreateInput!): RFQActionResult
+}

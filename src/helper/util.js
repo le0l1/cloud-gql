@@ -1,3 +1,5 @@
+import { formateID } from "./id";
+
 // 生成 postgres 占位符
 export const gPlaceholderForPostgres = length =>
   Array.from({ length })
@@ -85,3 +87,8 @@ export const flatEntitiesTree = (entities, relationMap) => {
 };
 
 export const prop = key => obj => obj[key];
+
+export const handleSuccessResult = (type, id) => ({
+  id: formateID(type, id),
+  status: true
+});

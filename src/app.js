@@ -23,6 +23,7 @@ import { thirdAPI } from "./graphql/thridAPI";
 import { comment } from "./graphql/comment";
 import { goodAttribute } from "./graphql/goodAttribute";
 import { sku } from "./graphql/sku";
+import { accessories } from "./graphql/accessories";
 
 const app = new Koa();
 const router = new Router();
@@ -75,7 +76,8 @@ const server = new ApolloServer({
     thirdAPI.typeDef,
     comment.typeDef,
     goodAttribute.typeDef,
-    sku.typeDef
+    sku.typeDef,
+    accessories.typeDef
   ],
   resolvers: [
     dateResolver,
@@ -90,7 +92,8 @@ const server = new ApolloServer({
     recommend.resolvers,
     good.resolvers,
     goodAttribute.resolvers,
-    sku.resolvers
+    sku.resolvers,
+    accessories.resolvers
   ],
   context: setGraphqlContext,
   schemaDirectives: {

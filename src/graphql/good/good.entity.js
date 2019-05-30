@@ -109,12 +109,6 @@ export class Good extends BaseEntity {
 
   static searchGood({ id }) {
     return Good.createQueryBuilder("good")
-      .leftJoinAndMapMany(
-        "good.goodBanners",
-        Banner,
-        "banner",
-        "banner.good_id = good.id"
-      )
       .where({
         id: decodeNumberId(id)
       })

@@ -1,0 +1,48 @@
+type Accessories implements Node {
+  id: ID!
+
+  "配件名称"
+  accessoriesName: String
+
+  "配件数量"
+  accessoriesQuantity: Int
+
+  "配件类别"
+  accessoriesCategory: ID
+
+  "配件图片"
+  accessoriesImages: [String!]
+}
+
+input AccessoriesCreateInput {
+  "配件名称"
+  accessoriesName: String
+
+  "配件数量"
+  accessoriesQuantity: Int
+
+  "配件类别"
+  accessoriesCategory: ID
+
+  "配件图片"
+  accessoriesImages: [String!]
+}
+
+type AccessoriesActionResult {
+  id: ID
+  status: Boolean
+}
+
+input AccessoriesQueryInput {
+  id: ID!
+}
+
+extend type Query {
+  accessories(query: AccessoriesQueryInput!): Accessories!
+}
+
+extend type Mutation {
+  createAccessories(
+    createAccessoriesInput: AccessoriesCreateInput
+  ): AccessoriesActionResult
+}
