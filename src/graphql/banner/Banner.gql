@@ -12,6 +12,8 @@ type Banner implements Node {
   tag: String
   "banner 跳转链接"
   link: String
+  "商品id"
+  goodId: ID
 }
 
 input BannerInput {
@@ -25,14 +27,16 @@ input BannerInput {
   tag: String
   "banner 跳转链接"
   link: String
-
   "商品id"
   goodId: ID
 }
 
 "轮播查询"
 input BannerQueryInput {
-  tag: String!
+  "轮播标签"
+  tag: String
+  "商品id"
+  goodId: ID
 }
 
 input BannerUpdateInput {
@@ -48,6 +52,8 @@ input BannerUpdateInput {
   tag: String
   "banner 跳转链接"
   link: String
+  "商品id"
+  goodId: ID
 }
 
 "添加/删除 轮播图结果"

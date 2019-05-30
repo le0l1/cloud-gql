@@ -1,34 +1,32 @@
-import Banner from "./Banner.gql";
-import { gql } from "apollo-server-koa";
-import { createBannerModel } from "./Banner";
-import { db } from "../../helper/database/db";
+import BannerSchema from "./Banner.gql";
+import { formateID } from "../../helper/id";
+import { Banner } from "./banner.entity";
 
 const resolvers = {
   Query: {
     banners(_, { bannerQueryInput }) {
-      const banner = createBannerModel(db);
-      return banner.findBannerByTag(bannerQueryInput);
+      return Banner.searchBanner(bannerQueryInput);
     }
   },
   Mutation: {
-    addBanner(_, { bannerInput }) {
-      const banner = createBannerModel(db);
-      return banner.addBanner(bannerInput);
+    createBanner(_, { bannerInput }) {
+      return Banner.createBanner(bannerInput);
     },
     deleteBanner(_, { id }) {
-      const banner = createBannerModel(db);
-      return banner.deletBanner(id);
+      return Banner.deleteBanner(id);
     },
     updateBanner(_, { bannerUpdateInput }) {
-      const banner = createBannerModel(db);
-      return banner.updateBanner(bannerUpdateInput);
+      return Banner.updateBanner(bannerUpdateInput);
+    }
+  },
+  Banner: {
+    id(v) {
+      return v.id ? formateID("banner", v.id) : null;
     }
   }
 };
 
 export const banner = {
-  typeDef: gql`
-    ${Banner}
-  `,
+  typeDef: BannerSchema,
   resolvers
 };
