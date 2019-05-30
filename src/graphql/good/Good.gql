@@ -1,25 +1,25 @@
 "商品"
-type Good  implements Node{
+type Good implements Node {
   "商品id"
   id: ID!
   "商品名称"
   name: String
-  "商品图片 默认第一张为封面"
-  goodBanners: [Banner!]
+  "商品封面"
+  cover: String
   "商品描述"
   description: String
   "商户id"
   shopId: ID
   "商品状态"
   status: GOODSTATUS
-  "商品价格"
-  price: Float
   "商品副标题"
   subTitle: String
   "商品销量"
   goodsSales: Int
   "商品库存"
   goodsStocks: Int
+  "商品主Sku价格"
+  goodSkuPrice: Float
 }
 
 "商品状态枚举"
@@ -52,16 +52,14 @@ type GoodActionResult {
 input GoodCreateInput {
   "商品名称"
   name: String
-  "商品的轮播图id 可通过创建轮播图得到"
-  goodBanners: [ID!]
+  "商品封面"
+  cover: String
   "商品描述"
   description: String
   "商户id"
-  shopId: ID! 
+  shopId: ID!
   "商品状态"
   status: GOODSTATUS
-  "商品价格"
-  price: Float
   "商品副标题"
   subTitle: String
   "商品销量"
@@ -75,16 +73,14 @@ input GoodUpdateInput {
   id: ID!
   "商品名称"
   name: String
-  "商品的轮播图id 可通过创建轮播图得到"
-  goodBanners: [ID!]
+  "商品封面"
+  cover: String
   "商品描述"
   description: String
   "商户id"
   shopId: ID
   "商品状态"
   status: GOODSTATUS
-  "商品价格"
-  price: Float
   "商品副标题"
   subTitle: String
   "商品销量"
@@ -102,7 +98,6 @@ input GoodSearchInput {
   "商品id"
   id: ID!
 }
-
 
 input GoodsSearchInput {
   "商户id"
@@ -125,13 +120,11 @@ extend type Query {
   goods(query: GoodsSearchInput!): GoodConnection
 }
 
-
-
 extend type Mutation {
   "创建商品"
   createGood(createGoodInput: GoodCreateInput!): GoodActionResult
   "更新商品"
-  updateGood(updateGoodInput: GoodUpdateInput!):GoodActionResult
+  updateGood(updateGoodInput: GoodUpdateInput!): GoodActionResult
   "删除商品"
   deleteGood(deleteGoodInput: GoodDeleteInput!): GoodActionResult
 }

@@ -20,6 +20,9 @@ export class Good extends BaseEntity {
   name;
 
   @Column({ type: "character varying", nullable: true })
+  cover;
+
+  @Column({ type: "character varying", nullable: true })
   subTitle;
 
   @Column({ type: "text", nullable: true })
@@ -61,21 +64,13 @@ export class Good extends BaseEntity {
   @CreateDateColumn({ name: "created_at" })
   createdAt;
 
-  static createGood({ goodBanners = [], shopId, ...rest }) {
-    const bannerFactory = goodId => id =>
-      Banner.update({
-        id: decodeID(id),
-      }, {
-        goodId
-      });
-
+  static createGood({ shopId, ...rest }) {
     return Good.create({
       shopId: decodeID(shopId),
       ...rest
     })
       .save()
       .then(({ id: goodId }) => {
-        Banner.save(goodBanners.map(bannerFactory(goodId)));
         return {
           id: formateID("good", goodId),
           status: true
@@ -83,13 +78,7 @@ export class Good extends BaseEntity {
       });
   }
 
-  static updateGood({ id: goodId, shopId, goodBanners = [], ...rest }) {
-    const bannerFactory = goodId => bannerId =>
-      Banner.update({
-        id: decodeID(bannerId),
-      }, {
-        goodId: decodeID(goodId)
-      });
+  static updateGood({ id: goodId, shopId, ...rest }) {
     return Good.update(
       {
         id: decodeID(goodId)
@@ -102,7 +91,6 @@ export class Good extends BaseEntity {
         {}
       )
     ).then(res => {
-      Banner.save(goodBanners.map(bannerFactory(goodId)));
       return {
         id: goodId,
         status: true
@@ -141,17 +129,11 @@ export class Good extends BaseEntity {
 
   static searchGoodConnection({ shopId, offset = 0, limit = 10 }) {
     return Good.createQueryBuilder("good")
-      .leftJoinAndMapMany(
-        "good.goodBanners",
-        Banner,
-        "banner",
-        "banner.good_id = good.id"
-      )
       .where({
         shopId: decodeID(shopId)
       })
       .skip(offset)
       .take(limit)
-      .getManyAndCount()
+      .getManyAndCount();
   }
 }
