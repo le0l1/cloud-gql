@@ -69,18 +69,30 @@ export class Category extends BaseEntity {
 
   static searchCategorys({ route, id }) {
     if (isValid(id)) {
+      const parentCategory = Category.create({
+        id: decodeNumberId(id)
+      });
       return getTreeRepository(Category)
-        .findDescendantsTree(
-          Category.create({
-            id: decodeNumberId(id)
-          })
+        .createDescendantsQueryBuilder(
+          "category",
+          "categoryClosure",
+          parentCategory
         )
-        .then(({ children }) => children);
+        .andWhere("category.deletedAt is null")
+        .getMany()
+        .then(res => {
+          // filter parent node
+          return res.filter(node => node.id !== decodeNumberId(id));
+        });
     }
 
     if (isValid(route)) {
       return Category.find({
-        route
+        where: {
+          route,
+          parent: null,
+          deletedAt: null
+        }
       });
     }
 
@@ -88,20 +100,19 @@ export class Category extends BaseEntity {
   }
 
   static createCategory({ parentId = null, ...rest }) {
-    const currentCategory = Category.create({
-      ...rest
-    });
-
-    if (isValid(parentId)) {
-      currentCategory.parent = Category.create({
-        id: decodeNumberId(parentId)
-      });
-    }
-
-    return currentCategory.save().then(({ id }) => ({
-      id: formateID("category", id),
-      status: true
-    }));
+    return Category.create({
+      ...rest,
+      parent: isValid(parentId)
+        ? Category.create({
+            id: decodeNumberId(parentId)
+          })
+        : null
+    })
+      .save()
+      .then(({ id }) => ({
+        id: formateID("category", id),
+        status: true
+      }));
   }
 
   static deleteCategory({ id }) {
