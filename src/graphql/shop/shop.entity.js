@@ -10,7 +10,7 @@ import {
   Index,
   ManyToOne
 } from "typeorm";
-import { isValid, mergeIfValid } from "../../helper/util";
+import { isValid, mergeIfValid, handleSuccessResult } from "../../helper/util";
 import { Category } from "../category/category.entity";
 import { decodeID, formateID } from "../../helper/id";
 import { Banner } from "../banner/banner.entity";
@@ -65,6 +65,12 @@ export class Shop extends BaseEntity {
   })
   status;
 
+  @Column({
+    type: "character varying",
+    nullable: true
+  })
+  cover;
+
   @CreateDateColumn()
   createdAt;
 
@@ -102,9 +108,6 @@ export class Shop extends BaseEntity {
   @JoinTable()
   coreBusiness;
 
-  @OneToMany(type => Banner, banner => banner.shop)
-  shopBanners;
-
   @OneToMany(type => Comment, comment => comment.shop)
   shopComments;
 
@@ -114,16 +117,17 @@ export class Shop extends BaseEntity {
     shopBanners = [],
     ...rest
   }) {
-    const currentShop = Shop.create({
+    return Shop.create({
       belongto: decodeID(belongto),
       coreBusiness: getCategories(coreBusiness),
-      shopBanners: getBanners(shopBanners),
+      cover: shopBanners[0] ? shopBanners[0] : null,
       ...rest
-    });
-    return currentShop.save().then(({ id }) => ({
-      id: formateID("shop", id),
-      status: true
-    }));
+    })
+      .save()
+      .then(({ id }) => {
+        Banner.createBannerArr("shop", id, shopBanners);
+        return handleSuccessResult("shop", id);
+      });
   }
 
   static deleteShop({ id }) {

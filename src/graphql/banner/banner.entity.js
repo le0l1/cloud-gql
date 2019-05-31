@@ -51,9 +51,6 @@ export class Banner extends BaseEntity {
   @CreateDateColumn()
   createdAt;
 
-  @ManyToOne(type => Shop, shop => shop.shopBanners)
-  shop;
-
   @Column({
     type: "character varying",
     nullable: true,

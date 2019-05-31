@@ -26,8 +26,8 @@ type Shop implements Node {
   area: String
   "商家所在城市"
   city: String
-  "商户详情轮播"
-  shopBanners: [Banner!]
+  "商户封面"
+  cover: String
 }
 
 enum ShopStatus {
@@ -84,8 +84,8 @@ input ShopCreateInput {
   area: String
   "商家所在城市"
   city: String
-  "商家banner"
-  shopBanners: [ID!]
+  "商户相册"
+  shopBanners: [String!]
 }
 
 "删除商户输入"
@@ -114,8 +114,6 @@ input ShopUpdateInput {
   coreBusiness: [ID!]
   "商家地址"
   address: String
-  "商家banner"
-  shopBanners: [ID!]
 }
 
 "商户列表"
