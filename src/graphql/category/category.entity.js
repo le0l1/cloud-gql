@@ -62,7 +62,8 @@ export class Category extends BaseEntity {
 
   @Column({
     type: "timestamp",
-    name: "deleted_at"
+    name: "deleted_at",
+    nullable: true
   })
   deletedAt;
 
