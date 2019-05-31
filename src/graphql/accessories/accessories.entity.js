@@ -1,11 +1,11 @@
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { Images } from "../images/image.entity";
-import { formateID, decodeNumberId } from "../../helper/id";
+import { formateID, decodeNumberId, decodeIDAndType } from "../../helper/id";
 import {
   handleActionResult,
   handleSuccessResult,
   mergeIfValid
 } from "../../helper/util";
+import { Banner } from "../banner/banner.entity";
 
 @Entity()
 export class Accessories extends BaseEntity {
@@ -50,31 +50,16 @@ export class Accessories extends BaseEntity {
     return Accessories.create(params)
       .save()
       .then(({ id }) => {
-        Images.createImages("Accessories", id, accessoriesImages);
+        Banner.createBannerArr("accessories", id, accessoriesImages);
         return handleSuccessResult("accessories", id);
       });
   }
 
   static searchAccessories({ id }) {
     return Accessories.createQueryBuilder("accessories")
-      .leftJoinAndMapMany(
-        "accessories.accessoriesImages",
-        Images,
-        "images",
-        "images.imageTypeId = accessories.id"
-      )
       .where({
         id: decodeNumberId(id)
       })
-      .getOne()
-      .then(res => {
-        const accessoriesImages = res.accessoriesImages.map(
-          ({ imagePath }) => imagePath
-        );
-        return {
-          ...res,
-          accessoriesImages
-        };
-      });
+      .getOne();
   }
 }

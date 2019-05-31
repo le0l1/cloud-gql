@@ -2,24 +2,33 @@
 type Good implements Node {
   "商品id"
   id: ID!
+
   "商品名称"
   name: String
+
   "商品封面"
   cover: String
+
   "商品描述"
   description: String
+
   "商户id"
   shopId: ID
+
   "商品状态"
   status: GOODSTATUS
+
   "商品副标题"
   subTitle: String
+
   "商品销量"
   goodsSales: Int
+
   "商品库存"
   goodsStocks: Int
-  "商品主Sku价格"
-  goodSkuPrice: Float
+
+  "商品销售价格"
+  goodSalePrice: Float
 }
 
 "商品状态枚举"
@@ -34,10 +43,13 @@ enum GOODSTATUS {
 type Goods {
   "商品列表"
   goods: [Good!]
+
   "每页数量"
   pageSize: Int
+
   "页数"
   page: Int
+
   "总页数量"
   total: Int
 }
@@ -52,41 +64,59 @@ type GoodActionResult {
 input GoodCreateInput {
   "商品名称"
   name: String
-  "商品封面"
-  cover: String
+
+  "商品图片"
+  images: [String]
+
   "商品描述"
   description: String
+
   "商户id"
   shopId: ID!
+
   "商品状态"
   status: GOODSTATUS
+
   "商品副标题"
   subTitle: String
+
   "商品销量"
   goodsSales: Int
+
   "商品库存"
   goodsStocks: Int
+
+  "商品销售价格"
+  goodSalePrice: Float
 }
 
 input GoodUpdateInput {
   "商品id"
   id: ID!
+
   "商品名称"
   name: String
-  "商品封面"
-  cover: String
+
   "商品描述"
   description: String
+
   "商户id"
   shopId: ID
+
   "商品状态"
   status: GOODSTATUS
+
   "商品副标题"
   subTitle: String
+
   "商品销量"
   goodsSales: Int
+
   "商品库存"
   goodsStocks: Int
+
+  "商品销售价格"
+  goodSalePrice: Float
 }
 
 input GoodDeleteInput {

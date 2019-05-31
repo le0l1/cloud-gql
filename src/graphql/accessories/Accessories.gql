@@ -9,9 +9,6 @@ type Accessories implements Node {
 
   "配件类别"
   accessoriesCategory: ID
-
-  "配件图片"
-  accessoriesImages: [String!]
 }
 
 input AccessoriesCreateInput {

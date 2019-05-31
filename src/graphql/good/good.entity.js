@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { Banner } from "../banner/banner.entity";
 import { decodeID, formateID, decodeNumberId } from "../../helper/id";
-import { mergeIfValid } from "../../helper/util";
+import { mergeIfValid, isValid } from "../../helper/util";
 
 @Entity()
 export class Good extends BaseEntity {
@@ -55,6 +55,12 @@ export class Good extends BaseEntity {
   goodsStocks;
 
   @Column({
+    type: "numeric",
+    nullable: true
+  })
+  goodsSalePrice;
+
+  @Column({
     type: "timestamp",
     nullable: true,
     name: "deleted_at"
@@ -64,13 +70,15 @@ export class Good extends BaseEntity {
   @CreateDateColumn({ name: "created_at" })
   createdAt;
 
-  static createGood({ shopId, ...rest }) {
+  static createGood({ shopId, images, ...rest }) {
     return Good.create({
       shopId: decodeID(shopId),
+      cover: isValid(images[0]) ? images[0] : null,
       ...rest
     })
       .save()
       .then(({ id: goodId }) => {
+        Banner.createBannerArr("good", goodId, images);
         return {
           id: formateID("good", goodId),
           status: true
@@ -86,6 +94,7 @@ export class Good extends BaseEntity {
       mergeIfValid(
         {
           shopId: decodeID(shopId),
+          cover: isValid(images[0]) ? images[0] : null,
           ...rest
         },
         {}

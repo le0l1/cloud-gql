@@ -7,13 +7,14 @@ export const formateID = (type, id) => {
 };
 
 // decode id
-export const decodeID = str => {
-  return str
+export const decodeID = str => decodeIDAndType(str)[1];
+
+export const decodeIDAndType = str =>
+  str
     ? Buffer.from(str, "base64")
         .toString("binary")
-        .split("/")[1]
-    : "";
-};
+        .split("/")
+    : [null, null];
 
 // decode Id and transform to type Number
 export const decodeNumberId = pipe(

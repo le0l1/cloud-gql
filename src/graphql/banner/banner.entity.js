@@ -9,7 +9,7 @@ import {
 import { Shop } from "../shop/shop.entity";
 import { Good } from "../good/good.entity";
 import { isValid, mergeIfValid } from "../../helper/util";
-import { decodeNumberId, formateID } from "../../helper/id";
+import { decodeNumberId, formateID, decodeIDAndType } from "../../helper/id";
 
 @Entity()
 export class Banner extends BaseEntity {
@@ -55,12 +55,20 @@ export class Banner extends BaseEntity {
   shop;
 
   @Column({
+    type: "character varying",
+    nullable: true,
+    comment: "轮播图所属类型",
+    name: "banner_type"
+  })
+  bannerType;
+
+  @Column({
     type: "int",
     nullable: true,
-    comment: "轮播图所属商品id",
-    name: "good_id"
+    comment: "轮播图所属的类型的id",
+    name: "banner_type_id"
   })
-  goodId;
+  bannerTypeId;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt;
@@ -72,10 +80,12 @@ export class Banner extends BaseEntity {
   })
   deletedAt;
 
-  static createBanner({ goodId, ...rest }) {
+  static createBanner({ bannerTypeId, ...rest }) {
     const currentBanner = Banner.create({ ...rest });
-    if (isValid(goodId)) {
-      currentBanner.goodId = decodeNumberId(goodId);
+    if (isValid(bannerTypeId)) {
+      const [bannerType, bannerTypeId] = decodeIDAndType(bannerTypeId);
+      currentBanner.bannerType = bannerType;
+      currentBanner.bannerTypeId = Number(bannerTypeId);
     }
     return currentBanner.save().then(({ id }) => ({
       id: formateID("banner", id),
@@ -97,10 +107,10 @@ export class Banner extends BaseEntity {
     }));
   }
 
-  static searchBanner({ tag, goodId }) {
-    const decodedGoodId = goodId ? decodeNumberId(goodId) : null;
+  static searchBanner({ tag, bannerTypeId: formatedId }) {
+    const [bannerType, bannerTypeId] = decodeIDAndType(formatedId);
     return Banner.find({
-      where: mergeIfValid({ tag, goodId: decodedGoodId }, {})
+      where: mergeIfValid({ tag, bannerType, bannerTypeId }, {})
     });
   }
 
@@ -114,5 +124,16 @@ export class Banner extends BaseEntity {
       id,
       status: true
     }));
+  }
+
+  static createBannerArr(bannerType, bannerTypeId, bannerArr = []) {
+    const transformBanner = node => {
+      return {
+        path: node,
+        bannerType,
+        bannerTypeId
+      };
+    };
+    Banner.save(bannerArr.map(transformBanner));
   }
 }
