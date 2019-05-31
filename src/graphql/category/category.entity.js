@@ -9,7 +9,8 @@ import {
   Tree,
   getTreeRepository,
   JoinTable,
-  Repository
+  Repository,
+  CreateDateColumn
 } from "typeorm";
 import { Shop } from "../shop/shop.entity";
 import { pipe, getQB, where, getMany, getOne } from "../../helper/database/sql";
@@ -56,28 +57,33 @@ export class Category extends BaseEntity {
   @ManyToMany(type => Shop, shop => shop.coreBusiness)
   shops;
 
+  @CreateDateColumn({ name: "created_at" })
+  createdAt;
+
+  @Column({
+    type: "timestamp",
+    name: "deleted_at"
+  })
+  deletedAt;
+
   static searchCategorys({ route, id }) {
     if (isValid(id)) {
-      console.log(id);
       return getTreeRepository(Category)
         .findDescendantsTree(
           Category.create({
             id: decodeNumberId(id)
           })
         )
-        .then(({ children }) => {
-          console.log(children)
-          return children
-        });
+        .then(({ children }) => children);
     }
+
     if (isValid(route)) {
       return Category.find({
         route
       });
     }
-    if (!parentCategory.id && !parentCategory.route) {
-      return getTreeRepository(Category).findTrees();
-    }
+
+    return getTreeRepository(Category).findTrees();
   }
 
   static createCategory({ parentId = null, ...rest }) {
@@ -88,11 +94,25 @@ export class Category extends BaseEntity {
     if (isValid(parentId)) {
       currentCategory.parent = Category.create({
         id: decodeNumberId(parentId)
-      })
+      });
     }
 
     return currentCategory.save().then(({ id }) => ({
       id: formateID("category", id),
+      status: true
+    }));
+  }
+
+  static deleteCategory({ id }) {
+    return Category.update(
+      {
+        id: decodeNumberId(id)
+      },
+      {
+        deletedAt: new Date()
+      }
+    ).then(() => ({
+      id,
       status: true
     }));
   }

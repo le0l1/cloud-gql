@@ -7,16 +7,16 @@ import { Category } from "./category.entity";
 const resolvers = {
   Query: {
     categorys(_, { query = {} }) {
-      return Category.searchCategorys(query)
+      return Category.searchCategorys(query);
     },
-    category(_, { query = {}}) {
-     const categoryModel = createCategoryModel(db);
-     return categoryModel.searchCategory(query); 
+    category(_, { query = {} }) {
+      const categoryModel = createCategoryModel(db);
+      return categoryModel.searchCategory(query);
     }
   },
   Category: {
     id(v) {
-      return formateID('category', v.id)
+      return formateID("category", v.id);
     }
   },
   CategoryStatus: {
@@ -28,8 +28,7 @@ const resolvers = {
       return Category.createCategory(category);
     },
     deleteCategory(_, { category }) {
-      const categoryModel = createCategoryModel(db);
-      return categoryModel.deleteCategory(category);
+      return Category.deleteCategory(category);
     },
     updateCategory(_, { category }) {
       const categoryModel = createCategoryModel(db);
