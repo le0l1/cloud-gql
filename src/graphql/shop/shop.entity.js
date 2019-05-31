@@ -165,6 +165,7 @@ export class Shop extends BaseEntity {
       }),
       where("shop.status = :status", { status: filter.status }),
       where("shop.is_passed = :isPassed", { isPassed }),
+      where("deletedAt is :deletedAt", { deletedAt: null }),
       withRelation,
       withPagination(limit, offset),
       getManyAndCount

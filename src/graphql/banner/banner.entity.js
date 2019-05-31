@@ -91,14 +91,9 @@ export class Banner extends BaseEntity {
   }
 
   static deleteBanner(id) {
-    return Banner.update(
-      {
-        id: decodeNumberId(id)
-      },
-      {
-        deletedAt: new Date()
-      }
-    ).then(() => ({
+    return Banner.delete({
+      id: decodeNumberId(id)
+    }).then(() => ({
       id,
       status: true
     }));
