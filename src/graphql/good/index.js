@@ -17,6 +17,9 @@ const resolvers = {
   Good: {
     id(v) {
       return v.id ? formateID("good", v.id) : null;
+    },
+    shopId(v) {
+      return v.shopId ? formateID("shop", v.shopId) : null;
     }
   },
   Query: {
