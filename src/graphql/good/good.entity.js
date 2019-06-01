@@ -70,7 +70,7 @@ export class Good extends BaseEntity {
   @CreateDateColumn({ name: "created_at" })
   createdAt;
 
-  static createGood({ shopId, images, ...rest }) {
+  static createGood({ shopId, images = [], ...rest }) {
     return Good.create({
       shopId: decodeID(shopId),
       cover: isValid(images[0]) ? images[0] : null,
