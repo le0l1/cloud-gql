@@ -10,8 +10,12 @@ type Category {
   tag: String!
   "路由地址"
   route: String
+
   "分类图片 用作icon展示"
   image: String
+  
+  "子分类"
+  children: [Category!]
 }
 
 "分类状态"
@@ -49,12 +53,15 @@ input CategoryDeleteInput {
   id: ID!
 }
 
-"分类查询输入"
 input CategorysQuery {
   "获取指定页面的分类"
   route: String
+
   "分类id 不传默认返回为一级分类"
   id: ID
+
+  "根节点路由"
+  root: String
 }
 
 "更新分类输入"
@@ -73,7 +80,6 @@ input CategoryUpdateInput {
   image: String
 }
 
-"通过分类查询对应的店铺"
 type CategoryQueryResult {
   id: ID
   "名称"
@@ -93,6 +99,7 @@ type CategoryQueryResult {
 input CategoryQuery {
   "分类id"
   id: ID!
+
 }
 
 extend type Query {

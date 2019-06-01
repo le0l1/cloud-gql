@@ -14,7 +14,7 @@ import {
 } from "typeorm";
 import { Shop } from "../shop/shop.entity";
 import { pipe, getQB, where, getMany, getOne } from "../../helper/database/sql";
-import { isValid } from "../../helper/util";
+import { isValid, flatEntitiesTree } from "../../helper/util";
 import { decodeID, formateID, decodeNumberId } from "../../helper/id";
 
 @Entity()
@@ -67,36 +67,77 @@ export class Category extends BaseEntity {
   })
   deletedAt;
 
-  static searchCategorys({ route, id }) {
+  static searchCategorys({ route, id, root }) {
     if (isValid(id)) {
-      const parentCategory = Category.create({
-        id: decodeNumberId(id)
-      });
-      return getTreeRepository(Category)
-        .createDescendantsQueryBuilder(
-          "category",
-          "categoryClosure",
-          parentCategory
-        )
-        .andWhere("category.deletedAt is null")
-        .getMany()
-        .then(res => {
-          // filter parent node
-          return res.filter(node => node.id !== decodeNumberId(id));
-        });
+      return this.searchCategorysDescends(id);
     }
 
     if (isValid(route)) {
-      return Category.find({
-        where: {
-          route,
-          parent: null,
-          deletedAt: null
-        }
-      });
+      return this.searchCategorysByRoute(route);
     }
 
-    return getTreeRepository(Category).findTrees();
+    if (isValid(root)) {
+      return this.searchCategorysRoot(root);
+    }
+  }
+
+  static searchCategorysByRoute(route) {
+    return Category.find({
+      where: {
+        route,
+        parent: null,
+        deletedAt: null
+      }
+    });
+  }
+
+  static searchCategorysRoot(root) {
+    return Category.createQueryBuilder("category")
+      .innerJoin(
+        getTreeRepository(Category).metadata.closureJunctionTable.tableName,
+        "categoryClosure",
+        "categoryClosure.id_descendant = category.id"
+      )
+      .where(qb => {
+        const subQuery = qb
+          .subQuery()
+          .select("id")
+          .from(Category)
+          .where("route = :root")
+          .getQuery();
+        return "categoryClosure.id_ancestor IN" + subQuery;
+      })
+      .setParameter("root", root)
+      .getRawAndEntities()
+      .then(res => {
+        const relationMap = res.raw.map(
+          ({ category_id: id, category_parentId: parent }) => {
+            return {
+              id,
+              parent
+            };
+          }
+        );
+        return flatEntitiesTree(res.entities, relationMap, "children");
+      });
+  }
+
+  static searchCategorysDescends(id) {
+    const parentCategory = Category.create({
+      id: decodeNumberId(id)
+    });
+    return getTreeRepository(Category)
+      .createDescendantsQueryBuilder(
+        "category",
+        "categoryClosure",
+        parentCategory
+      )
+      .andWhere("category.deletedAt is null")
+      .getMany()
+      .then(res => {
+        // filter parent node
+        return res.filter(node => node.id !== decodeNumberId(id));
+      });
   }
 
   static createCategory({ parentId = null, ...rest }) {
@@ -127,5 +168,14 @@ export class Category extends BaseEntity {
       id,
       status: true
     }));
+  }
+
+  static updateCategory({ id, ...rest }) {
+    return Category.update({ id: decodeNumberId(id) }, { ...rest }).then(() => {
+      return {
+        id,
+        status: true
+      };
+    });
   }
 }

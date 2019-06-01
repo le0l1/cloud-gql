@@ -31,8 +31,7 @@ const resolvers = {
       return Category.deleteCategory(category);
     },
     updateCategory(_, { category }) {
-      const categoryModel = createCategoryModel(db);
-      return categoryModel.updateCategory(category);
+      return Category.updateCategory(category)
     }
   }
 };
