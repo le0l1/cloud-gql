@@ -177,7 +177,7 @@ export class Shop extends BaseEntity {
       where: {
         id: decodeID(id)
       },
-      relations: ["shopBanners", "coreBusiness"]
+      relations: ["coreBusiness"]
     }).then(res => ({
       ...res,
       id
