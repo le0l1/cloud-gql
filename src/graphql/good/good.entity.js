@@ -56,9 +56,10 @@ export class Good extends BaseEntity {
 
   @Column({
     type: "numeric",
+    name: 'good_sale_price',
     nullable: true
   })
-  goodsSalePrice;
+  goodSalePrice;
 
   @Column({
     type: "timestamp",
@@ -71,6 +72,7 @@ export class Good extends BaseEntity {
   createdAt;
 
   static createGood({ shopId, images = [], ...rest }) {
+    console.log(rest)
     return Good.create({
       shopId: decodeID(shopId),
       cover: isValid(images[0]) ? images[0] : null,
