@@ -9,7 +9,7 @@ type Shop implements Node {
   "商户微信"
   wechat: String
   "商户电话"
-  phone: Number
+  phone: [Number!]
   "商户介绍"
   description: String
   "商户状态"
@@ -69,7 +69,7 @@ input ShopCreateInput {
   "商户微信"
   wechat: String
   "商户电话"
-  phone: Number
+  phone: [Number!]
   "商户介绍"
   description: String
   "商户状态"
@@ -103,7 +103,7 @@ input ShopUpdateInput {
   "商户微信"
   wechat: String
   "商户电话"
-  phone: Number
+  phone: [Number!]
   "商户介绍"
   description: String
   "商户状态"

@@ -12,7 +12,7 @@ import {
 } from "typeorm";
 import { isValid, mergeIfValid, handleSuccessResult } from "../../helper/util";
 import { Category } from "../category/category.entity";
-import { decodeID, formateID } from "../../helper/id";
+import { decodeID, formateID, decodeNumberId } from "../../helper/id";
 import { Banner } from "../banner/banner.entity";
 import { Comment } from "../comment/comment.entity";
 import {
@@ -23,17 +23,18 @@ import {
   getManyAndCount,
   withPagination
 } from "../../helper/database/sql";
+import { ShopPhone } from "./shopPhone.entity";
+import { buildSchemaFromTypeDefinitions } from "graphql-tools";
 
 const transform = type => arr =>
   arr.map(a => {
-    const cate = type.create();
-    cate.id = decodeID(a);
-    return cate;
+    return type.create({
+      id: decodeNumberId(a)
+    });
   });
 
 const getCategories = transform(Category);
 const getBanners = transform(Banner);
-
 @Entity()
 export class Shop extends BaseEntity {
   @Index()
@@ -48,9 +49,6 @@ export class Shop extends BaseEntity {
 
   @Column({ type: "character varying", comment: "商户微信", nullable: true })
   wechat;
-
-  @Column({ type: "character varying", comment: "商户手机号", nullable: true })
-  phone;
 
   @Column({ type: "text", comment: "商户描述", nullable: true })
   description;
@@ -115,18 +113,15 @@ export class Shop extends BaseEntity {
     belongto,
     coreBusiness = [],
     shopBanners = [],
+    phones = [],
     ...rest
   }) {
-    const findedShop = await Shop.findOne({
-        where: {
-          name: rest.name
-        }
-      })
-    if (findedShop) throw new Error("该店铺名已被使用");
+    rest.name && (await this.checkNameUnique(rest.name));
 
     return Shop.create({
       belongto: decodeID(belongto),
       coreBusiness: getCategories(coreBusiness),
+      phones: phones.map(ShopPhone.create),
       cover: shopBanners[0] ? shopBanners[0] : null,
       ...rest
     })
@@ -156,7 +151,14 @@ export class Shop extends BaseEntity {
     const queryBuilder = Shop.createQueryBuilder("shop");
 
     const withRelation = query => {
-      return query.leftJoinAndSelect("shop.coreBusiness", "category");
+      return query
+        .leftJoinAndSelect("shop.coreBusiness", "category")
+        .leftJoinAndMapMany(
+          "shop.phone",
+          ShopPhone,
+          "shopPhone",
+          "shopPhone.shopId = shop.id"
+        );
     };
 
     return pipe(
@@ -185,28 +187,49 @@ export class Shop extends BaseEntity {
     }));
   }
 
-  static async updateShop({ id, ...payload }) {
-    const findedShop = await Shop.findOne({
-        where: {
-          name: updatePayload.name
-        }
-      })
-    if (findedShop) throw new Error("该店铺名已被使用");
+  static async updateShop({ id, phone, ...payload }) {
+    payload.name && (await this.checkNameUnique(payload.name));
 
-    const updatePayload = payload;
-    if (updatePayload.coreBusiness) {
-      updatePayload.coreBusiness = getCategories(updatePayload.coreBusiness);
-    }
-    if (updatePayload.shopBanners) {
-      updatePayload.shopBanners = getBanners(updatePayload.shopBanners);
-    }
-    const currentShop = await Shop.findOne(decodeID(id));
+    const setIfValid = (key, fomate) => payload => {
+      return payload[key]
+        ? {
+            ...payload,
+            [key]: fomate(payload[key])
+          }
+        : payload;
+    };
 
-    await mergeIfValid(updatePayload, currentShop).save();
+    // update phone
+    if (phone.length) {
+      ShopPhone.savePhone(phone, decodeNumberId(id));
+    }
+
+    const successCb = () => ({
+      id,
+      status: true
+    });
+
+    const updatePayload = pipe(
+      setIfValid("coreBusiness", getCategories),
+      setIfValid("shopBanners", getBanners),
+      mergeIfValid.bind(null, {})
+    )(payload);
+    // if updatePayload is not empty
+    Object.keys(updatePayload).length > 0 &&
+      (await Shop.update({ id: decodeNumberId(id) }, updatePayload));
 
     return {
       id,
       status: true
     };
+  }
+
+  static async checkNameUnique(name) {
+    const findedShop = await Shop.findOne({
+      where: {
+        name: name
+      }
+    });
+    if (findedShop) throw new Error("该店铺名已被使用");
   }
 }
