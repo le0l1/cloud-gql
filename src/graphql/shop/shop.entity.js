@@ -111,12 +111,19 @@ export class Shop extends BaseEntity {
   @OneToMany(type => Comment, comment => comment.shop)
   shopComments;
 
-  static createShop({
+  static async createShop({
     belongto,
     coreBusiness = [],
     shopBanners = [],
     ...rest
   }) {
+    const findedShop = await Shop.findOne({
+        where: {
+          name: rest.name
+        }
+      })
+    if (findedShop) throw new Error("该店铺名已被使用");
+
     return Shop.create({
       belongto: decodeID(belongto),
       coreBusiness: getCategories(coreBusiness),
