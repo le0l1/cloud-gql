@@ -186,6 +186,13 @@ export class Shop extends BaseEntity {
   }
 
   static async updateShop({ id, ...payload }) {
+    const findedShop = await Shop.findOne({
+        where: {
+          name: updatePayload.name
+        }
+      })
+    if (findedShop) throw new Error("该店铺名已被使用");
+
     const updatePayload = payload;
     if (updatePayload.coreBusiness) {
       updatePayload.coreBusiness = getCategories(updatePayload.coreBusiness);
