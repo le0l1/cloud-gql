@@ -107,6 +107,7 @@ export class Category extends BaseEntity {
           .getQuery();
         return "categoryClosure.id_ancestor IN" + subQuery;
       })
+      .andWhere('category.deletedAt is null')
       .setParameter("root", root)
       .getRawAndEntities()
       .then(res => {
