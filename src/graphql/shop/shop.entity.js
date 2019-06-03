@@ -154,12 +154,6 @@ export class Shop extends BaseEntity {
     isPassed
   }) {
     const queryBuilder = Shop.createQueryBuilder("shop");
-    const formateResID = async query => {
-      const res = await query;
-      return res.map(a => ({
-        ...a
-      }));
-    };
 
     const withRelation = query => {
       return query.leftJoinAndSelect("shop.coreBusiness", "category");
