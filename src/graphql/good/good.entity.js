@@ -28,8 +28,8 @@ export class Good extends BaseEntity {
   @Column({ type: "text", nullable: true })
   description;
 
-  @Column({ type: "text", nullable: true, name: 'good_params' })
-  goodParams
+  @Column({ type: "text", nullable: true, name: 'good_paramter' })
+  goodParamter
 
   @Column({ type: "int", name: "shop_id", nullable: true })
   @Index()

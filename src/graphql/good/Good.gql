@@ -22,7 +22,7 @@ type Good implements Node {
   subTitle: String
 
   "商品参数"
-  goodParams: String
+  goodParamter: String
 
   "商品销量"
   goodsSales: Int
@@ -84,7 +84,7 @@ input GoodCreateInput {
   subTitle: String
 
   "商品参数"
-  goodParams: String
+  goodParamter: String
 
   "商品销量"
   goodsSales: Int
@@ -116,7 +116,7 @@ input GoodUpdateInput {
   subTitle: String
 
   "商品参数"
-  goodParams: String
+  goodParamter: String
 
   "商品销量"
   goodsSales: Int
