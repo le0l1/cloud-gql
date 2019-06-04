@@ -10,7 +10,12 @@ import {
   Index,
   ManyToOne
 } from "typeorm";
-import { isValid, mergeIfValid, handleSuccessResult } from "../../helper/util";
+import {
+  isValid,
+  mergeIfValid,
+  handleSuccessResult,
+  isEmpty
+} from "../../helper/util";
 import { Category } from "../category/category.entity";
 import { decodeID, formateID, decodeNumberId } from "../../helper/id";
 import { Banner } from "../banner/banner.entity";
@@ -116,8 +121,9 @@ export class Shop extends BaseEntity {
     phones = [],
     ...rest
   }) {
+    // check name unique
     rest.name && (await this.checkNameUnique(rest.name));
-
+    
     return Shop.create({
       belongto: decodeID(belongto),
       coreBusiness: getCategories(coreBusiness),
@@ -204,6 +210,15 @@ export class Shop extends BaseEntity {
       ShopPhone.savePhone(phone, decodeNumberId(id));
     }
 
+    const setCover = res => {
+      return res.shopBanners
+        ? {
+            ...res,
+            cover: res.shopBanners[0] || null
+          }
+        : res;
+    };
+
     const successCb = () => ({
       id,
       status: true
@@ -212,10 +227,11 @@ export class Shop extends BaseEntity {
     const updatePayload = pipe(
       setIfValid("coreBusiness", getCategories),
       setIfValid("shopBanners", getBanners),
+      setCover,
       mergeIfValid.bind(null, {})
     )(payload);
     // if updatePayload is not empty
-    Object.keys(updatePayload).length > 0 &&
+    !isEmpty(updatePayload) &&
       (await Shop.update({ id: decodeNumberId(id) }, updatePayload));
 
     return {

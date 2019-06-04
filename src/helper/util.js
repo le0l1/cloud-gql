@@ -65,7 +65,7 @@ export const mapAlias = (rules, obj) => {
 };
 
 // transform entities to tree struct
-export const flatEntitiesTree = (entities, relationMap, chidKey = 'specs') => {
+export const flatEntitiesTree = (entities, relationMap, chidKey = "specs") => {
   const findParent = node =>
     relationMap.find(({ id }) => id === node.id).parent;
   const flatFn = (arr, child) =>
@@ -92,3 +92,17 @@ export const handleSuccessResult = (type, id) => ({
   id: formateID(type, id),
   status: true
 });
+
+export const setIfValid = (key, fomate) => payload => {
+  return payload[key]
+    ? {
+        ...payload,
+        [key]: fomate(payload[key])
+      }
+    : payload;
+};
+
+
+export const isEmpty = (arg) => {
+  return arg === '' || Object.keys(arg).length === 0
+}
