@@ -28,6 +28,9 @@ export class Good extends BaseEntity {
   @Column({ type: "text", nullable: true })
   description;
 
+  @Column({ type: "text", nullable: true, name: 'good_params' })
+  goodParams
+
   @Column({ type: "int", name: "shop_id", nullable: true })
   @Index()
   shopId;
@@ -70,9 +73,9 @@ export class Good extends BaseEntity {
 
   @CreateDateColumn({ name: "created_at" })
   createdAt;
+  
 
   static createGood({ shopId, images = [], ...rest }) {
-    console.log(rest)
     return Good.create({
       shopId: decodeID(shopId),
       cover: isValid(images[0]) ? images[0] : null,
