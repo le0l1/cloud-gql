@@ -1,0 +1,11 @@
+type Image implements Node {
+  id: ID!
+  path: String
+}
+input ImageSearchInput {
+  imageTypeId: ID!
+}
+
+extend type Query {
+  images(query: ImageSearchInput): [Image!]
+}

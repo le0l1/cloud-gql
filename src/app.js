@@ -25,6 +25,7 @@ import { goodAttribute } from "./graphql/goodAttribute";
 import { sku } from "./graphql/sku";
 import { accessories } from "./graphql/accessories";
 import { rfq } from "./graphql/rfq";
+import { image } from "./graphql/image";
 
 const app = new Koa();
 const router = new Router();
@@ -79,7 +80,8 @@ const server = new ApolloServer({
     goodAttribute.typeDef,
     sku.typeDef,
     accessories.typeDef,
-    rfq.typeDef
+    rfq.typeDef,
+    image.typeDef,
   ],
   resolvers: [
     dateResolver,
@@ -96,7 +98,8 @@ const server = new ApolloServer({
     goodAttribute.resolvers,
     sku.resolvers,
     accessories.resolvers,
-    rfq.resolvers
+    rfq.resolvers,
+    image.resolvers
   ],
   context: setGraphqlContext,
   schemaDirectives: {

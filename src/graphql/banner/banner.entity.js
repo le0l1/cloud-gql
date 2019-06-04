@@ -126,6 +126,12 @@ export class Banner extends BaseEntity {
         bannerTypeId
       };
     };
+    // delete banner every time
+    Banner.delete({
+      bannerType,
+      bannerTypeId
+    })
+
     Banner.save(bannerArr.map(transformBanner));
   }
 }

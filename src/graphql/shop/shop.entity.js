@@ -30,6 +30,7 @@ import {
 } from "../../helper/database/sql";
 import { ShopPhone } from "./shopPhone.entity";
 import { buildSchemaFromTypeDefinitions } from "graphql-tools";
+import { Image } from "../image/image.entity";
 
 const transform = type => arr =>
   arr.map(a => {
@@ -118,22 +119,24 @@ export class Shop extends BaseEntity {
     belongto,
     coreBusiness = [],
     shopBanners = [],
+    shopImages = [],
     phones = [],
     ...rest
   }) {
     // check name unique
     rest.name && (await this.checkNameUnique(rest.name));
-    
+
     return Shop.create({
       belongto: decodeID(belongto),
       coreBusiness: getCategories(coreBusiness),
-      phones: phones.map(ShopPhone.create),
       cover: shopBanners[0] ? shopBanners[0] : null,
       ...rest
     })
       .save()
       .then(({ id }) => {
         Banner.createBannerArr("shop", id, shopBanners);
+        Image.createImageArr("shop", id, shopImages);
+        ShopPhone.savePhone(phones, id);
         return handleSuccessResult("shop", id);
       });
   }
@@ -160,7 +163,7 @@ export class Shop extends BaseEntity {
       return query
         .leftJoinAndSelect("shop.coreBusiness", "category")
         .leftJoinAndMapMany(
-          "shop.phone",
+          "shop.phones",
           ShopPhone,
           "shopPhone",
           "shopPhone.shopId = shop.id"
@@ -187,57 +190,42 @@ export class Shop extends BaseEntity {
         id: decodeID(id)
       },
       relations: ["coreBusiness"]
-    }).then(res => ({
+    })
+    .then(res => ({
       ...res,
       id
     }));
   }
 
-  static async updateShop({ id, phone, ...payload }) {
+  static async updateShop({ id, ...payload }) {
     payload.name && (await this.checkNameUnique(payload.name));
+    const realId = decodeNumberId(id);
 
-    const setIfValid = (key, fomate) => payload => {
-      return payload[key]
-        ? {
-            ...payload,
-            [key]: fomate(payload[key])
-          }
-        : payload;
+    const exteralRelationSave = (key, save) => {
+      if (payload[key]) {
+        save(payload[key]);
+        delete payload[key];
+      }
     };
 
-    // update phone
-    if (phone.length) {
-      ShopPhone.savePhone(phone, decodeNumberId(id));
+    if (payload.coreBusiness) {
+      payload.coreBusiness = getCategories(coreBusiness);
     }
-
-    const setCover = res => {
-      return res.shopBanners
-        ? {
-            ...res,
-            cover: res.shopBanners[0] || null
-          }
-        : res;
-    };
-
-    const successCb = () => ({
-      id,
-      status: true
+    exteralRelationSave("phones", phones =>
+      ShopPhone.savePhone(phones, realId)
+    );
+    exteralRelationSave("shopBanners", shopBanners => {
+      Banner.createBannerArr("shop", realId, shopBanners);
+      payload.cover = payload.shopBanners[0] || null;
+    });
+    exteralRelationSave("shopImages", shopImages => {
+      Image.createImageArr("shop", realId, shopImages);
     });
 
-    const updatePayload = pipe(
-      setIfValid("coreBusiness", getCategories),
-      setIfValid("shopBanners", getBanners),
-      setCover,
-      mergeIfValid.bind(null, {})
-    )(payload);
-    // if updatePayload is not empty
-    !isEmpty(updatePayload) &&
-      (await Shop.update({ id: decodeNumberId(id) }, updatePayload));
-
-    return {
+    return Shop.update({ id: realId }, payload).then(() => ({
       id,
       status: true
-    };
+    }));
   }
 
   static async checkNameUnique(name) {

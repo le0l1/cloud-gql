@@ -23,8 +23,8 @@ const resolvers = {
     id(v) {
       return formateID("shop", v.id);
     },
-    phone(v) {
-      return v.phone.map(a => a.phone)
+    phones(v) {
+      return v.phones.map(a => a.phone)
     }
   },
   ShopStatus: {
