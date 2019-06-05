@@ -78,7 +78,12 @@ export class Shop extends BaseEntity {
   @CreateDateColumn()
   createdAt;
 
-  @Column({ type: "boolean", default: false, name: 'is_passed',comment: "商户审核状态" })
+  @Column({
+    type: "boolean",
+    default: false,
+    name: "is_passed",
+    comment: "商户审核状态"
+  })
   isPassed;
 
   @Column({
@@ -181,20 +186,20 @@ export class Shop extends BaseEntity {
       withRelation,
       withPagination(limit, offset),
       getManyAndCount
-    )(Shop)
+    )(Shop);
   }
 
   static searchShop({ id }) {
-    return Shop.findOne({
-      where: {
-        id: decodeID(id)
-      },
-      relations: ["coreBusiness"]
-    })
-    .then(res => ({
-      ...res,
-      id
-    }));
+    return Shop.createQueryBuilder("shop")
+      .leftJoinAndSelect("shop.coreBusiness", "category")
+      .leftJoinAndMapMany(
+        "shop.phones",
+        ShopPhone,
+        "shopPhone",
+        "shopPhone.shopId = shop.id"
+      )
+      .andWhere("shop.id = :id", { id: decodeNumberId(id) })
+      .getOne();
   }
 
   static async updateShop({ id, ...payload }) {

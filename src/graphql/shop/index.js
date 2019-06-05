@@ -24,7 +24,7 @@ const resolvers = {
       return formateID("shop", v.id);
     },
     phones(v) {
-      return v.phones.map(a => a.phone)
+      return v.phones ? v.phones.map(a => a.phone) : [];
     }
   },
   ShopStatus: {
