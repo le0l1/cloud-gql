@@ -78,8 +78,8 @@ export class Shop extends BaseEntity {
   @CreateDateColumn()
   createdAt;
 
-  @Column({ type: "boolean", default: false, comment: "商户审核状态" })
-  is_passed;
+  @Column({ type: "boolean", default: false, name: 'is_passed',comment: "商户审核状态" })
+  isPassed;
 
   @Column({
     type: "character varying",
@@ -176,12 +176,12 @@ export class Shop extends BaseEntity {
         tsQuery: tsQuery ? `%${tsQuery}%` : null
       }),
       where("shop.status = :status", { status: filter.status }),
-      where("shop.is_passed = :isPassed", { isPassed }),
+      where("shop.isPassed = :isPassed", { isPassed }),
       where("deletedAt is :deletedAt", { deletedAt: null }),
       withRelation,
       withPagination(limit, offset),
       getManyAndCount
-    )(Shop);
+    )(Shop)
   }
 
   static searchShop({ id }) {
