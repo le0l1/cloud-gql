@@ -140,7 +140,7 @@ input GoodSearchInput {
 
 input GoodsSearchInput {
   "商户id"
-  shopId: ID!
+  shopId: ID
   "偏离值"
   offset: Int
   "分页条数"
@@ -155,8 +155,8 @@ type GoodConnection implements Connection {
 extend type Query {
   "商品查询 可通过商品id、名称进行查询"
   good(query: GoodSearchInput!): Good
-  "商品列表查询"
-  goods(query: GoodsSearchInput!): GoodConnection
+  "商品列表查询 不传任何参数默认返回全部商品"
+  goods(query: GoodsSearchInput): GoodConnection
 }
 
 extend type Mutation {

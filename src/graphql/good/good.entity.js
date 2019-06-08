@@ -28,8 +28,8 @@ export class Good extends BaseEntity {
   @Column({ type: "text", nullable: true })
   description;
 
-  @Column({ type: "text", nullable: true, name: 'good_paramter' })
-  goodParamter
+  @Column({ type: "text", nullable: true, name: "good_paramter" })
+  goodParamter;
 
   @Column({ type: "int", name: "shop_id", nullable: true })
   @Index()
@@ -59,7 +59,7 @@ export class Good extends BaseEntity {
 
   @Column({
     type: "numeric",
-    name: 'good_sale_price',
+    name: "good_sale_price",
     nullable: true
   })
   goodSalePrice;
@@ -73,7 +73,6 @@ export class Good extends BaseEntity {
 
   @CreateDateColumn({ name: "created_at" })
   createdAt;
-  
 
   static createGood({ shopId, images = [], ...rest }) {
     return Good.create({
@@ -135,13 +134,16 @@ export class Good extends BaseEntity {
       });
   }
 
-  static searchGoodConnection({ shopId, offset = 0, limit = 10 }) {
-    return Good.createQueryBuilder("good")
-      .where({
-        shopId: decodeID(shopId)
-      })
-      .skip(offset)
-      .take(limit)
-      .getManyAndCount();
+  static searchGoodConnection({ shopId, offset , limit = 10 }) {
+    const goodQb = this.createQueryBuilder("good")
+      .skip(Math.max(offset - 1, 0))
+      .take(limit);
+
+    return (isValid(shopId)
+      ? goodQb.andWhere({
+          shopId: decodeNumberId(shopId)
+        })
+      : goodQb
+    ).getManyAndCount();
   }
 }
