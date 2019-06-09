@@ -22,18 +22,22 @@ export class Comment extends BaseEntity {
   @Column({ type: "character varying", length: 60, comment: "评论内容" })
   comment;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    name: 'updated_at'
+  })
   updatedAt;
 
   @Column({
     type: "character varying",
     comment: "comment type",
+    name: "comment_type",
     nullable: true
   })
   commentType;
 
   @Column({
-    type: "character varying",
+    type: "int",
+    name: "comment_type_id",
     nullable: true
   })
   commentTypeId;
