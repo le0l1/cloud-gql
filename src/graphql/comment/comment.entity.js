@@ -7,8 +7,11 @@ import {
   ManyToOne,
   OneToMany
 } from "typeorm";
-import { UserInputError } from "apollo-server-koa";
-import { decodeID } from "../../helper/id";
+import {
+  UserInputError,
+  addSchemaLevelResolveFunction
+} from "apollo-server-koa";
+import { decodeID, decodeIDAndType } from "../../helper/id";
 import { User } from "../user/user.entity";
 
 @Entity()
@@ -24,35 +27,40 @@ export class Comment extends BaseEntity {
 
   @Column({
     type: "character varying",
-    comment: "which shop has this comment",
+    comment: "comment type",
     nullable: true
   })
-  shopId;
+  commentType;
+
+  @Column({
+    type: "character varying",
+    nullable: true
+  })
+  commentTypeId;
 
   @ManyToOne(type => User, user => user.comments)
   belongto;
 
-  static createComment({ shopId, belongto, ...rest }) {
+  static createComment({ typeId, belongto, ...rest }) {
+    const [commentType, commentTypeId] = decodeIDAndType(typeId);
     return Comment.create({
-      shopId: decodeID(shopId),
+      commentType,
+      commentTypeId,
       belongto: User.create({ id: decodeID(belongto) }),
       ...rest
     }).save();
   }
 
   // 通过条件查找对应的评论
-  static getCommentList({ shopId }) {
-    const findCommentWithWhere = condition =>
-      Comment.findAndCount({
-        where: condition,
-        relations: ["belongto"]
-      });
+  static getCommentList({ typeId }) {
+    const [commentType, commentTypeId] = decodeIDAndType(typeId);
 
-    // 查找商户评论
-    if (shopId) {
-      return findCommentWithWhere({
-        shopId: decodeID(shopId)
-      });
-    }
+    return Comment.findAndCount({
+      where: {
+        commentType,
+        commentTypeId
+      },
+      relations: ["belongto"]
+    });
   }
 }

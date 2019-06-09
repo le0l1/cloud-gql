@@ -99,7 +99,8 @@ const server = new ApolloServer({
     sku.resolvers,
     accessories.resolvers,
     rfq.resolvers,
-    image.resolvers
+    image.resolvers,
+    businessCircle.resolvers
   ],
   context: setGraphqlContext,
   schemaDirectives: {

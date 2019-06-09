@@ -20,7 +20,7 @@ export class Image extends BaseEntity {
   imageType;
 
   @Column({
-    type: "character varying",
+    type: "int",
     name: "image_type_id",
     nullable: true
   })

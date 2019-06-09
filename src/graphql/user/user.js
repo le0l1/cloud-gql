@@ -121,7 +121,7 @@ export const createUserModel = db => ({
       const resFilter = arr =>
         arr.map(({ id, password, ...rest }) => {
           return {
-            id: formateID("user", id),
+            id,
             ...rest
           };
         });

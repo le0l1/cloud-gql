@@ -4,6 +4,10 @@ type User implements Node {
   id: ID!
   "用户姓名"
   name: String
+
+  "用户头像"
+  profilePicture: String
+
   "用户手机号"
   phone: Number
   "汽修厂名称"

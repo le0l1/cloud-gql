@@ -1,20 +1,30 @@
 "生意圈"
-type BusinessCircle {
+type BusinessCircle implements Node {
   "生意圈id"
-  id: ID
+  id: ID!
+
   "发布者名称"
-  master: String
-  "发布事件"
+  user: User
+
+  "发布时间"
   publishAt: Date
+
   "发布信息"
   content: String
+
   "发布图片"
   images: [String!]
+
   "点赞数"
   starCount: Int
+
+  "评论数"
+  commentCount: Int
+
   "举报状态"
   reportStatus: REPORTSTATUS
 }
+
 
 "举报状态枚举"
 enum REPORTSTATUS {
@@ -32,23 +42,47 @@ enum SORTCONDITION {
   PUBLISHDATE
 }
 
+
+input BusinessCircleSearchInput {
+  "偏离值"
+  offset: Int
+  "分页条数"
+  limit: Int
+}
+
 "生意圈列表"
-type BusinessCircles {
-  "生意圈列表"
-  businessCircles: [BusinessCircle!]
-  "每页数量"
-  pageSize: Int
-  "页数"
-  page: Int
-  "总页数量"
-  total: Int
+type BusinessCircleConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [Node!]
+}
+
+input BusinessCircleCreateInput {
+  "用户id(不是商户id)"
+  userId: ID!
+
+  "内容"
+  content: String
+  
+  "图片"
+  images: [String!]
+}
+
+type BusinessCircleOperationResult {
+  "操作id"
+  id: ID
+
+  "操作结果"
+  status: Boolean
 }
 
 extend type Query {
-  "生意圈查询 支持发布者 发布时间 举报状态过滤 支持点赞数和发布时间排序"
-  businessCircleList(
-    master: String
-    publishAt: String
-    sortBy: SORTCONDITION
-  ): BusinessCircles
+  "生意圈查询"
+  businessCircles(
+    query: BusinessCircleSearchInput
+  ): BusinessCircleConnection
+}
+
+extend type Mutation {
+  "创建生意圈"
+  createBusinessCircle(createBusinessCircleInput: BusinessCircleCreateInput!): BusinessCircleOperationResult
 }

@@ -30,6 +30,12 @@ export class User extends BaseEntity {
   address;
 
   @Column({
+    type: 'character varying',
+    nullable: true
+  })
+  profilePicture
+
+  @Column({
     comment: "user password",
     type: "character",
     length: 64,

@@ -2,7 +2,7 @@ import "reflect-metadata";
 import dotenv from "dotenv";
 import path from "path";
 import { startServe } from "./app";
-import {createConnection} from "typeorm";
+import {createConnection } from "typeorm";
 import {
   getOperationDefinition,
   argumentsObjectFromField

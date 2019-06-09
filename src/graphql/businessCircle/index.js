@@ -1,8 +1,42 @@
-import BusinessCircle from "./BusinessCircle.gql";
-import { gql } from "apollo-server-koa";
+import BusinessCircleSchema from "./BusinessCircle.gql";
+import { formateID } from "../../helper/id";
+import { BusinessCircle } from "./businessCircle.entity";
+
+const resolvers = {
+  Query: {
+    businessCircles(_, { query = {}}) {
+      return BusinessCircle.searchBusinessCircle(query)
+    }
+  },
+  Mutation: {
+    createBusinessCircle(_, { createBusinessCircleInput }) {
+      return BusinessCircle.createBusinessCircle(createBusinessCircleInput);
+    }
+  },
+  BusinessCircleOperationResult: {
+    id(v) {
+      return v.id ? formateID('businessCircle', v.id) : null;
+    },
+  }, 
+  BusinessCircle: {
+    id(v) {
+      return v.id ? formateID('businessCircle', v.id) : null;
+    },
+    images(v) {
+      return v.images ? v.images.map(a => a.path) : []
+    }
+  },
+  BusinessCircleConnection: {
+    edges(v) {
+      return v[0];
+    },
+    pageInfo(v) {
+      return v;
+    }
+  }
+}
 
 export const businessCircle = {
-  typeDef: gql`
-    ${BusinessCircle}
-  `
+  typeDef: BusinessCircleSchema,
+  resolvers
 };

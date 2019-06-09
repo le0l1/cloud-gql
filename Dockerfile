@@ -14,4 +14,5 @@ WORKDIR /home/graphql
 RUN npm config set registry https://registry.npm.taobao.org
 RUN npm install 
 
-ENTRYPOINT ["node", "main.js"]
+
+ENTRYPOINT ["npm", "run start"]

@@ -2,10 +2,13 @@
 type Comment implements Node {
   "评论id"
   id: ID!
+
   "评论用户"
-  belongto: User!
+  belongto: User
+
   "评论内容"
   comment: String
+
   "评论最新时间"
   updatedAt: String
 }
@@ -13,8 +16,10 @@ type Comment implements Node {
 input CreateCommentInput {
   "用户id"
   belongto: ID!
-  "商户id"
-  shopId: ID
+
+  "评论类型id 若是商户就传商户id 以此类推"
+  typeId: ID!
+
   "评论内容 最大长度为60个字符"
   comment: String
 }
@@ -27,8 +32,8 @@ type CommentResult {
 }
 
 input getCommentInput {
-  "商户id"
-  shopId: ID
+  "评论类型id 若是商户就传商户id 以此类推"
+  typeId: ID!
 }
 
 "评论列表"

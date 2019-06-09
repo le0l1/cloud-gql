@@ -27,6 +27,11 @@ const resolvers = {
       };
     }
   },
+  User: {
+    id(v) {
+      return v.id ? formateID('user', v.id) : null;
+    }
+  },
   Mutation: {
     async register(obj, { userRegisterInput }, ctx) {
       const user = createUserModel(db);
