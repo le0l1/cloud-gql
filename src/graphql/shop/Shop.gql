@@ -65,6 +65,9 @@ input ShopsQueryInput {
 input ShopQueryInput {
   "商户id"
   id: ID
+
+  "用户id"
+  user: ID
 }
 
 "创建商户输入"

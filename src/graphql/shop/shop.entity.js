@@ -189,8 +189,8 @@ export class Shop extends BaseEntity {
     )(Shop);
   }
 
-  static searchShop({ id }) {
-    return Shop.createQueryBuilder("shop")
+  static searchShop({ id, user }) {
+    const qb = Shop.createQueryBuilder("shop")
       .leftJoinAndSelect("shop.coreBusiness", "category")
       .leftJoinAndMapMany(
         "shop.phones",
@@ -209,9 +209,14 @@ export class Shop extends BaseEntity {
         Image,
         "image",
         "image.imageType = 'shop' and image.imageTypeId = shop.id"
-      )
-      .andWhere("shop.id = :id", { id: decodeNumberId(id) })
-      .getOne();
+      );
+    if (id) {
+      return qb.andWhere("shop.id = :id ", { id: decodeNumberId(id) }).getOne();
+    }
+    if (user)
+      return qb.andWhere("shop.belongto = :user", {
+        user: decodeNumberId(user)
+      }).getOne()
   }
 
   static async updateShop({ id, ...payload }) {
