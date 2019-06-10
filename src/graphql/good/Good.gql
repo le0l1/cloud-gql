@@ -68,8 +68,8 @@ input GoodCreateInput {
   "商品名称"
   name: String
 
-  "商品图片"
-  images: [String]
+  "商品轮播"
+  banners: [String!]
 
   "商品描述"
   description: String
@@ -102,6 +102,9 @@ input GoodUpdateInput {
 
   "商品名称"
   name: String
+
+  "商品轮播"
+  banners: [String!]
 
   "商品描述"
   description: String

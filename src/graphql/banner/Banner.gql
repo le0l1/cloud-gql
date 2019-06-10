@@ -50,7 +50,8 @@ input BannerUpdateInput {
   tag: String
   "banner 跳转链接"
   link: String
-  "轮播图类型id"
+
+  "当前查询的主体id  若是商户就传商户id 以此类推"
   bannerTypeId: ID
 }
 

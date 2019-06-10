@@ -74,15 +74,15 @@ export class Good extends BaseEntity {
   @CreateDateColumn({ name: "created_at" })
   createdAt;
 
-  static createGood({ shopId, images = [], ...rest }) {
+  static createGood({ shopId,  banners = [], ...rest }) {
     return Good.create({
       shopId: decodeID(shopId),
-      cover: isValid(images[0]) ? images[0] : null,
+      cover: isValid(banners[0]) ? banners[0] : null,
       ...rest
     })
       .save()
       .then(({ id: goodId }) => {
-        Banner.createBannerArr("good", goodId, images);
+        Banner.createBannerArr("good", goodId, banners);
         return {
           id: formateID("good", goodId),
           status: true
@@ -90,20 +90,22 @@ export class Good extends BaseEntity {
       });
   }
 
-  static updateGood({ id: goodId, shopId, ...rest }) {
+  static updateGood({ id: goodId, shopId, banners,...rest }) {
+    const realGoodId = decodeNumberId(goodId)
     return Good.update(
       {
-        id: decodeID(goodId)
+        id: realGoodId
       },
       mergeIfValid(
         {
-          shopId: decodeID(shopId),
-          cover: isValid(images[0]) ? images[0] : null,
+          shopId: decodeNumberId(shopId),
+          cover: isValid(banners[0]) ? banners[0] : null,
           ...rest
         },
         {}
       )
     ).then(res => {
+      Banner.createBannerArr('good', realGoodId, banners)
       return {
         id: goodId,
         status: true
