@@ -25,6 +25,12 @@ const resolvers = {
     },
     phones(v) {
       return v.phones ? v.phones.map(a => a.phone) : [];
+    },
+    shopImages(v) {
+      return (v.shopImages || []).map(a => a.path)
+    },
+    shopBanners(v) {
+      return (v.shopBanners || []).map(a => a.path)
     }
   },
   ShopStatus: {

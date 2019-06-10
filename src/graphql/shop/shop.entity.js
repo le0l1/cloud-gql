@@ -198,6 +198,18 @@ export class Shop extends BaseEntity {
         "shopPhone",
         "shopPhone.shopId = shop.id"
       )
+      .leftJoinAndMapMany(
+        "shop.shopBanners",
+        Banner,
+        "banner",
+        "banner.bannerType = 'shop' and banner.bannerTypeId = shop.id"
+      )
+      .leftJoinAndMapMany(
+        "shop.shopImages",
+        Image,
+        "image",
+        "image.imageType = 'shop' and image.imageTypeId = shop.id"
+      )
       .andWhere("shop.id = :id", { id: decodeNumberId(id) })
       .getOne();
   }
