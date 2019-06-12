@@ -232,7 +232,7 @@ export class Shop extends BaseEntity {
       }
     };
 
-    if (payload.coreBusiness.length) {
+    if (coreBusiness.length) {
       payload.coreBusiness = getCategories(coreBusiness);
     }
     exteralRelationSave("phones", phones =>
