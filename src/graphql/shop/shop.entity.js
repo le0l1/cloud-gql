@@ -221,7 +221,7 @@ export class Shop extends BaseEntity {
         .getOne();
   }
 
-  static async updateShop({ id, ...payload }) {
+  static async updateShop({ id, coreBusiness = [],...payload }) {
     payload.name && (await this.checkNameUnique(id, payload.name));
     const realId = decodeNumberId(id);
 
@@ -232,7 +232,7 @@ export class Shop extends BaseEntity {
       }
     };
 
-    if (payload.coreBusiness) {
+    if (payload.coreBusiness.length) {
       payload.coreBusiness = getCategories(coreBusiness);
     }
     exteralRelationSave("phones", phones =>
