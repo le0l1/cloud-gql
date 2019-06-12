@@ -3,13 +3,15 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
   CreateDateColumn,
-  Index
+  Index,
+  ManyToMany,
+  JoinTable
 } from "typeorm";
 import { Banner } from "../banner/banner.entity";
 import { decodeID, formateID, decodeNumberId } from "../../helper/id";
 import { mergeIfValid, isValid } from "../../helper/util";
+import { Category } from "../category/category.entity";
 
 @Entity()
 export class Good extends BaseEntity {
@@ -74,10 +76,19 @@ export class Good extends BaseEntity {
   @CreateDateColumn({ name: "created_at" })
   createdAt;
 
-  static createGood({ shopId,  banners = [], ...rest }) {
+  @ManyToMany(type => Category, category => category.good)
+  @JoinTable()
+  categories;
+
+  static createGood({ shopId, banners = [], categories = [], ...rest }) {
     return Good.create({
       shopId: decodeID(shopId),
       cover: isValid(banners[0]) ? banners[0] : null,
+      categories: categories.map(a =>
+        Category.create({
+          id: decodeNumberId(a)
+        })
+      ),
       ...rest
     })
       .save()
@@ -90,8 +101,8 @@ export class Good extends BaseEntity {
       });
   }
 
-  static updateGood({ id: goodId, shopId, banners,...rest }) {
-    const realGoodId = decodeNumberId(goodId)
+  static updateGood({ id: goodId, shopId, banners, categories = [], ...rest }) {
+    const realGoodId = decodeNumberId(goodId);
     return Good.update(
       {
         id: realGoodId
@@ -100,12 +111,17 @@ export class Good extends BaseEntity {
         {
           shopId: decodeNumberId(shopId),
           cover: isValid(banners[0]) ? banners[0] : null,
+          categories: categories.map(a =>
+            Category.create({
+              id: decodeNumberId(a)
+            })
+          ),
           ...rest
         },
         {}
       )
     ).then(res => {
-      Banner.createBannerArr('good', realGoodId, banners)
+      Banner.createBannerArr("good", realGoodId, banners);
       return {
         id: goodId,
         status: true
@@ -124,6 +140,7 @@ export class Good extends BaseEntity {
 
   static searchGood({ id }) {
     return Good.createQueryBuilder("good")
+      .leftJoinAndSelect("good.categories", "category")
       .where({
         id: decodeNumberId(id)
       })
@@ -136,7 +153,7 @@ export class Good extends BaseEntity {
       });
   }
 
-  static searchGoodConnection({ shopId, offset , limit = 10 }) {
+  static searchGoodConnection({ shopId, offset, limit = 10 }) {
     const goodQb = this.createQueryBuilder("good")
       .skip(Math.max(offset - 1, 0))
       .take(limit);
@@ -146,6 +163,8 @@ export class Good extends BaseEntity {
           shopId: decodeNumberId(shopId)
         })
       : goodQb
-    ).getManyAndCount();
+    )
+      .leftJoinAndSelect("good.categories", "category")
+      .getManyAndCount();
   }
 }
