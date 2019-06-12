@@ -214,13 +214,15 @@ export class Shop extends BaseEntity {
       return qb.andWhere("shop.id = :id ", { id: decodeNumberId(id) }).getOne();
     }
     if (user)
-      return qb.andWhere("shop.belongto = :user", {
-        user: decodeNumberId(user)
-      }).getOne()
+      return qb
+        .andWhere("shop.belongto = :user", {
+          user: decodeNumberId(user)
+        })
+        .getOne();
   }
 
   static async updateShop({ id, ...payload }) {
-    payload.name && (await this.checkNameUnique(payload.name));
+    payload.name && (await this.checkNameUnique(id, payload.name));
     const realId = decodeNumberId(id);
 
     const exteralRelationSave = (key, save) => {
@@ -250,12 +252,15 @@ export class Shop extends BaseEntity {
     }));
   }
 
-  static async checkNameUnique(name) {
-    const findedShop = await Shop.findOne({
-      where: {
-        name: name
-      }
-    });
+  static async checkNameUnique(id, name) {
+    const findedShop = await Shop.createQueryBuilder("shop")
+      .where("id <> :id and name = :name")
+      .setParameters({
+        id: decodeNumberId(id),
+        name
+      })
+      .getOne();
+
     if (findedShop) throw new Error("该店铺名已被使用");
   }
 }
