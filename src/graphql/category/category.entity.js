@@ -10,12 +10,14 @@ import {
   getTreeRepository,
   JoinTable,
   Repository,
-  CreateDateColumn
+  CreateDateColumn,
+  ManyToOne
 } from "typeorm";
 import { Shop } from "../shop/shop.entity";
 import { pipe, getQB, where, getMany, getOne } from "../../helper/database/sql";
 import { isValid, flatEntitiesTree } from "../../helper/util";
 import { decodeID, formateID, decodeNumberId } from "../../helper/id";
+import { Good } from "../good/good.entity";
 
 @Entity()
 @Tree("closure-table")
@@ -56,6 +58,9 @@ export class Category extends BaseEntity {
 
   @ManyToMany(type => Shop, shop => shop.coreBusiness)
   shops;
+
+  @ManyToMany(type => Good, good => good.categories)
+  good;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt;

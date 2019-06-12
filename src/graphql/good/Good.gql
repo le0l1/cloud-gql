@@ -12,6 +12,10 @@ type Good implements Node {
   "商品描述"
   description: String
 
+  
+  "商品类型 传入对应的分类ID"
+  categories: [Category!]
+
   "商户id"
   shopId: ID
 
@@ -74,6 +78,9 @@ input GoodCreateInput {
   "商品描述"
   description: String
 
+  "商品类型 传入对应的分类ID"
+  categories: [ID!]
+
   "商户id"
   shopId: ID!
 
@@ -105,6 +112,9 @@ input GoodUpdateInput {
 
   "商品轮播"
   banners: [String!]
+
+  "商品类型 传入对应的分类ID"
+  categories: [ID!]
 
   "商品描述"
   description: String
