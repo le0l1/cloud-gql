@@ -4,7 +4,7 @@
   "description": "#### Description {**When you're done, you can delete the content in this README and update the file with details for others getting started with your repository**}",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "babel src -d dist",
     "start": "MODE=production node main.js && typeorm migration:run",
     "dev": "MODE=development  babel-watch src/main.js",
@@ -37,10 +37,14 @@
     "@babel/core": "^7.4.3",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
     "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.4.4",
+    "apollo-server-testing": "^2.6.3",
     "babel-plugin-import-graphql": "^2.7.0",
     "babel-watch": "^7.0.0",
+    "graphql-request": "^1.8.2",
     "graphql-tag": "^2.10.1",
+    "jest": "^24.8.0",
     "nodemon": "^1.18.11",
     "standard-version": "^5.0.2"
   }

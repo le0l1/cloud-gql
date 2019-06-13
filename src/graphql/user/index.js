@@ -37,7 +37,7 @@ const resolvers = {
       const user = createUserModel(db);
       const { phone } = userRegisterInput;
       // check smsCode
-      if (userRegisterInput.smsCode !== ctx.session[phone]) {
+      if (process.NODE_ENV === 'production' && userRegisterInput.smsCode !== ctx.session[phone]) {
         throw new Error("验证码错误");
       }
 
