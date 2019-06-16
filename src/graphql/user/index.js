@@ -6,9 +6,12 @@ import { formateID } from "../../helper/id";
 
 const resolvers = {
   Query: {
-    users: (_, { userQueryInput }) => {
+    users: (_, { usersQueryInput }) => {
       const user = createUserModel(db);
-      return user.fuzzySearchUser(userQueryInput);
+      return user.fuzzySearchUser(usersQueryInput);
+    },
+    user(_, { userQueryInput}) {
+      return User.getUser(userQueryInput)
     }
   },
   Role: {
@@ -34,10 +37,9 @@ const resolvers = {
   },
   Mutation: {
     async register(obj, { userRegisterInput }, ctx) {
-      const user = createUserModel(db);
       const { phone } = userRegisterInput;
       // check smsCode
-      if (process.NODE_ENV === 'production' && userRegisterInput.smsCode !== ctx.session[phone]) {
+      if (userRegisterInput.smsCode !== ctx.session[phone]) {
         throw new Error("验证码错误");
       }
 
@@ -49,12 +51,10 @@ const resolvers = {
       if (await User.checkIfExists(phone)) {
         throw new Error("该用户已注册");
       }
+      
 
-      return user.addNewUser(userRegisterInput).then(result => {
-        // clear session after register
-        ctx.session[phone] = "";
-        return result;
-      });
+      ctx.session[phone] = "";
+      return User.createUser(userRegisterInput);
     },
     loginIn(obj, { userLoginInput }) {
       const user = createUserModel(db);
