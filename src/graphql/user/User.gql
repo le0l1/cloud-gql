@@ -75,11 +75,17 @@ enum Role {
 }
 
 "用户查询筛选条件"
-input UserQueryFilter {
+input UsersQueryFilter {
   "地区"
   area: String
   "角色"
   role: Role
+}
+
+"单一用户查询"
+input UserQueryInput {
+  "用户id"
+  id: ID!
 }
 
 "用户注册返回"
@@ -144,7 +150,8 @@ type UserConnection {
 }
 
 extend type Query {
-  users(userQueryInput: UserQueryInput!): UserConnection! @auth
+  users(usersQueryInput: UsersQueryInput!): UserConnection! @auth
+  user(userQueryInput: UserQueryInput!): User
 }
 
 extend type Mutation {
