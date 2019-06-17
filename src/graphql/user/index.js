@@ -4,6 +4,11 @@ import { db } from "../../helper/database/db";
 import { User } from "./user.entity";
 import { formateID } from "../../helper/id";
 
+const formateUserId = 
+    (v) => {
+      return v.id ? formateID('user', v.id) : null;
+    }
+
 const resolvers = {
   Query: {
     users: (_, { usersQueryInput }) => {
@@ -31,9 +36,10 @@ const resolvers = {
     }
   },
   User: {
-    id(v) {
-      return v.id ? formateID('user', v.id) : null;
-    }
+    id: formateUserId
+  },
+  UserActionResult: {
+    id: formateUserId
   },
   Mutation: {
     async register(obj, { userRegisterInput }, ctx) {
@@ -74,6 +80,9 @@ const resolvers = {
         id: formateID("user", id),
         status: true
       };
+    },
+    updateUser(_, { userUpdateInput }) {
+      return User.updateUserInfo(userUpdateInput);
     }
   }
 };

@@ -25,7 +25,6 @@ module.exports =
         database: "test",
         entities: ["src/graphql/**/*.entity.js"],
         migrations: ["src/migration/*.js"],
-        logging: true,
         synchronize: true,
         dropSchema: true,
         entityPrefix: "cloud_",

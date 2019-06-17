@@ -3,6 +3,7 @@ import { makeServe } from "../src/app";
 import { gql } from "apollo-server-koa";
 import { createConnection } from "typeorm";
 import { formateID } from "../src/helper/id";
+import { UserFetch } from "./user.fetch";
 
 const testServer = makeServe(() => ({
   session: {
@@ -10,64 +11,51 @@ const testServer = makeServe(() => ({
   }
 }));
 
-let client;
 let connection;
+let userFetch;
+let userId = formateID("user", 1);
 let user = {
   phone: 17602157024,
-  role: "MERCHANT",
   name: "leo",
   address: "china"
 };
-const userId = formateID("user", 1);
 
 describe("User", () => {
   beforeAll(async () => {
-    client = createTestClient(testServer);
+    userFetch = new UserFetch(createTestClient(testServer));
     connection = await createConnection();
   });
 
   afterAll(() => connection.close());
 
   it("should register correct", async () => {
-    const Register = gql`
-      mutation registry($input: UserRegisterInput!) {
-        register(userRegisterInput: $input) {
-          id
-        }
-      }
-    `;
-    const res = await client.mutate({
-      mutation: Register,
-      variables: {
-        input: {
-          ...user,
-          password: "123",
-          smsCode: "000000"
-        }
-      }
+    const res = await userFetch.register({
+      ...user,
+      password: "123",
+      smsCode: "000000"
     });
     expect(res.data.register.id).toEqual(userId);
   });
 
   it("should be able to fetch single user by id", async () => {
-    const fetchUser = gql`
-      query fetchUser($input: UserQueryInput!) {
-        user(userQueryInput: $input) {
-          phone
-          role
-          name
-          address
-        }
-      }
-    `;
-    const res = await client.query({
-      query: fetchUser,
-      variables: {
-        input: {
-          id: userId
-        }
-      }
+    const res = await userFetch.fetchUserInfo(userId);
+    expect(res).toEqual(user);
+  });
+
+  it("should update user info correct", async () => {
+    const newUserInfo = {
+      name: "leo123",
+      address: "china"
+    };
+    const res = await userFetch.updateUserInfo({
+      id: userId,
+      ...newUserInfo
     });
-    expect(res.data.user).toEqual(user);
+    expect(res.id).toEqual(userId);
+    const afterUpdate = await userFetch.fetchUserInfo(userId);
+    expect(afterUpdate).toEqual({
+      ...user,
+      ...newUserInfo
+    });
   });
 });

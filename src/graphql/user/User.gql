@@ -32,7 +32,7 @@ type User implements Node {
 input UserRegisterInput {
   "用户姓名"
   name: String
-  
+
   "用户手机号"
   phone: Number!
 
@@ -160,6 +160,41 @@ type UserConnection {
   edges: [User!]
 }
 
+type UserActionResult {
+  "被操作的用户id"
+  id: ID
+
+  "操作状态"
+  status: Boolean
+}
+
+
+input UserUpdateInput {
+  "用户id"
+  id: ID!
+
+  "用户姓名"
+  name: String
+
+  "用户头像"
+  profilePicture: String
+
+  "用户手机号"
+  phone: Number
+
+  "汽修厂名称"
+  garage: String
+
+  "订货城市"
+  city: String
+
+  "地区"
+  area: String
+
+  "详细地址"
+  address: String
+}
+
 extend type Query {
   users(usersQueryInput: UsersQueryInput!): UserConnection! @auth
   user(userQueryInput: UserQueryInput!): User
@@ -178,4 +213,7 @@ extend type Mutation {
   retrievePassword(
     retrievePasswordInput: RetrievePasswordInput!
   ): RetrievePasswordResult!
+
+  "升级用户信息"
+  updateUser(userUpdateInput: UserUpdateInput!):UserActionResult
 }
