@@ -4,11 +4,19 @@ import { db } from "../../helper/database/db";
 import { User } from "./user.entity";
 import { formateID } from "../../helper/id";
 
+const formateUserId = 
+    (v) => {
+      return v.id ? formateID('user', v.id) : null;
+    }
+
 const resolvers = {
   Query: {
-    users: (_, { userQueryInput }) => {
+    users: (_, { usersQueryInput }) => {
       const user = createUserModel(db);
-      return user.fuzzySearchUser(userQueryInput);
+      return user.fuzzySearchUser(usersQueryInput);
+    },
+    user(_, { userQueryInput}) {
+      return User.getUser(userQueryInput)
     }
   },
   Role: {
@@ -28,13 +36,13 @@ const resolvers = {
     }
   },
   User: {
-    id(v) {
-      return v.id ? formateID('user', v.id) : null;
-    }
+    id: formateUserId
+  },
+  UserActionResult: {
+    id: formateUserId
   },
   Mutation: {
     async register(obj, { userRegisterInput }, ctx) {
-      const user = createUserModel(db);
       const { phone } = userRegisterInput;
       // check smsCode
       if (userRegisterInput.smsCode !== ctx.session[phone]) {
@@ -49,12 +57,10 @@ const resolvers = {
       if (await User.checkIfExists(phone)) {
         throw new Error("该用户已注册");
       }
+      
 
-      return user.addNewUser(userRegisterInput).then(result => {
-        // clear session after register
-        ctx.session[phone] = "";
-        return result;
-      });
+      ctx.session[phone] = "";
+      return User.createUser(userRegisterInput);
     },
     loginIn(obj, { userLoginInput }) {
       const user = createUserModel(db);
@@ -74,6 +80,9 @@ const resolvers = {
         id: formateID("user", id),
         status: true
       };
+    },
+    updateUser(_, { userUpdateInput }) {
+      return User.updateUserInfo(userUpdateInput);
     }
   }
 };

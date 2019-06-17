@@ -1,24 +1,13 @@
 version: "3.7"
 services:
-  nodejs:
-    image: node:alpine
-    restart: always
-    tty: true
-    container_name: graphql-node
-    depends_on:
-      - pgsql
-    links:
-      - pgsql
-    ports:
-      - "4500:4500"
-    volumes:
-      - ".:/home/graphql"
   pgsql:
     image: postgres:alpine
     restart: always
     container_name: pgsql
     extra_hosts:
       - "remote:172.17.0.1"
+    ports:
+      - "127.0.0.1:5432:5432"
   adminer:
     container_name: adminer
     restart: always

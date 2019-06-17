@@ -64,7 +64,8 @@ router.all(
   })
 );
 
-const server = new ApolloServer({
+
+export const makeServer =  context => new ApolloServer({
   typeDefs: [
     root.typeDef,
     banner.typeDef,
@@ -81,7 +82,7 @@ const server = new ApolloServer({
     sku.typeDef,
     accessories.typeDef,
     rfq.typeDef,
-    image.typeDef,
+    image.typeDef
   ],
   resolvers: [
     dateResolver,
@@ -102,7 +103,7 @@ const server = new ApolloServer({
     image.resolvers,
     businessCircle.resolvers
   ],
-  context: setGraphqlContext,
+  context,
   schemaDirectives: {
     auth: AuthDriective
   },
@@ -112,13 +113,7 @@ const server = new ApolloServer({
     }
   }
 });
-server.applyMiddleware({ app });
 
-export const startServe = () =>
-  app.listen({ port: process.env.PORT }, () =>
-    console.log(
-      `🚀 Server ready at http://localhost:${process.env.PORT}${
-        server.graphqlPath
-      }`
-    )
-  );
+
+export { app };
+

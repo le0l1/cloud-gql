@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { Comment } from "../comment/comment.entity";
 import { hashPassword } from "../../helper/auth/encode";
-import { formateID } from "../../helper/id";
+import { formateID, decodeNumberId } from "../../helper/id";
 
 @Entity()
 export class User extends BaseEntity {
@@ -30,10 +30,10 @@ export class User extends BaseEntity {
   address;
 
   @Column({
-    type: 'character varying',
+    type: "character varying",
     nullable: true
   })
-  profilePicture
+  profilePicture;
 
   @Column({
     comment: "user password",
@@ -102,5 +102,39 @@ export class User extends BaseEntity {
         phone
       }
     }).then(res => !!res);
+  }
+
+  static createUser({ password, ...rest }) {
+    const { hashed, salt } = hashPassword(password);
+    return User.create({
+      password: hashed,
+      salt,
+      ...rest
+    })
+      .save()
+      .then(res => ({
+        id: formateID("user", res.id)
+      }));
+  }
+
+  static getUser({ id }) {
+    return User.findOne({
+      where: {
+        id: decodeNumberId(id)
+      }
+    });
+  }
+
+  static updateUserInfo({ id, ...rest }) {
+    const realId = decodeNumberId(id);
+    return User.update(
+      {
+        id: realId
+      },
+      rest
+    ).then(() => ({
+      id: realId,
+      status: true,
+    }))
   }
 }

@@ -2,6 +2,7 @@
 type User implements Node {
   "用户id"
   id: ID!
+  
   "用户姓名"
   name: String
 
@@ -10,14 +11,19 @@ type User implements Node {
 
   "用户手机号"
   phone: Number
+
   "汽修厂名称"
   garage: String
+
   "订货城市"
   city: String
+
   "地区"
   area: String
+
   "详细地址"
   address: String
+
   "用户角色"
   role: Role
 }
@@ -26,20 +32,25 @@ type User implements Node {
 input UserRegisterInput {
   "用户姓名"
   name: String
+
   "用户手机号"
   phone: Number!
+
   "用户密码"
   password: String!
+
   "汽修厂名称"
   garage: String
+
   "订货城市"
   city: String
+
   "地区"
   area: String
+
   "详细地址"
   address: String
-  "用户角色"
-  role: Role!
+
   "短信验证码"
   smsCode: Number!
 }
@@ -53,11 +64,11 @@ input UserLoginInput {
 }
 
 "用户查询输入"
-input UserQueryInput {
+input UsersQueryInput {
   "模糊查询文本"
   tsQuery: String
   "用户筛选条件"
-  filters: UserQueryFilter
+  filters: UsersQueryFilter
   "偏离值"
   offset: Int
   "分页条数"
@@ -75,11 +86,17 @@ enum Role {
 }
 
 "用户查询筛选条件"
-input UserQueryFilter {
+input UsersQueryFilter {
   "地区"
   area: String
   "角色"
   role: Role
+}
+
+"单一用户查询"
+input UserQueryInput {
+  "用户id"
+  id: ID!
 }
 
 "用户注册返回"
@@ -143,8 +160,44 @@ type UserConnection {
   edges: [User!]
 }
 
+type UserActionResult {
+  "被操作的用户id"
+  id: ID
+
+  "操作状态"
+  status: Boolean
+}
+
+
+input UserUpdateInput {
+  "用户id"
+  id: ID!
+
+  "用户姓名"
+  name: String
+
+  "用户头像"
+  profilePicture: String
+
+  "用户手机号"
+  phone: Number
+
+  "汽修厂名称"
+  garage: String
+
+  "订货城市"
+  city: String
+
+  "地区"
+  area: String
+
+  "详细地址"
+  address: String
+}
+
 extend type Query {
-  users(userQueryInput: UserQueryInput!): UserConnection! @auth
+  users(usersQueryInput: UsersQueryInput!): UserConnection! @auth
+  user(userQueryInput: UserQueryInput!): User
 }
 
 extend type Mutation {
@@ -160,4 +213,7 @@ extend type Mutation {
   retrievePassword(
     retrievePasswordInput: RetrievePasswordInput!
   ): RetrievePasswordResult!
+
+  "升级用户信息"
+  updateUser(userUpdateInput: UserUpdateInput!):UserActionResult
 }

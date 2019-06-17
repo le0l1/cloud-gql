@@ -159,7 +159,7 @@ export class Shop extends BaseEntity {
     tsQuery,
     filter = { status: null },
     limit = 10,
-    offset = 0,
+    offset = 1,
     isPassed
   }) {
     const queryBuilder = Shop.createQueryBuilder("shop");
@@ -177,14 +177,14 @@ export class Shop extends BaseEntity {
 
     return pipe(
       getQB("shop"),
-      where("(shop.name like :tsQuery or shop.phone like :tsQuery)", {
+      where("(shop.name like :tsQuery)", {
         tsQuery: tsQuery ? `%${tsQuery}%` : null
       }),
       where("shop.status = :status", { status: filter.status }),
       where("shop.isPassed = :isPassed", { isPassed }),
       where("deletedAt is :deletedAt", { deletedAt: null }),
       withRelation,
-      withPagination(limit, offset),
+      withPagination(limit, offset - 1),
       getManyAndCount
     )(Shop);
   }
