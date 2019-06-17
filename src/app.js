@@ -64,7 +64,8 @@ router.all(
   })
 );
 
-export const makeServe = context =>  new ApolloServer({
+
+export const makeServer =  context => new ApolloServer({
   typeDefs: [
     root.typeDef,
     banner.typeDef,
@@ -113,14 +114,6 @@ export const makeServe = context =>  new ApolloServer({
   }
 });
 
-makeServe(setGraphqlContext).applyMiddleware({ app });
 
+export { app };
 
-export const startServe = () =>
-    app.listen({ port: process.env.PORT }, () => {
-      console.log(
-        `🚀 Server ready at http://localhost:${process.env.PORT}${
-          server.graphqlPath
-        }`
-      );
-    });

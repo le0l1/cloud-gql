@@ -1,45 +1,29 @@
-import { createTestClient } from "apollo-server-testing";
-import { makeServe } from "../src/app";
 import { gql } from "apollo-server-koa";
-import { createConnection } from "typeorm";
-import { formateID } from "../src/helper/id";
 import { UserFetch } from "./user.fetch";
+import { makeServe } from "../../src/app";
+import { formateID } from "../../src/helper/id";
 
-const testServer = makeServe(() => ({
-  session: {
-    "17602157024": "000000"
-  }
-}));
-
-let connection;
-let userFetch;
-let userId = formateID("user", 1);
-let user = {
+const userFetch = new UserFetch();
+const userId = formateID("user", 1);
+const user = {
   phone: 17602157024,
   name: "leo",
   address: "china"
 };
 
 describe("User", () => {
-  beforeAll(async () => {
-    userFetch = new UserFetch(createTestClient(testServer));
-    connection = await createConnection();
-  });
-
-  afterAll(() => connection.close());
-
   it("should register correct", async () => {
     const res = await userFetch.register({
       ...user,
       password: "123",
       smsCode: "000000"
     });
-    expect(res.data.register.id).toEqual(userId);
+    expect(res.register.id).toEqual(userId);
   });
 
   it("should be able to fetch single user by id", async () => {
     const res = await userFetch.fetchUserInfo(userId);
-    expect(res).toEqual(user);
+    expect(res.user).toEqual(user);
   });
 
   it("should update user info correct", async () => {
@@ -51,11 +35,12 @@ describe("User", () => {
       id: userId,
       ...newUserInfo
     });
-    expect(res.id).toEqual(userId);
+    expect(res.updateUser.id).toEqual(userId);
     const afterUpdate = await userFetch.fetchUserInfo(userId);
-    expect(afterUpdate).toEqual({
+    expect(afterUpdate.user).toEqual({
       ...user,
       ...newUserInfo
     });
+
   });
 });

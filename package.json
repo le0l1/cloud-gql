@@ -7,7 +7,7 @@
     "test": "jest",
     "build": "babel src -d dist",
     "start": "MODE=production node main.js && typeorm migration:run",
-    "dev": "MODE=development  babel-watch src/main.js",
+    "dev": "MODE=development NODE_ENV=development  babel-watch src/main.js",
     "release": "standard-version"
   },
   "repository": {
@@ -39,7 +39,6 @@
     "@babel/plugin-proposal-decorators": "^7.4.4",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.4.4",
-    "apollo-server-testing": "^2.6.3",
     "babel-plugin-import-graphql": "^2.7.0",
     "babel-watch": "^7.0.0",
     "graphql-request": "^1.8.2",

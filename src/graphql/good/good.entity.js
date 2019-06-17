@@ -101,32 +101,11 @@ export class Good extends BaseEntity {
       });
   }
 
-  static updateGood({ id: goodId, shopId, banners, categories = [], ...rest }) {
-    const realGoodId = decodeNumberId(goodId);
-    return Good.update(
-      {
-        id: realGoodId
-      },
-      mergeIfValid(
-        {
-          shopId: decodeNumberId(shopId),
-          cover: isValid(banners[0]) ? banners[0] : null,
-          categories: categories.map(a =>
-            Category.create({
-              id: decodeNumberId(a)
-            })
-          ),
-          ...rest
-        },
-        {}
-      )
-    ).then(res => {
-      Banner.createBannerArr("good", realGoodId, banners);
-      return {
-        id: goodId,
-        status: true
-      };
-    });
+  static updateGood({ id: goodId,  ...rest }) {
+    return this.createGood({
+      id: decodeNumberId(goodId),
+      ...rest
+    })
   }
 
   static deleteGood({ id }) {
@@ -167,4 +146,6 @@ export class Good extends BaseEntity {
       .leftJoinAndSelect("good.categories", "category")
       .getManyAndCount();
   }
+
+  static updateCategories(categoryId) {}
 }
