@@ -132,7 +132,7 @@ export class Good extends BaseEntity {
       });
   }
 
-  static searchGoodConnection({ shopId, offset, limit = 10 }) {
+  static searchGoodConnection({ shopId, offset = 1, limit = 10 }) {
     const goodQb = this.createQueryBuilder("good")
       .skip(Math.max(offset - 1, 0))
       .take(limit);
