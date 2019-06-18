@@ -118,16 +118,17 @@ export class Good extends BaseEntity {
   }
 
   static searchGood({ id }) {
+    const realId = decodeNumberId(id);
     return Good.createQueryBuilder("good")
       .leftJoinAndSelect("good.categories", "category")
       .where({
-        id: decodeNumberId(id)
+        id: realId
       })
       .getOne()
       .then(res => {
         return {
           ...res,
-          id
+          id: realId
         };
       });
   }
