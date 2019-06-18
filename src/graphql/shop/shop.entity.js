@@ -246,10 +246,12 @@ export class Shop extends BaseEntity {
       Image.createImageArr("shop", realId, shopImages);
     });
 
-    return Shop.update({ id: realId }, payload).then(() => ({
-      id,
-      status: true
-    }));
+    return Shop.create({ id: realId, ...payload })
+      .save()
+      .then(() => ({
+        id,
+        status: true
+      }));
   }
 
   static async checkNameUnique(name, id = null) {

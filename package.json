@@ -4,7 +4,7 @@
   "description": "#### Description {**When you're done, you can delete the content in this README and update the file with details for others getting started with your repository**}",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "build": "babel src -d dist",
     "start": "MODE=production node main.js && typeorm migration:run",
     "dev": "MODE=development NODE_ENV=development  babel-watch src/main.js",

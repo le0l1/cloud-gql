@@ -50,11 +50,19 @@ export class ShopFetch extends BaseFetch {
     const query  = `
       query shop($input: ShopQueryInput) {
         shop(query: $input) {
+          address
+          coreBusiness {
+            id
+          }
+          description
           id
           isPassed
           name
-          address
           phones
+          qqchat
+          shopBanners
+          status
+          wechat
         }
       }
     `
