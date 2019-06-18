@@ -99,7 +99,6 @@ type CategoryQueryResult {
 input CategoryQuery {
   "分类id"
   id: ID!
-
 }
 
 extend type Query {

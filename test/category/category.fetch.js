@@ -14,4 +14,14 @@ export class CategoryFetch extends BaseFetch {
       input
     })
   }
+  fetchCategorys(input) {
+    const query = `
+      query categorys($input:CategorysQuery) {
+        categorys(query: $input) {
+          id
+        }
+      }
+    `
+    return this.client.request(query, { input })
+  }
 }
