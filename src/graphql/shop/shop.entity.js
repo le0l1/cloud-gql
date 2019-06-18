@@ -130,9 +130,9 @@ export class Shop extends BaseEntity {
   }) {
     // check name unique
     rest.name && (await this.checkNameUnique(rest.name));
-
+    console.log(decodeNumberId(belongto));
     return Shop.create({
-      belongto: decodeID(belongto),
+      belongto: decodeNumberId(belongto),
       coreBusiness: getCategories(coreBusiness),
       cover: shopBanners[0] ? shopBanners[0] : null,
       ...rest
@@ -221,8 +221,8 @@ export class Shop extends BaseEntity {
         .getOne();
   }
 
-  static async updateShop({ id, coreBusiness = [],...payload }) {
-    payload.name && (await this.checkNameUnique(id, payload.name));
+  static async updateShop({ id, coreBusiness = [], ...payload }) {
+    payload.name && (await this.checkNameUnique(payload.name, payload.id));
     const realId = decodeNumberId(id);
 
     const exteralRelationSave = (key, save) => {
@@ -252,14 +252,20 @@ export class Shop extends BaseEntity {
     }));
   }
 
-  static async checkNameUnique(id, name) {
-    const findedShop = await Shop.createQueryBuilder("shop")
-      .where("id <> :id and name = :name")
+  static async checkNameUnique(name, id = null) {
+    const qb = Shop.createQueryBuilder("shop")
+      .where("name = :name")
       .setParameters({
-        id: decodeNumberId(id),
         name
-      })
-      .getOne();
+      });
+
+    if (id) {
+      qb.andWhere("id <> :id").setParameters({
+        id: decodeNumberId(id)
+      });
+    }
+
+    const findedShop = await qb.getOne();
 
     if (findedShop) throw new Error("该店铺名已被使用");
   }

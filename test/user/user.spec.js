@@ -6,7 +6,7 @@ import { formateID } from "../../src/helper/id";
 const userFetch = new UserFetch();
 const userId = formateID("user", 1);
 const user = {
-  phone: 17602157024,
+  phone: 1111111111,
   name: "leo",
   address: "china"
 };

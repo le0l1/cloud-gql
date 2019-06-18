@@ -29,4 +29,20 @@ describe("Shop", () => {
     const { shops } = await shopFetch.fetchShops(query);
     expect(shops.edges[0]).toMatchObject(shopInfo);
   });
+
+  it('should update correct', async () => {
+    const newShopInfo = {
+      address: "asd",
+      isPassed: true,
+      phones: [1111111111, 2222, 3333]
+    }
+    await shopFetch.updateShop({
+      id: shopId,
+      ...newShopInfo
+    })
+    const { shop } = await shopFetch.fetchSingleShop({
+      id: shopId
+    })
+    expect(shop).toMatchObject(newShopInfo);
+  })
 });

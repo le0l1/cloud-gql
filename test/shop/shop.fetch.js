@@ -1,9 +1,8 @@
 import { BaseFetch } from "../baseFetch";
-import { gql } from "apollo-server-koa";
 
 export class ShopFetch extends BaseFetch {
   updateShop(shopInfo) {
-    const updateShop = gql`
+    const updateShop = `
       mutation updateShop($input: ShopUpdateInput!) {
         updateShop(shopUpdateInput: $input) {
           id
@@ -41,6 +40,21 @@ export class ShopFetch extends BaseFetch {
             belongto
             shopImages
           }
+        }
+      }
+    `
+    return this.client.request(query, { input })
+  }
+
+  fetchSingleShop(input) {
+    const query  = `
+      query shop($input: ShopQueryInput) {
+        shop(query: $input) {
+          id
+          isPassed
+          name
+          address
+          phones
         }
       }
     `
