@@ -92,8 +92,6 @@ type CategoryQueryResult {
   route: String
   "分类图片 用作icon展示"
   image: String
-  "分类下的店铺"
-  shops: [Shop!]
 }
 
 input CategoryQuery {

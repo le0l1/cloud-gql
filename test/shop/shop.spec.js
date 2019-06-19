@@ -2,6 +2,7 @@ import { ShopFetch } from './shop.fetch'
 import { formateID } from '../../src/helper/id'
 import { CategoryFetch } from '../category/category.fetch'
 
+let categoryId;
 const shopFetch = new ShopFetch()
 const categoryFetch = new CategoryFetch()
 const shopId = formateID('shop', 1)
@@ -19,8 +20,11 @@ const getCategory = () =>
 
 describe('Shop', () => {
   it('should create shop correct', async () => {
+    const { createCategory } = await getCategory()
+    categoryId = createCategory.id
     const { createShop } = await shopFetch.createShop({
       belongto: userId,
+      categories: [categoryId],
       shopImages: [
         'http://pr67w6y6s.bkt.clouddn.com/FnFQfB79duu715bo4dbzvKkcBDhX'
       ],
@@ -29,7 +33,7 @@ describe('Shop', () => {
     expect(createShop.id).toBe(shopId)
   })
 
-  it('should fetch correct when tsQuery', async () => {
+  it('should fetch correct when using tsQuery', async () => {
     const query = {
       filter: { status: 'NORMAL' },
       isPassed: false,
@@ -39,6 +43,21 @@ describe('Shop', () => {
     }
     const { shops } = await shopFetch.fetchShops(query)
     expect(shops.edges[0]).toMatchObject(shopInfo)
+
+  })
+
+  it('should fetch correct when using categoryId', async () => {
+    const { createCategory } = await  getCategory()
+    const categoryQuery = {
+      categoryId
+    }
+    const { shops } = await shopFetch.fetchShops(categoryQuery)
+    expect(shops.edges[0]).toMatchObject(shopInfo)
+    const missingQuery = {
+      categoryId: createCategory.id
+    }
+    const { shops: missingShop } = await  shopFetch.fetchShops(missingQuery);
+    expect(missingShop.edges).toEqual([])
   })
 
   it('should update correct', async () => {
@@ -56,13 +75,13 @@ describe('Shop', () => {
     }
     await shopFetch.updateShop({
       id: shopId,
-      coreBusiness: [createCategory.id],
+      categories: [createCategory.id],
       phones: newPhones,
       ...newShopInfo
     })
     const { shop, phones } = await shopFetch.fetchSingleShop(shopId)
     expect(phones.map(a => Number(a.phone))).toEqual(newPhones)
     expect(shop).toMatchObject(newShopInfo)
-    expect(shop.coreBusiness[0].id).toBe(createCategory.id)
+    expect(shop.categories[0].id).toBe(createCategory.id)
   })
 })

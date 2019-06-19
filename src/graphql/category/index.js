@@ -1,4 +1,4 @@
-import CategorySchema from "./Category.gql";
+import CategorySchema from "./Category.graphql";
 import { createCategoryModel } from "./category";
 import { db } from "../../helper/database/db";
 import { formateID } from "../../helper/id";

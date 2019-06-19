@@ -8,23 +8,18 @@ import {
   ManyToMany,
   OneToMany,
   Index,
-  ManyToOne
 } from 'typeorm'
 import {
-  isValid,
-  mergeIfValid,
   handleSuccessResult,
-  isEmpty
 } from '../../helper/util'
 import { Category } from '../category/category.entity'
-import { decodeID, formateID, decodeNumberId } from '../../helper/id'
+import { decodeNumberId } from '../../helper/id'
 import { Banner } from '../banner/banner.entity'
 import { Comment } from '../comment/comment.entity'
 import {
   where,
   getQB,
   pipe,
-  getMany,
   getManyAndCount,
   withPagination
 } from '../../helper/database/sql'
@@ -39,7 +34,6 @@ const transform = type => arr =>
   })
 
 const getCategories = transform(Category)
-const getBanners = transform(Banner)
 
 @Entity()
 export class Shop extends BaseEntity {
@@ -166,8 +160,11 @@ export class Shop extends BaseEntity {
 
     const withRelation = query => {
       return query
-        .leftJoinAndSelect('shop.categories', 'category')
+        .leftJoinAndSelect('shop.categories',
+          'category',
+        )
     }
+
 
     return pipe(
       getQB('shop'),
@@ -176,7 +173,7 @@ export class Shop extends BaseEntity {
       }),
       where('shop.status = :status', { status: filter.status }),
       where('shop.isPassed = :isPassed', { isPassed }),
-      where('shop.categories = :categories', { categories: decodeNumberId(categoryId) }),
+      where('category.id = :categoryId', { categoryId: categoryId ? decodeNumberId(categoryId) : null }),
       where('deletedAt is :deletedAt', { deletedAt: null }),
       withRelation,
       withPagination(limit, offset - 1),
@@ -261,4 +258,5 @@ export class Shop extends BaseEntity {
 
     if (findedShop) throw new Error('该店铺名已被使用')
   }
+
 }
