@@ -1,4 +1,4 @@
-import Root from "./Root.gql";
+import Root from "./Root.graphql";
 
 const resolvers = {
   PageInfo: {

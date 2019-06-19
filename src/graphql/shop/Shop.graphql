@@ -17,7 +17,8 @@ type Shop implements Node {
   "商户的用户id 可用于查询商户的用户信息"
   belongto: ID!
   "主营业务"
-  coreBusiness: [Category!]
+  categories: [Category!]
+  
   "商家地址"
   address: String
   "商家地区"
@@ -58,6 +59,9 @@ input ShopsQueryInput {
   offset: Int
   "商户审核状态"
   isPassed: Boolean
+
+  "分类id 可以通过分类查询所有的店铺"
+  categoryId: ID
 }
 
 input ShopQueryInput {
@@ -85,7 +89,7 @@ input ShopCreateInput {
   "商家id"
   belongto: ID!
   "主营业务"
-  coreBusiness: [ID!]
+  categories: [ID!]
   "商家地址"
   address: String
   "商家地区"
@@ -123,7 +127,7 @@ input ShopUpdateInput {
   "商户审核状态"
   isPassed: Boolean
   "主营业务"
-  coreBusiness: [ID!]
+  categories: [ID!]
   "商家地址"
   address: String
 
@@ -147,10 +151,10 @@ type ShopResult {
 }
 
 extend type Query {
-  "商户列表查询 支持模糊查询 筛选条件"
-  shops(query: ShopsQueryInput): ShopConnection! @auth
-  "单一商户查询"
-  shop(query: ShopQueryInput): Shop!
+    "商户列表查询 支持模糊查询 筛选条件"
+    shops(query: ShopsQueryInput): ShopConnection! @auth
+    "单一商户查询"
+    shop(query: ShopQueryInput): Shop!
 }
 
 extend type Mutation {

@@ -1,68 +1,68 @@
-import { ShopFetch } from "./shop.fetch";
-import { formateID } from "../../src/helper/id";
-import { CategoryFetch } from "../category/category.fetch";
+import { ShopFetch } from './shop.fetch'
+import { formateID } from '../../src/helper/id'
+import { CategoryFetch } from '../category/category.fetch'
 
-const shopFetch = new ShopFetch();
-const categoryFetch = new CategoryFetch();
-const shopId = formateID("shop", 1);
-const userId = formateID("user", 1);
+const shopFetch = new ShopFetch()
+const categoryFetch = new CategoryFetch()
+const shopId = formateID('shop', 1)
+const userId = formateID('user', 1)
 const shopInfo = {
-  name: "测试店铺8"
-};
+  name: '测试店铺8'
+}
 
 const getCategory = () =>
   categoryFetch.createCategory({
-    name: "汽车轿车",
-    status: "NORMAL",
-    tag: "A"
-  });
+    name: '汽车轿车',
+    status: 'NORMAL',
+    tag: 'A'
+  })
 
-describe("Shop", () => {
-  it("should create shop correct", async () => {
+describe('Shop', () => {
+  it('should create shop correct', async () => {
     const { createShop } = await shopFetch.createShop({
       belongto: userId,
       shopImages: [
-        "http://pr67w6y6s.bkt.clouddn.com/FnFQfB79duu715bo4dbzvKkcBDhX"
+        'http://pr67w6y6s.bkt.clouddn.com/FnFQfB79duu715bo4dbzvKkcBDhX'
       ],
       ...shopInfo
-    });
-    expect(createShop.id).toBe(shopId);
-  });
+    })
+    expect(createShop.id).toBe(shopId)
+  })
 
-  it("should fetch correct when tsQuery", async () => {
+  it('should fetch correct when tsQuery', async () => {
     const query = {
-      filter: { status: "NORMAL" },
+      filter: { status: 'NORMAL' },
       isPassed: false,
       limit: 10,
       offset: 1,
-      tsQuery: "测试"
-    };
-    const { shops } = await shopFetch.fetchShops(query);
-    expect(shops.edges[0]).toMatchObject(shopInfo);
-  });
+      tsQuery: '测试'
+    }
+    const { shops } = await shopFetch.fetchShops(query)
+    expect(shops.edges[0]).toMatchObject(shopInfo)
+  })
 
-  it("should update correct", async () => {
-    const { createCategory } = await getCategory();
+  it('should update correct', async () => {
+    const { createCategory } = await getCategory()
     const newPhones = [11111111, 2222222, 333]
     const newShopInfo = {
       address: null,
       description: null,
       isPassed: false,
-      name: "测试店铺8",
+      name: '测试店铺8',
       qqchat: 8181239,
-      shopBanners: ["http://oss.dafengge.top/FlYHiGm-XTsyMjrGBFtNshLqDnP_"],
-      status: "NORMAL",
-      wechat: "asd"
-    };
+      shopBanners: ['http://oss.dafengge.top/FlYHiGm-XTsyMjrGBFtNshLqDnP_'],
+      status: 'NORMAL',
+      wechat: 'asd'
+    }
     await shopFetch.updateShop({
       id: shopId,
-      coreBusiness: [ createCategory.id ],
+      coreBusiness: [createCategory.id],
       phones: newPhones,
       ...newShopInfo
-    });
-    const { shop, phones } = await shopFetch.fetchSingleShop(shopId);
-    expect(phones.map(a => Number(a.phone))).toEqual(newPhones);
-    expect(shop).toMatchObject(newShopInfo);
+    })
+    const { shop, phones } = await shopFetch.fetchSingleShop(shopId)
+    expect(phones.map(a => Number(a.phone))).toEqual(newPhones)
+    expect(shop).toMatchObject(newShopInfo)
     expect(shop.coreBusiness[0].id).toBe(createCategory.id)
-  });
-});
+  })
+})

@@ -9,17 +9,17 @@ import {
   OneToMany,
   Index,
   ManyToOne
-} from "typeorm";
+} from 'typeorm'
 import {
   isValid,
   mergeIfValid,
   handleSuccessResult,
   isEmpty
-} from "../../helper/util";
-import { Category } from "../category/category.entity";
-import { decodeID, formateID, decodeNumberId } from "../../helper/id";
-import { Banner } from "../banner/banner.entity";
-import { Comment } from "../comment/comment.entity";
+} from '../../helper/util'
+import { Category } from '../category/category.entity'
+import { decodeID, formateID, decodeNumberId } from '../../helper/id'
+import { Banner } from '../banner/banner.entity'
+import { Comment } from '../comment/comment.entity'
 import {
   where,
   getQB,
@@ -27,235 +27,238 @@ import {
   getMany,
   getManyAndCount,
   withPagination
-} from "../../helper/database/sql";
-import { Phone } from "../phone/phone.entity";
-import { Image } from "../image/image.entity";
+} from '../../helper/database/sql'
+import { Phone } from '../phone/phone.entity'
+import { Image } from '../image/image.entity'
 
 const transform = type => arr =>
   arr.map(a => {
     return type.create({
       id: decodeNumberId(a)
-    });
-  });
+    })
+  })
 
-const getCategories = transform(Category);
-const getBanners = transform(Banner);
+const getCategories = transform(Category)
+const getBanners = transform(Banner)
+
 @Entity()
 export class Shop extends BaseEntity {
   @Index()
   @PrimaryGeneratedColumn()
-  id;
+  id
 
-  @Column({ type: "character varying", comment: "商户名称", nullable: true })
-  name;
+  @Column({ type: 'character varying', comment: '商户名称', nullable: true })
+  name
 
-  @Column({ type: "character varying", comment: "商户qq", nullable: true })
-  qqchat;
+  @Column({ type: 'character varying', comment: '商户qq', nullable: true })
+  qqchat
 
-  @Column({ type: "character varying", comment: "商户微信", nullable: true })
-  wechat;
+  @Column({ type: 'character varying', comment: '商户微信', nullable: true })
+  wechat
 
-  @Column({ type: "text", comment: "商户描述", nullable: true })
-  description;
+  @Column({ type: 'text', comment: '商户描述', nullable: true })
+  description
 
-  @Column({ type: "integer", comment: "商户从属" })
-  belongto;
+  @Column({ type: 'integer', comment: '商户从属' })
+  belongto
 
   @Column({
-    type: "integer",
-    comment: "商户状态 1: 正常, 2: 暂停营业",
+    type: 'integer',
+    comment: '商户状态 1: 正常, 2: 暂停营业',
     default: 1
   })
-  status;
+  status
 
   @Column({
-    type: "character varying",
+    type: 'character varying',
     nullable: true
   })
-  cover;
+  cover
 
   @CreateDateColumn()
-  createdAt;
+  createdAt
 
   @Column({
-    type: "boolean",
+    type: 'boolean',
     default: false,
-    name: "is_passed",
-    comment: "商户审核状态"
+    name: 'is_passed',
+    comment: '商户审核状态'
   })
-  isPassed;
+  isPassed
 
   @Column({
-    type: "character varying",
-    comment: "商户所在地区",
+    type: 'character varying',
+    comment: '商户所在地区',
     nullable: true
   })
-  area;
+  area
 
   @Column({
-    type: "character varying",
-    comment: "商户所在城市",
+    type: 'character varying',
+    comment: '商户所在城市',
     nullable: true
   })
-  city;
+  city
 
   @Column({
-    type: "timestamp",
+    type: 'timestamp',
     nullable: true
   })
-  deletedAt;
+  deletedAt
 
   @Column({
-    type: "character varying",
-    comment: "商户详细地址",
+    type: 'character varying',
+    comment: '商户详细地址',
     nullable: true
   })
-  address;
+  address
 
   @ManyToMany(type => Category, category => category.shops)
   @JoinTable()
-  coreBusiness;
+  categories
 
   @OneToMany(type => Comment, comment => comment.shop)
-  shopComments;
+  shopComments
 
-  static async createShop({
-    belongto,
-    coreBusiness = [],
-    shopBanners = [],
-    shopImages = [],
-    phones = [],
-    ...rest
-  }) {
+  static async createShop ({
+                             belongto,
+                             categories = [],
+                             shopBanners = [],
+                             shopImages = [],
+                             phones = [],
+                             ...rest
+                           }) {
     // check name unique
-    rest.name && (await this.checkNameUnique(rest.name));
-    console.log(decodeNumberId(belongto));
+    rest.name && (await this.checkNameUnique(rest.name))
+    console.log(decodeNumberId(belongto))
     return Shop.create({
       belongto: decodeNumberId(belongto),
-      coreBusiness: getCategories(coreBusiness),
+      categories: getCategories(categories),
       cover: shopBanners[0] ? shopBanners[0] : null,
       ...rest
     })
       .save()
       .then(({ id }) => {
-        Banner.createBannerArr("shop", id, shopBanners);
-        Image.createImageArr("shop", id, shopImages);
-        Phone.savePhone(phones, id);
-        return handleSuccessResult("shop", id);
-      });
+        Banner.createBannerArr('shop', id, shopBanners)
+        Image.createImageArr('shop', id, shopImages)
+        Phone.savePhone(phones, id)
+        return handleSuccessResult('shop', id)
+      })
   }
 
-  static deleteShop({ id }) {
+  static deleteShop ({ id }) {
     return Shop.update(id, {
       deletedAt: new Datate()
     }).then(() => ({
       id,
       status: true
-    }));
+    }))
   }
 
-  static searchShopList({
-    tsQuery,
-    filter = { status: null },
-    limit = 10,
-    offset = 1,
-    isPassed
-  }) {
-    const queryBuilder = Shop.createQueryBuilder("shop");
+  static searchShopList ({
+                           tsQuery,
+                           filter = { status: null },
+                           limit = 10,
+                           offset = 1,
+                           categoryId,
+                           isPassed
+                         }) {
 
     const withRelation = query => {
       return query
-        .leftJoinAndSelect("shop.coreBusiness", "category")
-    };
+        .leftJoinAndSelect('shop.categories', 'category')
+    }
 
     return pipe(
-      getQB("shop"),
-      where("(shop.name like :tsQuery)", {
+      getQB('shop'),
+      where('(shop.name like :tsQuery)', {
         tsQuery: tsQuery ? `%${tsQuery}%` : null
       }),
-      where("shop.status = :status", { status: filter.status }),
-      where("shop.isPassed = :isPassed", { isPassed }),
-      where("deletedAt is :deletedAt", { deletedAt: null }),
+      where('shop.status = :status', { status: filter.status }),
+      where('shop.isPassed = :isPassed', { isPassed }),
+      where('shop.categories = :categories', { categories: decodeNumberId(categoryId) }),
+      where('deletedAt is :deletedAt', { deletedAt: null }),
       withRelation,
       withPagination(limit, offset - 1),
       getManyAndCount
-    )(Shop);
+    )(Shop)
   }
 
-  static searchShop({ id, user }) {
-    const qb = Shop.createQueryBuilder("shop")
-      .leftJoinAndSelect("shop.coreBusiness", "category")
+  static searchShop ({ id, user }) {
+    const qb = Shop.createQueryBuilder('shop')
+      .leftJoinAndSelect('shop.categories', 'category')
       .leftJoinAndMapMany(
-        "shop.shopBanners",
+        'shop.shopBanners',
         Banner,
-        "banner",
-        "banner.bannerType = 'shop' and banner.bannerTypeId = shop.id"
+        'banner',
+        'banner.bannerType = \'shop\' and banner.bannerTypeId = shop.id'
       )
       .leftJoinAndMapMany(
-        "shop.shopImages",
+        'shop.shopImages',
         Image,
-        "image",
-        "image.imageType = 'shop' and image.imageTypeId = shop.id"
-      );
+        'image',
+        'image.imageType = \'shop\' and image.imageTypeId = shop.id'
+      )
     if (id) {
-      return qb.andWhere("shop.id = :id ", { id: decodeNumberId(id) }).getOne();
+      return qb.andWhere('shop.id = :id ', { id: decodeNumberId(id) }).getOne()
     }
+
     if (user)
       return qb
-        .andWhere("shop.belongto = :user", {
+        .andWhere('shop.belongto = :user', {
           user: decodeNumberId(user)
         })
-        .getOne();
+        .getOne()
   }
 
-  static async updateShop({ id, coreBusiness = [], ...payload }) {
-    payload.name && (await this.checkNameUnique(payload.name, id));
-    const realId = decodeNumberId(id);
+  static async updateShop ({ id, categories = [], ...payload }) {
+    payload.name && (await this.checkNameUnique(payload.name, id))
+    const realId = decodeNumberId(id)
 
     const exteralRelationSave = (key, save) => {
       if (payload[key]) {
-        save(payload[key]);
-        delete payload[key];
+        save(payload[key])
+        delete payload[key]
       }
-    };
-
-    if (coreBusiness.length) {
-      payload.coreBusiness = getCategories(coreBusiness);
     }
-    exteralRelationSave("phones", phones =>
+
+    if (categories.length) {
+      payload.categories = getCategories(categories)
+    }
+    exteralRelationSave('phones', phones =>
       Phone.savePhone(phones, realId)
-    );
-    exteralRelationSave("shopBanners", shopBanners => {
-      Banner.createBannerArr("shop", realId, shopBanners);
-      payload.cover = payload.shopBanners[0] || null;
-    });
-    exteralRelationSave("shopImages", shopImages => {
-      Image.createImageArr("shop", realId, shopImages);
-    });
+    )
+    exteralRelationSave('shopBanners', shopBanners => {
+      Banner.createBannerArr('shop', realId, shopBanners)
+      payload.cover = payload.shopBanners[0] || null
+    })
+    exteralRelationSave('shopImages', shopImages => {
+      Image.createImageArr('shop', realId, shopImages)
+    })
 
     return Shop.create({ id: realId, ...payload })
       .save()
       .then(() => ({
         id,
         status: true
-      }));
+      }))
   }
 
-  static async checkNameUnique(name, id = null) {
-    const qb = Shop.createQueryBuilder("shop")
-      .where("name = :name")
+  static async checkNameUnique (name, id = null) {
+    const qb = Shop.createQueryBuilder('shop')
+      .where('name = :name')
       .setParameters({
         name
-      });
+      })
 
     if (id) {
-      qb.andWhere("id <> :id").setParameters({
+      qb.andWhere('id <> :id').setParameters({
         id: decodeNumberId(id)
-      });
+      })
     }
 
-    const findedShop = await qb.getOne();
+    const findedShop = await qb.getOne()
 
-    if (findedShop) throw new Error("该店铺名已被使用");
+    if (findedShop) throw new Error('该店铺名已被使用')
   }
 }
