@@ -7,7 +7,7 @@ const categoryFetch = new CategoryFetch();
 const shopId = formateID("shop", 1);
 const userId = formateID("user", 1);
 const shopInfo = {
-  name: "leo12"
+  name: "测试店铺8"
 };
 
 const getCategory = () =>
@@ -35,7 +35,7 @@ describe("Shop", () => {
       isPassed: false,
       limit: 10,
       offset: 1,
-      tsQuery: "leo"
+      tsQuery: "测试"
     };
     const { shops } = await shopFetch.fetchShops(query);
     expect(shops.edges[0]).toMatchObject(shopInfo);

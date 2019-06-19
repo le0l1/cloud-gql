@@ -222,7 +222,7 @@ export class Shop extends BaseEntity {
   }
 
   static async updateShop({ id, coreBusiness = [], ...payload }) {
-    payload.name && (await this.checkNameUnique(payload.name, payload.id));
+    payload.name && (await this.checkNameUnique(payload.name, id));
     const realId = decodeNumberId(id);
 
     const exteralRelationSave = (key, save) => {
