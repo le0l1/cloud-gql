@@ -10,7 +10,7 @@ import {
 } from "typeorm";
 import { Banner } from "../banner/banner.entity";
 import { decodeID, formateID, decodeNumberId } from "../../helper/id";
-import { mergeIfValid, isValid } from "../../helper/util";
+import {  isValid } from "../../helper/util";
 import { Category } from "../category/category.entity";
 
 @Entity()
@@ -51,6 +51,28 @@ export class Good extends BaseEntity {
     default: 100
   })
   goodsSales;
+
+  @Column({
+    type: "character varying",
+    nullable: true ,
+    name: "shipping_address",
+    comment: '配送地址'
+  })
+  shippingAddress;
+
+  @Column({
+    type: "character varying",
+    nullable: true,
+    comment: "条款"
+  })
+  terms;
+
+  @Column({
+    type: "character varying",
+    nullable: true,
+    comment: '运费'
+  })
+  freight;
 
   @Column({
     type: "int",
@@ -148,5 +170,4 @@ export class Good extends BaseEntity {
       .getManyAndCount();
   }
 
-  static updateCategories(categoryId) {}
 }

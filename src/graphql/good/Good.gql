@@ -1,4 +1,3 @@
-"商品"
 type Good implements Node {
   "商品id"
   id: ID!
@@ -12,9 +11,17 @@ type Good implements Node {
   "商品描述"
   description: String
 
-  
   "商品类型 传入对应的分类ID"
   categories: [Category!]
+
+  "商品发货地址"
+  shippingAddress: String
+
+  "商品服务条款"
+  terms: String
+
+  "快递费"
+  freight: String
 
   "商户id"
   shopId: ID
