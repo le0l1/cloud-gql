@@ -3,8 +3,7 @@ import Router from "koa-router";
 import parameter from "koa-parameter";
 import bodyparser from "koa-bodyparser";
 import session from "koa-session";
-import { ApolloServer, gql } from "apollo-server-koa";
-import { merchant } from "./graphql/merchant";
+import { ApolloServer } from "apollo-server-koa";
 import { koa as voyagerMiddleware } from "graphql-voyager/middleware";
 import { banner } from "./graphql/banner";
 import { demand } from "./graphql/demand";
@@ -13,7 +12,6 @@ import { recommend } from "./graphql/recommend";
 import { dateResolver } from "./helper/scalar/Date";
 import { businessCircle } from "./graphql/businessCircle";
 import { user } from "./graphql/user";
-import { setGraphqlContext } from "./helper/auth/setContextUser";
 import { AuthDriective } from "./helper/auth/authDirective";
 import { root } from "./graphql/root";
 import { numberResolver } from "./helper/scalar/Number";
@@ -26,6 +24,7 @@ import { sku } from "./graphql/sku";
 import { accessories } from "./graphql/accessories";
 import { rfq } from "./graphql/rfq";
 import { image } from "./graphql/image";
+import { phone } from "./graphql/phone"
 
 const app = new Koa();
 const router = new Router();
@@ -82,7 +81,8 @@ export const makeServer =  context => new ApolloServer({
     sku.typeDef,
     accessories.typeDef,
     rfq.typeDef,
-    image.typeDef
+    image.typeDef,
+    phone.typeDef
   ],
   resolvers: [
     dateResolver,
@@ -101,7 +101,8 @@ export const makeServer =  context => new ApolloServer({
     accessories.resolvers,
     rfq.resolvers,
     image.resolvers,
-    businessCircle.resolvers
+    businessCircle.resolvers,
+    phone.resolvers
   ],
   context,
   schemaDirectives: {

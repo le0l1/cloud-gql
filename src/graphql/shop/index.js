@@ -1,4 +1,4 @@
-import ShopSchema from "./Shop.gql";
+import ShopSchema from "./Shop.graphql";
 import { formateID } from "../../helper/id";
 import { Shop } from "./shop.entity";
 
@@ -22,9 +22,6 @@ const resolvers = {
   Shop: {
     id(v) {
       return formateID("shop", v.id);
-    },
-    phones(v) {
-      return v.phones ? v.phones.map(a => a.phone) : [];
     },
     shopImages(v) {
       return (v.shopImages || []).map(a => a.path)

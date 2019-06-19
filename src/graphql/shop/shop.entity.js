@@ -28,8 +28,7 @@ import {
   getManyAndCount,
   withPagination
 } from "../../helper/database/sql";
-import { ShopPhone } from "./shopPhone.entity";
-import { buildSchemaFromTypeDefinitions } from "graphql-tools";
+import { Phone } from "../phone/phone.entity";
 import { Image } from "../image/image.entity";
 
 const transform = type => arr =>
@@ -141,7 +140,7 @@ export class Shop extends BaseEntity {
       .then(({ id }) => {
         Banner.createBannerArr("shop", id, shopBanners);
         Image.createImageArr("shop", id, shopImages);
-        ShopPhone.savePhone(phones, id);
+        Phone.savePhone(phones, id);
         return handleSuccessResult("shop", id);
       });
   }
@@ -167,12 +166,6 @@ export class Shop extends BaseEntity {
     const withRelation = query => {
       return query
         .leftJoinAndSelect("shop.coreBusiness", "category")
-        .leftJoinAndMapMany(
-          "shop.phones",
-          ShopPhone,
-          "shopPhone",
-          "shopPhone.shopId = shop.id"
-        );
     };
 
     return pipe(
@@ -192,12 +185,6 @@ export class Shop extends BaseEntity {
   static searchShop({ id, user }) {
     const qb = Shop.createQueryBuilder("shop")
       .leftJoinAndSelect("shop.coreBusiness", "category")
-      .leftJoinAndMapMany(
-        "shop.phones",
-        ShopPhone,
-        "shopPhone",
-        "shopPhone.shopId = shop.id"
-      )
       .leftJoinAndMapMany(
         "shop.shopBanners",
         Banner,
@@ -236,7 +223,7 @@ export class Shop extends BaseEntity {
       payload.coreBusiness = getCategories(coreBusiness);
     }
     exteralRelationSave("phones", phones =>
-      ShopPhone.savePhone(phones, realId)
+      Phone.savePhone(phones, realId)
     );
     exteralRelationSave("shopBanners", shopBanners => {
       Banner.createBannerArr("shop", realId, shopBanners);

@@ -1,0 +1,15 @@
+type Phone {
+    "电话"
+    phone: String
+
+    "商家id"
+    shopId: ID
+}
+input PhoneQuery {
+    "商家id"
+    shopId: ID!
+}
+
+extend  type  Query {
+    phones(query: PhoneQuery!): [Phone]
+}

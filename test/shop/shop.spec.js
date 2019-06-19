@@ -43,12 +43,12 @@ describe("Shop", () => {
 
   it("should update correct", async () => {
     const { createCategory } = await getCategory();
+    const newPhones = [11111111, 2222222, 333]
     const newShopInfo = {
       address: null,
       description: null,
       isPassed: false,
       name: "测试店铺8",
-      phones: [11111111, 2222222, 333],
       qqchat: 8181239,
       shopBanners: ["http://oss.dafengge.top/FlYHiGm-XTsyMjrGBFtNshLqDnP_"],
       status: "NORMAL",
@@ -57,11 +57,11 @@ describe("Shop", () => {
     await shopFetch.updateShop({
       id: shopId,
       coreBusiness: [ createCategory.id ],
+      phones: newPhones,
       ...newShopInfo
     });
-    const { shop } = await shopFetch.fetchSingleShop({
-      id: shopId
-    });
+    const { shop, phones } = await shopFetch.fetchSingleShop(shopId);
+    expect(phones.map(a => Number(a.phone))).toEqual(newPhones);
     expect(shop).toMatchObject(newShopInfo);
     expect(shop.coreBusiness[0].id).toBe(createCategory.id)
   });

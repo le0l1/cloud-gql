@@ -1,8 +1,8 @@
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { Shop } from "./shop.entity";
+import {decodeNumberId} from "../../helper/id";
 
 @Entity()
-export class ShopPhone extends BaseEntity {
+export class Phone extends BaseEntity {
   @PrimaryGeneratedColumn()
   id;
 
@@ -26,16 +26,24 @@ export class ShopPhone extends BaseEntity {
 
   static savePhone(phones, shopId) {
     const phoneArr = phones.map(p =>
-      ShopPhone.create({
+        Phone.create({
         phone: p,
         shopId
       })
     );
-    ShopPhone.delete({
+    Phone.delete({
       where: {
         shopId
       }
     })
-    return ShopPhone.save(phoneArr);
+    return Phone.save(phoneArr);
+  }
+
+  static  searchPhone({ shopId }) {
+    return Phone.find({
+      where: {
+        shopId: decodeNumberId(shopId)
+      }
+    })
   }
 }

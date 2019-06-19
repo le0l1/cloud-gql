@@ -48,8 +48,8 @@ export class ShopFetch extends BaseFetch {
 
   fetchSingleShop(input) {
     const query  = `
-      query shop($input: ShopQueryInput) {
-        shop(query: $input) {
+      query shop($input: ID!) {
+        shop(query: { id: $input }) {
           address
           coreBusiness {
             id
@@ -58,11 +58,13 @@ export class ShopFetch extends BaseFetch {
           id
           isPassed
           name
-          phones
           qqchat
           shopBanners
           status
           wechat
+        }
+        phones(query: { shopId: $input }) {
+          phone
         }
       }
     `
