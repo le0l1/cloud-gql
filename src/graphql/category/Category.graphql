@@ -76,8 +76,6 @@ input CategoryUpdateInput {
   "状态"
   status: CategoryStatus
 
-  "更新指定的父级id"
-  parentId: ID
   "更新路由"
   route: String
   "更新图片"
