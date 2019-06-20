@@ -23,6 +23,11 @@ const resolvers = {
     HOT: 1,
     NORMAL: 2
   },
+  CategoryResult: {
+    id(v) {
+      return formateID("category", v.id);
+    }
+  },
   Mutation: {
     createCategory(_, { category }) {
       return Category.createCategory(category);

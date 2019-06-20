@@ -72,6 +72,10 @@ input CategoryUpdateInput {
   name: String
   "更新指定分类tag"
   tag: String
+
+  "状态"
+  status: CategoryStatus
+
   "更新指定的父级id"
   parentId: ID
   "更新路由"

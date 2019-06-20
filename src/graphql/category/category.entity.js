@@ -157,7 +157,7 @@ export class Category extends BaseEntity {
     })
       .save()
       .then(({ id }) => ({
-        id: formateID("category", id),
+        id,
         status: true
       }));
   }
@@ -176,12 +176,14 @@ export class Category extends BaseEntity {
     }));
   }
 
-  static updateCategory({ id, ...rest }) {
-    return Category.update({ id: decodeNumberId(id) }, { ...rest }).then(() => {
-      return {
-        id,
-        status: true
-      };
-    });
+  static updateCategory({ id, parentId, ...rest }) {
+    const category = Category.create({
+      id: decodeNumberId(id),
+      ...rest
+    })
+    if (parentId) {
+      category.parent = Category.create({ id: decodeNumberId(parentId) })
+    }
+    return category.save();
   }
 }
