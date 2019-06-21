@@ -1,18 +1,10 @@
-import RecommendSchema from "./Recommend.gql";
+import RecommendSchema from "./Recommend.graphql";
 import { Recommend } from "./recommend.entity";
 
 const resolvers = {
   Query: {
     recommends(_, { searchRecommendInput }) {
       return Recommend.searchRecommend(searchRecommendInput);
-    }
-  },
-  RecommendConnection: {
-    edges(v) {
-      return v[0];
-    },
-    pageInfo(v) {
-      return v[1];
     }
   },
   Mutation: {
@@ -26,10 +18,6 @@ const resolvers = {
       return Recommend.deleteRecommend(deleteRecommendInput);
     }
   },
-  RecommendType: {
-    SHOP: 1,
-    GOOD: 2
-  }
 };
 
 export const recommend = {

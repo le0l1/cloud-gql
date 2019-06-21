@@ -4,79 +4,103 @@ import {
   Column,
   Index,
   PrimaryGeneratedColumn
-} from "typeorm";
-import { decodeID, formateID } from "../../helper/id";
-import { Shop } from "../shop/shop.entity";
+} from 'typeorm'
+import { decodeID, decodeIDAndType } from '../../helper/id'
+import { Good } from '../good/good.entity'
+import { Shop } from '../shop/shop.entity'
 
 @Entity()
 export class Recommend extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id;
+  id
 
   @Index()
-  @Column({ type: "character varying", comment: "the path of recommend" })
-  path;
-
-  @Column({ type: "int", default: 1, comment: "1. shop 2. good" })
-  type;
+  @Column({ type: 'character varying', comment: 'the path of recommend' })
+  route
 
   @Column({
-    type: "int",
-    comment: "the id of recommend thing",
-    name: "node"
+    type: 'character varying',
+    name: 'recommend_type'
   })
-  recommendNodeId;
+  recommendType
 
   @Column({
-    type: "timestamp",
-    comment: "when the record has been deleted",
-    name: "delete_at",
+    type: 'character varying',
+    name: 'recommend_type_id'
+  })
+  recommendTypeId
+
+  @Column({
+    type: 'timestamp',
+    comment: 'when the record has been deleted',
+    name: 'delete_at',
     nullable: true
   })
-  deletedAt;
+  deletedAt
 
-  static createRecommend({ path, type, recommendNodeId }) {
-    return Recommend.save({
-      path,
-      type,
-      recommendNodeId: decodeID(recommendNodeId)
-    }).then(({ id }) => {
+  static async createRecommend ({ route, typeIds }) {
+    try {
+      await Recommend.save(Recommend.makeRecommends(route, typeIds))
       return {
-        id: formateID("recommend", id),
         status: true
-      };
-    });
+      }
+    } catch (e) {
+      console.trace(e)
+      return {
+        status: false
+      }
+    }
   }
 
-  static searchRecommend({ path, type }) {
-    return Recommend.createQueryBuilder("recommend")
-      .leftJoinAndMapOne(
-        "recommend.recommendNode",
-        Shop,
-        "shop",
-        "shop.id = recommend.node"
-      )
-      .where("recommend.path = :path and recommend.delete_at is null")
-      .setParameter("path", path)
-      .getManyAndCount();
-  }
-  static updateRecommend({ id, path, type, recommendNodeId }) {
-    return Recommend.update(decodeID(id), {
-      path,
-      type,
-      recommendNodeId: decodeID(recommendNodeId)
-    }).then(() => ({
-      id,
-      status: true
-    }));
+  static makeRecommends (route, arr) {
+    return arr.map(t => {
+      const [recommendType, recommendTypeId] = decodeIDAndType(t)
+      return Recommend.create({
+        route,
+        recommendType,
+        recommendTypeId
+      })
+    })
   }
 
-  static deleteRecommend({ id }) {
+  static async searchRecommend ({ route }) {
+    const  recommends  = await Recommend.find({
+      where: { route }
+    })
+    if (!recommends.length) return []
+
+    const recommendClass = {
+      good: Good ,
+      shop: Shop
+    }
+    const nodeIds = recommends.map(a => a.id)
+    const res = await recommendClass[recommends[0].recommendType].findByIds(nodeIds)
+
+    return res.map(node => ({
+      route,
+      recommendNode: node
+    }))
+  }
+
+  static async updateRecommend ({ route,  typeIds }) {
+    try {
+      await  Recommend.delete({
+        route
+      })
+      return  Recommend.createRecommend({ route, typeIds})
+    } catch (e) {
+      return {
+        status: false
+      }
+    }
+  }
+
+  static deleteRecommend ({ id }) {
     return Recommend.update(decodeID(id), { deletedAt: new Date() }).then(
       () => ({
         id,
         status: true
       })
-    );
+    )
   }
 }

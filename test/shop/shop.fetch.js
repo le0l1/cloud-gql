@@ -1,4 +1,8 @@
 import { BaseFetch } from '../baseFetch'
+import { formateID } from '../../src/helper/id'
+
+const userId = formateID('user', 1)
+
 
 export class ShopFetch extends BaseFetch {
   updateShop (shopInfo) {
@@ -16,7 +20,10 @@ export class ShopFetch extends BaseFetch {
     })
   }
 
-  createShop (input) {
+  createShop (input = {
+    name: '测试店铺9102312',
+    belongto: userId
+  }) {
     const mutation = `
       mutation createShop($input: ShopCreateInput!) {
         createShop(shopCreateInput: $input) {

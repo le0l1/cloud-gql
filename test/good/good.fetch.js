@@ -1,7 +1,11 @@
 import { BaseFetch } from "../baseFetch";
 
 export class GoodFetch extends BaseFetch {
-  async createGood(goodInfo) {
+  async createGood(goodInfo = {
+    shopId: "c2hvcC8xMDA1",
+    goodSalePrice: 999,
+    goodParamter: "<div>123</div>"
+  }) {
     const mutation = `
       mutation createGood($input: GoodCreateInput!) {
         createGood(createGoodInput: $input) {

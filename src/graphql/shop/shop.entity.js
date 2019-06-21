@@ -7,7 +7,7 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
-  Index,
+  Index, In, IsNull,
 } from 'typeorm'
 import {
   handleSuccessResult,
@@ -254,4 +254,10 @@ export class Shop extends BaseEntity {
     if (findedShop) throw new Error('该店铺名已被使用')
   }
 
+  static findByIds(shopIds) {
+    return Shop.find({
+      id: In(shopIds),
+      deletedAt: IsNull()
+    })
+  }
 }
