@@ -8,7 +8,7 @@ const categoryFetch = new CategoryFetch()
 const shopId = formateID('shop', 1)
 const userId = formateID('user', 1)
 const shopInfo = {
-  name: '测试店铺8'
+  name: '测试店铺8',
 }
 
 const getCategory = () =>
@@ -82,6 +82,7 @@ describe('Shop', () => {
     const { shop, phones } = await shopFetch.fetchSingleShop(shopId)
     expect(phones.map(a => Number(a.phone))).toEqual(newPhones)
     expect(shop).toMatchObject(newShopInfo)
+    expect(shop.phone).toBe(phones[0].phone);
     expect(shop.categories[0].id).toBe(createCategory.id)
   })
 })

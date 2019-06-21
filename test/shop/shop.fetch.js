@@ -62,6 +62,7 @@ export class ShopFetch extends BaseFetch {
           shopBanners
           status
           wechat
+          phone
         }
         phones(query: { shopId: $input }) {
           phone

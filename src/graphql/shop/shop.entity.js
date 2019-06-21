@@ -107,6 +107,13 @@ export class Shop extends BaseEntity {
   })
   address
 
+  @Column({
+    type: 'character varying',
+    comment: '商户联系方式 冗余字段',
+    nullable: true
+  })
+  phone
+
   @ManyToMany(type => Category, category => category.shops)
   @JoinTable()
   categories
@@ -114,30 +121,37 @@ export class Shop extends BaseEntity {
   @OneToMany(type => Comment, comment => comment.shop)
   shopComments
 
-  static async createShop ({
-                             belongto,
-                             categories = [],
-                             shopBanners = [],
-                             shopImages = [],
-                             phones = [],
-                             ...rest
-                           }) {
-    // check name unique
-    rest.name && (await this.checkNameUnique(rest.name))
-    console.log(decodeNumberId(belongto))
-    return Shop.create({
+  static async createShop (params) {
+    params.name && (await this.checkNameUnique(params.name))
+    try {
+      const id = await Shop.createorUpdateShop(params)
+      return handleSuccessResult('shop', id)
+    } catch (e) {
+      return {
+        status: false
+      }
+    }
+  }
+
+  static async createorUpdateShop ({
+                                     belongto,
+                                     categories = [],
+                                     shopBanners = [],
+                                     shopImages = [],
+                                     phones = [],
+                                     ...rest
+                                   }) {
+    const { id } = await Shop.create({
       belongto: decodeNumberId(belongto),
       categories: getCategories(categories),
       cover: shopBanners[0] ? shopBanners[0] : null,
+      phone: phones[0] ? phones[0] : null,
       ...rest
-    })
-      .save()
-      .then(({ id }) => {
-        Banner.createBannerArr('shop', id, shopBanners)
-        Image.createImageArr('shop', id, shopImages)
-        Phone.savePhone(phones, id)
-        return handleSuccessResult('shop', id)
-      })
+    }).save();
+    await Banner.createBannerArr('shop', id, shopBanners)
+    await Image.createImageArr('shop', id, shopImages)
+    await Phone.savePhone(phones, id)
+    return id;
   }
 
   static deleteShop ({ id }) {
@@ -164,7 +178,6 @@ export class Shop extends BaseEntity {
           'category',
         )
     }
-
 
     return pipe(
       getQB('shop'),
@@ -208,37 +221,19 @@ export class Shop extends BaseEntity {
         .getOne()
   }
 
-  static async updateShop ({ id, categories = [], ...payload }) {
-    payload.name && (await this.checkNameUnique(payload.name, id))
-    const realId = decodeNumberId(id)
-
-    const exteralRelationSave = (key, save) => {
-      if (payload[key]) {
-        save(payload[key])
-        delete payload[key]
+  static async updateShop (params) {
+    params.name && (await this.checkNameUnique(params.name, params.id))
+    try {
+      const id = await Shop.createorUpdateShop({
+        ...params,
+        id: decodeNumberId(params.id),
+      })
+      return handleSuccessResult('shop', id)
+    } catch (e) {
+      return {
+        status: false
       }
     }
-
-    if (categories.length) {
-      payload.categories = getCategories(categories)
-    }
-    exteralRelationSave('phones', phones =>
-      Phone.savePhone(phones, realId)
-    )
-    exteralRelationSave('shopBanners', shopBanners => {
-      Banner.createBannerArr('shop', realId, shopBanners)
-      payload.cover = payload.shopBanners[0] || null
-    })
-    exteralRelationSave('shopImages', shopImages => {
-      Image.createImageArr('shop', realId, shopImages)
-    })
-
-    return Shop.create({ id: realId, ...payload })
-      .save()
-      .then(() => ({
-        id,
-        status: true
-      }))
   }
 
   static async checkNameUnique (name, id = null) {
