@@ -7,7 +7,7 @@ export class Phone extends BaseEntity {
   id;
 
   @Column({
-    type: "int",
+    type: 'character varying',
     nullable: true
   })
   phone;

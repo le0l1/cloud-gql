@@ -62,7 +62,7 @@ describe('Shop', () => {
 
   it('should update correct', async () => {
     const { createCategory } = await getCategory()
-    const newPhones = [11111111, 2222222, 333]
+    const newPhones = [18888888888, 2222222, 333]
     const newShopInfo = {
       address: null,
       description: null,
