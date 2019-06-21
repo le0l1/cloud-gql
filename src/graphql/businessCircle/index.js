@@ -13,6 +13,10 @@ const resolvers = {
       return BusinessCircle.createBusinessCircle(createBusinessCircleInput);
     }
   },
+  REPORTSTATUS: {
+    IS_NOT_REPORT: 1,
+    IS_REPORTED: 2,
+  },
   BusinessCircleOperationResult: {
     id(v) {
       return v.id ? formateID('businessCircle', v.id) : null;

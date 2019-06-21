@@ -39,7 +39,7 @@ export class Image extends BaseEntity {
       imageType,
       imageTypeId
     });
-    Image.save(imageArr.map(transformImage));
+    return Image.save(imageArr.map(transformImage));
   }
 
   static searchImages({ imageTypeId }) {

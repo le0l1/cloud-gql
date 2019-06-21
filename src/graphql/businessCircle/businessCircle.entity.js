@@ -4,91 +4,92 @@ import {
   Column,
   CreateDateColumn,
   Entity
-} from "typeorm";
-import { Image } from "../image/image.entity";
-import { User } from "../user/user.entity";
-import { decodeNumberId } from "../../helper/id";
+} from 'typeorm'
+import { Image } from '../image/image.entity'
+import { User } from '../user/user.entity'
+import { decodeNumberId } from '../../helper/id'
 
 @Entity()
 export class BusinessCircle extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id;
+  id
 
   @Column({
-    type: "int",
+    type: 'int',
     nullable: true,
-    name: "user_id"
+    name: 'user_id'
   })
-  userId;
+  userId
 
   @Column({
-    type: "character varying",
+    type: 'character varying',
     nullable: true
   })
-  content;
+  content
 
   @Column({
-    type: "int",
+    type: 'int',
     default: 0,
-    name: "star_count"
+    name: 'star_count'
   })
-  starCount;
+  starCount
 
   @Column({
-    type: "int",
+    type: 'int',
     default: 0,
-    name: "comment_count"
+    name: 'comment_count'
   })
-  commentCount;
+  commentCount
 
   @Column({
-    type: "int",
+    type: 'int',
     default: 1,
-    name: "report_status",
-    comment: "1: isNotReported, 2: isReported"
+    name: 'report_status',
+    comment: '1: isNotReported, 2: isReported'
   })
-  reportStatus;
+  reportStatus
 
   @CreateDateColumn({
-    name: "created_at"
+    name: 'created_at'
   })
-  createdAt;
+  createdAt
 
-  static createBusinessCircle({ userId, images, content }) {
+  static createBusinessCircle ({ userId, images, content }) {
     return BusinessCircle.create({
       userId: decodeNumberId(userId),
       content
     })
       .save()
-      .then(({ id }) => {
-        BusinessCircle.saveBusinessCircleImages(id, images);
-        return {
-          id,
-          status: true
-        };
-      });
+      .then(async ({ id }) => {
+        return BusinessCircle.saveBusinessCircleImages(id, images).then(() => {
+          return {
+            id,
+            status: true
+          }
+        })
+      })
   }
 
-  static saveBusinessCircleImages(id, images) {
-    Image.createImageArr("businessCircle", id, images);
+  static saveBusinessCircleImages (id, images) {
+    return Image.createImageArr('businessCircle', id, images)
   }
 
-  static searchBusinessCircle({ offset = 1, limit = 10 }) {
-    return BusinessCircle.createQueryBuilder("businessCircle")
+  static searchBusinessCircle ({ offset = 1, limit = 10 }) {
+    return BusinessCircle.createQueryBuilder('businessCircle')
       .leftJoinAndMapOne(
-        "businessCircle.user",
+        'businessCircle.user',
         User,
-        "user",
-        "user.id = businessCircle.userId"
+        'user',
+        'user.id = businessCircle.userId'
       )
       .leftJoinAndMapMany(
-        "businessCircle.images",
+        'businessCircle.images',
         Image,
-        "image",
-        `image.imageType = 'businessCircle' and image.imageTypeId = businessCircle.id`
+        'image',
+        'image.imageType = \'businessCircle\' and businessCircle.id = image.imageTypeId'
       )
       .skip(Math.max(offset - 1, 0))
       .take(limit)
-      .getManyAndCount();
+      .getManyAndCount()
   }
 }
