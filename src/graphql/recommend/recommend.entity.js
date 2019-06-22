@@ -5,9 +5,10 @@ import {
   Index,
   PrimaryGeneratedColumn
 } from 'typeorm'
-import { decodeID, decodeIDAndType } from '../../helper/id'
+import { decodeID, decodeIDAndType, decodeNumberId } from '../../helper/id'
 import { Good } from '../good/good.entity'
 import { Shop } from '../shop/shop.entity'
+import { tryStatement } from '@babel/types'
 
 @Entity()
 export class Recommend extends BaseEntity {
@@ -38,39 +39,35 @@ export class Recommend extends BaseEntity {
   })
   deletedAt
 
-  static async createRecommend ({ route, typeIds }) {
-    try {
-      await Recommend.save(Recommend.makeRecommends(route, typeIds))
-      return {
-        status: true
-      }
-    } catch (e) {
-      console.trace(e)
-      return {
-        status: false
-      }
-    }
+  static async createRecommend ({ route, typeId }) {
+    return Recommend.storeRecommends(route, typeId)
   }
 
-  static makeRecommends (route, arr) {
-    return arr.map(t => {
-      const [recommendType, recommendTypeId] = decodeIDAndType(t)
-      return Recommend.create({
+  static async storeRecommends (route, recommnedNode) {
+    try {
+      const [recommendType, recommendTypeId] = decodeIDAndType(recommnedNode)
+      const { id } = await Recommend.create({
         route,
         recommendType,
         recommendTypeId
-      })
-    })
+      }).save()
+      return {
+        id,
+        status: true
+      }
+    } catch (e) {
+      throw  e
+    }
   }
 
   static async searchRecommend ({ route }) {
-    const  recommends  = await Recommend.find({
+    const recommends = await Recommend.find({
       where: { route }
     })
     if (!recommends.length) return []
 
     const recommendClass = {
-      good: Good ,
+      good: Good,
       shop: Shop
     }
     const nodeIds = recommends.map(a => a.id)
@@ -82,25 +79,31 @@ export class Recommend extends BaseEntity {
     }))
   }
 
-  static async updateRecommend ({ route,  typeIds }) {
-    try {
-      await  Recommend.delete({
-        route
-      })
-      return  Recommend.createRecommend({ route, typeIds})
-    } catch (e) {
-      return {
-        status: false
-      }
-    }
-  }
+  // static async updateRecommend ({ route, typeIds }) {
+  //   try {
+  //     await Recommend.delete({
+  //       route
+  //     })
+  //     return Recommend.createRecommend({ route, typeIds })
+  //   } catch (e) {
+  //     return {
+  //       status: false
+  //     }
+  //   }
+  // }
 
-  static deleteRecommend ({ id }) {
-    return Recommend.update(decodeID(id), { deletedAt: new Date() }).then(
-      () => ({
-        id,
-        status: true
+  static async deleteRecommend ({ id }) {
+    try {
+      const realId = decodeNumberId(id)
+      await Recommend.delete({
+        id: realId
       })
-    )
+      return {
+        id: realId,
+        status: true
+      }
+    } catch (e) {
+      throw e
+    }
   }
 }

@@ -1,0 +1,85 @@
+type Coupon {
+    id: ID
+
+    "优惠劵满足条件"
+    biggerThan: Int
+
+    "优惠券减免金额"
+    discount: Int
+
+    "优惠劵过期时间 unix timestamp"
+    expiredAt: Number
+
+    "优惠劵状态"
+    status: CouponStatus
+}
+
+enum CouponStatus {
+    "已失效"
+    HAS_EXPIRED
+    "已领取"
+    HAS_USED
+    "可使用"
+    AVAILABLE
+}
+input CreateCouponInput {
+    "商品id"
+    goodId: ID!
+
+    "优惠劵满足条件"
+    biggerThan: Int!
+
+    "优惠券减免金额"
+    discount: Int!
+
+    "优惠劵过期时间 unix timestamp"
+    expiredAt: Number
+}
+
+input UpdateCouponInput {
+    "优惠劵id"
+    id: ID!
+
+    "优惠劵满足条件"
+    biggerThan: Int
+
+    "优惠券减免金额"
+    discount: Int
+
+    "优惠劵过期时间 前端传入unix timestamp"
+    expiredAt: Number
+}
+
+input DeleteCouponInput {
+    "优惠劵id"
+    id: ID!
+}
+
+input QueryCouponInput {
+    "商品id"
+    goodId: ID!
+
+    "用户id"
+    userId: ID
+}
+
+type CouponActionResult {
+    id: ID
+    status: Boolean
+}
+
+extend  type Query {
+    "通过商品id返回商品的优惠劵 若传入了userId，则会返回用户领取当前优惠劵状态"
+    coupons(query: QueryCouponInput!): [Coupon!]
+}
+
+extend type Mutation {
+    "创建优惠劵"
+    createCoupon(createCouponInput: CreateCouponInput!): CouponActionResult
+    "更新优惠劵"
+    updateCoupon(updateCouponInput: UpdateCouponInput!): CouponActionResult
+    "删除优惠劵"
+    deleteCoupon(deleteCouponInput: DeleteCouponInput!): CouponActionResult
+}
+
+

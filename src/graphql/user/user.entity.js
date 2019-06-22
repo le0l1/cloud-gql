@@ -5,11 +5,12 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
-  OneToMany
-} from "typeorm";
+  OneToMany, ManyToMany
+} from 'typeorm'
 import { Comment } from "../comment/comment.entity";
 import { hashPassword } from "../../helper/auth/encode";
 import { formateID, decodeNumberId } from "../../helper/id";
+import { Coupon } from '../coupon/coupon.entity'
 
 @Entity()
 export class User extends BaseEntity {
@@ -82,6 +83,9 @@ export class User extends BaseEntity {
 
   @OneToMany(type => Comment, comment => comment.belongto)
   comments;
+
+  @ManyToMany(type => Coupon, coupon => coupon.user)
+  coupons
 
   static retrievePassword({ phone, password }) {
     return User.findOne({

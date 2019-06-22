@@ -9,17 +9,17 @@ const recommend = {
   route: 'test'
 }
 
-const seachRecommendAndAssert = async () => {
+const seachRecommendAndAssert = async (result) => {
   const { recommends } = await recommendFetch.searchRecommend({
     route: recommend.route
   })
-  expect(recommends[0].recommendNode.id).toBe(recommend.typeIds[0])
+  expect(recommends[0].recommendNode.id).toBe(result)
 }
 
 describe('Recommend', () => {
   beforeAll(async () => {
     const { createGood } = await goodFetch.createGood()
-    recommend.typeIds = [createGood.id]
+    recommend.typeId = createGood.id
   })
 
   it('should create correct', async () => {
@@ -29,19 +29,16 @@ describe('Recommend', () => {
   })
 
   it('should fetch recommend correct', async () => {
-    await seachRecommendAndAssert()
+    await seachRecommendAndAssert(recommend.typeId)
   })
 
-  it('should update recommend correct', async () => {
-    const { createShop } = await shopFetch.createShop()
-    recommend.typeIds = [createShop.id]
-    const { updateRecommend } = await recommendFetch.updateRecommend(recommend)
-    expect(updateRecommend.status).toBeTruthy()
-  })
-
-  it('should fetch recommend correct after update', () => {
-    setTimeout(async () => {
-      await seachRecommendAndAssert()
+  it('should delete recommend correct', async () => {
+    const { deleteRecommend } = await recommendFetch.deleteRecommend({
+      id: recommend.id
     })
+    expect(deleteRecommend.status).toBeTruthy()
+    setTimeout(async () => {
+      await  seachRecommendAndAssert(undefined);
+    }, 300)
   })
 })

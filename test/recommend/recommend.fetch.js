@@ -31,12 +31,12 @@ export class RecommendFetch extends  BaseFetch {
     `, { input })
   }
 
-  updateRecommend(input = {
+  deleteRecommend(input = {
     route: 'input'
   }) {
     return this.client.request(`
-      mutation  updateRecommend($input: RecommendUpdateInput!) {
-          updateRecommend(updateRecommendInput: $input) {
+      mutation  deleteRecommend($input: RecommendDeleteInput!) {
+          deleteRecommend(deleteRecommendInput: $input) {
               status
           }
       }

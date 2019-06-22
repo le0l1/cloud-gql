@@ -1,5 +1,7 @@
 "推荐类型"
 type Recommend {
+  id: ID
+
   "推荐对应的路径"
   route: String
 
@@ -21,7 +23,7 @@ input RecommendCreateInput {
   route: String!
 
   "推荐类型ID  如果是商户 就传商户id  如果是商品 则传商品id 以此类推 "
-  typeIds: [ID!]
+  typeId: ID!
 }
 
 "查询推荐输入"
@@ -30,25 +32,24 @@ input RecommendSearchInput {
   route: String!
 }
 
-"更新推荐输入"
-input RecommendUpdateInput {
-  "推荐列表对应路由"
-  route: String!
-
-  "推荐类型ID  如果是商户 就传商户id  如果是商品 则传商品id 以此类推 "
-  typeIds: [ID!]
-}
+#"更新推荐输入"
+#input RecommendUpdateInput {
+#  "推荐列表对应路由"
+#  route: String!
+#
+#  "推荐类型ID  如果是商户 就传商户id  如果是商品 则传商品id 以此类推 "
+#  typeIds: [ID!]
+#}
 
 "创建推荐返回"
 type RecommendActionResult {
+  id: ID
   status: Boolean
 }
 
 "删除推荐输入"
 input RecommendDeleteInput {
-  "推荐列表对应路由"
-  route: String!
-
+    id: ID
 }
 
 extend type Query {
@@ -61,10 +62,10 @@ extend type Mutation {
   createRecommend(
     createRecommendInput: RecommendCreateInput!
   ): RecommendActionResult
-  "更新推荐"
-  updateRecommend(
-    updateRecommendInput: RecommendUpdateInput!
-  ): RecommendActionResult
+#  "更新推荐"
+#  updateRecommend(
+#    updateRecommendInput: RecommendUpdateInput!
+#  ): RecommendActionResult
   "删除推荐"
   deleteRecommend(
     deleteRecommendInput: RecommendDeleteInput!

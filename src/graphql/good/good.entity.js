@@ -6,12 +6,13 @@ import {
   CreateDateColumn,
   Index,
   ManyToMany,
-  JoinTable, In, IsNull
+  JoinTable, In, IsNull, OneToMany
 } from 'typeorm'
 import { Banner } from '../banner/banner.entity'
 import { decodeID, formateID, decodeNumberId } from '../../helper/id'
 import { isValid } from '../../helper/util'
 import { Category } from '../category/category.entity'
+import { Coupon } from '../coupon/coupon.entity'
 
 @Entity()
 export class Good extends BaseEntity {
@@ -101,6 +102,9 @@ export class Good extends BaseEntity {
   @ManyToMany(type => Category, category => category.good)
   @JoinTable()
   categories
+
+  @OneToMany(type => Coupon, coupon => coupon.good)
+  coupon;
 
   static createGood ({ shopId, banners = [], categories = [], ...rest }) {
     return Good.create({

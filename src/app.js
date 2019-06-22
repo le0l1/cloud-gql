@@ -25,6 +25,7 @@ import { accessories } from "./graphql/accessories";
 import { rfq } from "./graphql/rfq";
 import { image } from "./graphql/image";
 import { phone } from "./graphql/phone"
+import { coupon } from './graphql/coupon/coupon'
 
 const app = new Koa();
 const router = new Router();
@@ -82,7 +83,8 @@ export const makeServer =  context => new ApolloServer({
     accessories.typeDef,
     rfq.typeDef,
     image.typeDef,
-    phone.typeDef
+    phone.typeDef,
+    coupon.typeDef
   ],
   resolvers: [
     dateResolver,
@@ -102,7 +104,8 @@ export const makeServer =  context => new ApolloServer({
     rfq.resolvers,
     image.resolvers,
     businessCircle.resolvers,
-    phone.resolvers
+    phone.resolvers,
+    coupon.resolvers
   ],
   context,
   schemaDirectives: {
