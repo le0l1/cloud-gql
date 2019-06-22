@@ -1,6 +1,5 @@
 import { BusinessCircleFetch } from './businessCircle.fetch'
 import { UserFetch } from '../user/user.fetch'
-import { formateID } from '../../src/helper/id'
 
 const businessCircleFetch = new BusinessCircleFetch()
 const userFetch = new UserFetch()

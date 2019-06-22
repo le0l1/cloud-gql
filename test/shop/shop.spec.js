@@ -1,10 +1,12 @@
 import { ShopFetch } from './shop.fetch'
 import { formateID } from '../../src/helper/id'
 import { CategoryFetch } from '../category/category.fetch'
+import { PhoneFetch } from '../phone/phone.fetch'
 
-let categoryId;
+let categoryId
 const shopFetch = new ShopFetch()
 const categoryFetch = new CategoryFetch()
+const phoneFetch = new PhoneFetch()
 const shopId = formateID('shop', 1)
 const userId = formateID('user', 1)
 const shopInfo = {
@@ -47,7 +49,7 @@ describe('Shop', () => {
   })
 
   it('should fetch correct when using categoryId', async () => {
-    const { createCategory } = await  getCategory()
+    const { createCategory } = await getCategory()
     const categoryQuery = {
       categoryId
     }
@@ -56,7 +58,7 @@ describe('Shop', () => {
     const missingQuery = {
       categoryId: createCategory.id
     }
-    const { shops: missingShop } = await  shopFetch.fetchShops(missingQuery);
+    const { shops: missingShop } = await shopFetch.fetchShops(missingQuery)
     expect(missingShop.edges).toEqual([])
   })
 
@@ -82,7 +84,19 @@ describe('Shop', () => {
     const { shop, phones } = await shopFetch.fetchSingleShop(shopId)
     expect(phones.map(a => Number(a.phone))).toEqual(newPhones)
     expect(shop).toMatchObject(newShopInfo)
-    expect(shop.phone).toBe(phones[0].phone);
+    expect(shop.phone).toBe(phones[0].phone)
     expect(shop.categories[0].id).toBe(createCategory.id)
+  })
+
+  it('should update shop phone correct correct', async () => {
+    const { phones } = await phoneFetch.searchPhones(shopId)
+    await phoneFetch.updatePhone({
+      id: phones[0].id,
+      count: 1000,
+    })
+
+    const { phones: afterUpdate } = await phoneFetch.searchPhones(shopId)
+    const updatedPhone = afterUpdate.find(a => a.id === phones[0].id);
+    expect(updatedPhone.count).toBe(1000);
   })
 })

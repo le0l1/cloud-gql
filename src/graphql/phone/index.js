@@ -23,7 +23,8 @@ const resolvers = {
   Phone: {
     shopId (v) {
       return formateID('shop', v.shopId)
-    }
+    },
+    id: formatePhoneId
   },
   PhoneActionResult: {
     id: formatePhoneId

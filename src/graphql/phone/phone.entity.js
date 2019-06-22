@@ -59,7 +59,6 @@ export class Phone extends BaseEntity {
       await Phone.update({
         id: realId
       }, rest)
-      console.log(realId)
       return {
         id: realId,
         status: true

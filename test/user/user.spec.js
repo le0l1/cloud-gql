@@ -1,6 +1,4 @@
-import { gql } from "apollo-server-koa";
 import { UserFetch } from "./user.fetch";
-import { makeServe } from "../../src/app";
 import { formateID } from "../../src/helper/id";
 
 const userFetch = new UserFetch();
