@@ -3,6 +3,7 @@ import { Coupon } from './coupon.entity'
 import { pipe } from '../../helper/database/sql'
 import { prop } from '../../helper/util'
 import { formateID } from '../../helper/id'
+import { UserCoupon } from './userCoupon.entity'
 
 const formateCouponId = pipe(
   prop('id'),
@@ -18,7 +19,10 @@ const resolvers = {
     },
     deleteCoupon(_, { deleteCouponInput }) {
       return Coupon.deleteCoupon(deleteCouponInput)
-    }
+    },
+    collectCoupon(_, { collectCouponInput }) {
+      return UserCoupon.collectCoupon(collectCouponInput);
+    },
   },
   Query: {
     coupons (_, { query }) {

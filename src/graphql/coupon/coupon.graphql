@@ -63,6 +63,14 @@ input QueryCouponInput {
     userId: ID
 }
 
+input CollectCouponInput {
+    "优惠劵id"
+    id: ID!
+
+    "用户id"
+    userId: ID!
+}
+
 type CouponActionResult {
     id: ID
     status: Boolean
@@ -80,6 +88,8 @@ extend type Mutation {
     updateCoupon(updateCouponInput: UpdateCouponInput!): CouponActionResult
     "删除优惠劵"
     deleteCoupon(deleteCouponInput: DeleteCouponInput!): CouponActionResult
+    "领取优惠券"
+    collectCoupon(collectCouponInput: CollectCouponInput!): CouponActionResult
 }
 
 

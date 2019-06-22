@@ -1,7 +1,7 @@
-import { BaseEntity, Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { decodeNumberId } from '../../helper/id'
 import { Good } from '../good/good.entity'
-import { User } from '../user/user.entity'
+import { UserCoupon } from './userCoupon.entity'
 
 @Entity()
 export class Coupon extends BaseEntity {
@@ -12,9 +12,19 @@ export class Coupon extends BaseEntity {
    * 优惠劵状态 1. 已失效 2. 已领取 3. 可使用
    * @returns {number}
    */
-  get status() {
+  get status () {
+    if (this.useStatus) return 2;
     return this.expiredAt < Date.now() ? 1 : 3
   }
+
+  get isExpired () {
+    return this.status === 1
+  }
+
+  /**
+   * map to userCoupon.useStatus
+   */
+  useStatus
 
   @Column({
     type: 'numeric',
@@ -43,8 +53,8 @@ export class Coupon extends BaseEntity {
   @ManyToOne(type => Good, good => Good.coupon)
   good
 
-  @ManyToMany(type => User, user => user.coupons)
-  user
+  @OneToMany(type => UserCoupon, userCoupon => userCoupon.coupon)
+  userCoupon
 
   static createCoupon ({
                          goodId,
@@ -87,11 +97,30 @@ export class Coupon extends BaseEntity {
     })
   }
 
-  static searchCoupon({ goodId, userId }) {
-    return Coupon.find({
-      where: {
-        good: Good.create({ id: decodeNumberId(goodId)})
-      }
-    })
+  static searchCoupon ({ goodId, userId }) {
+    if (!userId) {
+      return Coupon.find({
+        where: {
+          good: Good.create({ id: decodeNumberId(goodId) })
+        }
+      })
+    }
+
+    return Coupon.createQueryBuilder('coupon')
+      .leftJoinAndMapOne(
+        'coupon.useStatus',
+        'coupon.userCoupon',
+        'userCoupon',
+        'userCoupon.user.id = :userId',
+        {
+          userId: decodeNumberId(userId)
+        }
+      )
+      .getMany()
+      .then(res => {
+        console.log(res)
+        return res
+      })
   }
+
 }

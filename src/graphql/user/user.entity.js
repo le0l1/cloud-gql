@@ -11,6 +11,7 @@ import { Comment } from "../comment/comment.entity";
 import { hashPassword } from "../../helper/auth/encode";
 import { formateID, decodeNumberId } from "../../helper/id";
 import { Coupon } from '../coupon/coupon.entity'
+import { UserCoupon } from '../coupon/userCoupon.entity'
 
 @Entity()
 export class User extends BaseEntity {
@@ -84,8 +85,8 @@ export class User extends BaseEntity {
   @OneToMany(type => Comment, comment => comment.belongto)
   comments;
 
-  @ManyToMany(type => Coupon, coupon => coupon.user)
-  coupons
+  @OneToMany(type => UserCoupon, userCoupon => userCoupon.user)
+  userCoupon;
 
   static retrievePassword({ phone, password }) {
     return User.findOne({
