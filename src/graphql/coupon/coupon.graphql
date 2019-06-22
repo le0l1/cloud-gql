@@ -17,8 +17,13 @@ type Coupon {
 enum CouponStatus {
     "已失效"
     HAS_EXPIRED
-    "已领取"
+
+    "已使用"
     HAS_USED
+
+    "已领取"
+    HAS_COLLECTED
+
     "可使用"
     AVAILABLE
 }
@@ -77,7 +82,7 @@ type CouponActionResult {
 }
 
 extend  type Query {
-    "通过商品id返回商品的优惠劵 若传入了userId，则会返回用户领取当前优惠劵状态"
+    "通过商品id返回商品的优惠劵 若传入了userId，则会返回用户领取优惠劵的状态"
     coupons(query: QueryCouponInput!): [Coupon!]
 }
 

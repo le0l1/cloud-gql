@@ -9,22 +9,34 @@ export class Coupon extends BaseEntity {
   id
 
   /**
-   * 优惠劵状态 1. 已失效 2. 已领取 3. 可使用
+   * 优惠劵状态 1. 已失效 2. 可使用 3.已使用 4. 已领取
    * @returns {number}
    */
   get status () {
-    if (this.useStatus) return 2;
-    return this.expiredAt < Date.now() ? 1 : 3
+    console.log(this.userCouponStatus)
+    return this.userCouponStatus ?
+      this.userCouponStatus :
+      this.couponExpiredStatus
   }
 
   get isExpired () {
-    return this.status === 1
+    return this.coupunExpiredStatus === 1
   }
 
+  get couponExpiredStatus() {
+    return this.expiredAt < Date.now() ? 1 : 3
+  }
   /**
-   * map to userCoupon.useStatus
+   * 用户使用优惠券情况
+   * @returns {null|number}
    */
-  useStatus
+  get userCouponStatus() {
+    console.log(this)
+    if (this.userCoupon) {
+      return this.userCoupon.useStatus ? 3 : 4;
+    }
+    return null;
+  }
 
   @Column({
     type: 'numeric',
@@ -108,7 +120,7 @@ export class Coupon extends BaseEntity {
 
     return Coupon.createQueryBuilder('coupon')
       .leftJoinAndMapOne(
-        'coupon.useStatus',
+        'coupon.userCoupon',
         'coupon.userCoupon',
         'userCoupon',
         'userCoupon.user.id = :userId',
@@ -117,10 +129,5 @@ export class Coupon extends BaseEntity {
         }
       )
       .getMany()
-      .then(res => {
-        console.log(res)
-        return res
-      })
   }
-
 }

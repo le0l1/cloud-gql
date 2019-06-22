@@ -34,8 +34,9 @@ const resolvers = {
   },
   CouponStatus: {
     HAS_EXPIRED: 1,
-    HAS_USED: 2,
-    AVAILABLE: 3
+    AVAILABLE: 2,
+    HAS_USED: 3,
+    HAS_COLLECTED: 4
   },
   CouponActionResult: {
     id: formateCouponId
