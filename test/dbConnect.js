@@ -1,9 +1,10 @@
 import { createConnection } from 'typeorm'
 
-export class DBConnect {
-  connection = null
+export class DBConnect  {
+  static connection = null
 
-  async connect () {
+  static async connect () {
+    if (DBConnect.connection) return DBConnect.connection;
     this.connection = await createConnection()
   }
 

@@ -46,4 +46,26 @@ export class Phone extends BaseEntity {
       }
     })
   }
+
+  /**
+   * Update Phone Count
+   * @param id
+   * @param rest
+   * @returns {Promise<UpdateResult>}
+   */
+  static async updatePhone({ id, ...rest }) {
+    try {
+      const realId = decodeNumberId(id);
+      await Phone.update({
+        id: realId
+      }, rest)
+      console.log(realId)
+      return {
+        id: realId,
+        status: true
+      }
+    } catch(e) {
+      throw  e;
+    }
+  }
 }

@@ -1,15 +1,37 @@
-type Phone {
+type Phone implements Node{
+    id: ID!
+
     "电话"
     phone: String
 
     "商家id"
     shopId: ID
+
+    "电话拨打次数"
+    count: Number
 }
 input PhoneQuery {
     "商家id"
     shopId: ID!
 }
 
+input UpdatePhoneInput {
+    id: ID!
+
+    "电话拨打次数"
+    count: Number
+}
+
+type PhoneActionResult {
+    id: ID
+    status: Boolean
+}
+
 extend  type  Query {
     phones(query: PhoneQuery!): [Phone]
+}
+
+extend type Mutation  {
+    "更新电话相关 如拨打次数"
+    updatePhone(updatePhoneInput: UpdatePhoneInput!): PhoneActionResult
 }
