@@ -176,8 +176,12 @@ export class Good extends BaseEntity {
 
   static findByIds (goodIds) {
     return Good.find({
-      id: In(goodIds),
-      deletedAt: IsNull(),
+      where: {
+
+        id: In(goodIds),
+        deletedAt: IsNull(),
+      },
+      relations: ['categories']
     })
   }
 }
