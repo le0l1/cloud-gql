@@ -256,8 +256,11 @@ export class Shop extends BaseEntity {
 
   static findByIds(shopIds) {
     return Shop.find({
-      id: In(shopIds),
-      deletedAt: IsNull()
+      where: {
+        id: In(shopIds),
+        deletedAt: IsNull(),
+      },
+      relations: ['categories']
     })
   }
 }
