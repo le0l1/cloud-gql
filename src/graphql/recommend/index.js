@@ -28,6 +28,9 @@ const resolvers = {
   },
   Recommend: {
     id: formateRecommendId
+  },
+  RecommendActionResult: {
+    id: formateRecommendId
   }
 };
 

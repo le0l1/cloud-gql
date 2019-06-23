@@ -70,7 +70,7 @@ export class Recommend extends BaseEntity {
       good: Good,
       shop: Shop
     }
-    const nodeIds = recommends.map(a => a.id)
+    const nodeIds = recommends.map(a => a.recommendTypeId)
     const res = await recommendClass[recommends[0].recommendType].findByIds(nodeIds)
 
     return res.map(node => ({
