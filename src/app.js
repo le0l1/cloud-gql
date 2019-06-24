@@ -26,9 +26,16 @@ import { rfq } from "./graphql/rfq";
 import { image } from "./graphql/image";
 import { phone } from "./graphql/phone"
 import { coupon } from './graphql/coupon/coupon'
+import { order } from "./graphql/order/order"
+import { payment } from './graphql/payment/payment'
+import { transfer } from './graphql/transfer/transfer'
 
 const app = new Koa();
 const router = new Router();
+
+router.get('/pay', res => {
+  console.log(res)
+})
 
 app.keys = ["asdqwdqwdqqwdqdqwd"];
 
@@ -84,7 +91,10 @@ export const makeServer =  context => new ApolloServer({
     rfq.typeDef,
     image.typeDef,
     phone.typeDef,
-    coupon.typeDef
+    coupon.typeDef,
+    order.typeDef,
+    payment.typeDef,
+    transfer.typeDef
   ],
   resolvers: [
     dateResolver,
@@ -105,7 +115,9 @@ export const makeServer =  context => new ApolloServer({
     image.resolvers,
     businessCircle.resolvers,
     phone.resolvers,
-    coupon.resolvers
+    coupon.resolvers,
+    order.resolvers,
+    transfer.resolvers
   ],
   context,
   schemaDirectives: {

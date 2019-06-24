@@ -4,14 +4,15 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  ManyToOne,
-  OneToMany, ManyToMany
+  OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm'
 import { Comment } from "../comment/comment.entity";
 import { hashPassword } from "../../helper/auth/encode";
 import { formateID, decodeNumberId } from "../../helper/id";
-import { Coupon } from '../coupon/coupon.entity'
 import { UserCoupon } from '../coupon/userCoupon.entity'
+import { Transfer } from '../transfer/transfer.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -87,6 +88,15 @@ export class User extends BaseEntity {
 
   @OneToMany(type => UserCoupon, userCoupon => userCoupon.user)
   userCoupon;
+
+  @ManyToMany(type => Transfer, transfer => transfer.payee)
+  @JoinTable()
+  transfer;
+
+
+  @ManyToMany(type => Transfer, transfer => transfer.payer)
+  @JoinTable()
+  transfer;
 
   static retrievePassword({ phone, password }) {
     return User.findOne({

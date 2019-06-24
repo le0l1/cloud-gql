@@ -1,0 +1,30 @@
+type Order {
+    id: ID
+}
+
+"支付信息"
+type PayInfoResult {
+    "appid"
+    appid: String
+
+    "商户id"
+    mch_id: String
+
+    "随机字符串"
+    nonce_str: String
+
+    "微信支付签名"
+    sign: String
+
+    "业务结果"
+    result_code: String
+}
+
+input PayOrderInput {
+    "订单id"
+    id: ID
+}
+
+extend  type Mutation {
+    payOrder(payOrderInput: PayOrderInput!): PayInfoResult
+}

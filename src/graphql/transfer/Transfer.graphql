@@ -1,0 +1,54 @@
+"转账"
+type Transfer {
+    id: ID
+
+    "付款方(用户id)"
+    payer: ID
+
+    "收款方(用户id)"
+    payee: ID
+
+    "总金额"
+    totalFee: Float
+
+    "支付时间(unix timestamp)"
+    createdAt: Number
+
+    "支付状态"
+    paymentStatus: PAYMENTSTATUS
+
+    "支付方式"
+    paymentMethod: PAYMENTMETHOD
+
+    "支付备注"
+    remark: String
+}
+
+
+
+input CreateTransferInput {
+    "付款方(用户id)"
+    payer: ID!
+
+    "收款方(商户id)"
+    payee: ID!
+
+    "总金额"
+    totalFee: Float!
+
+    "支付方式"
+    paymentMethod: PAYMENTMETHOD!
+
+    "支付备注"
+    remark: String
+}
+
+type TransferResult {
+    id: ID
+    status: Boolean
+}
+
+extend type Mutation  {
+    "创建转账"
+    createTransfer(createTransferInput: CreateTransferInput!): TransferResult
+}
