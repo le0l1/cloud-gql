@@ -24,7 +24,7 @@ export class Payment extends BaseEntity {
   @Column({
     type: "int",
     name: "payment_status",
-    comment: "支付状态 1: 待支付 2. 已支付 3. 已取消 4. 支付失败"
+    default: 3
   })
   paymentStatus;
 

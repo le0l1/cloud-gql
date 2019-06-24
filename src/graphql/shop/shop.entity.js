@@ -7,7 +7,7 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
-  Index, In, IsNull,
+  Index, In, IsNull, OneToOne,
 } from 'typeorm'
 import {
   handleSuccessResult,

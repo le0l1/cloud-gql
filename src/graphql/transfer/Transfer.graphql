@@ -50,5 +50,5 @@ type TransferResult {
 
 extend type Mutation  {
     "创建转账"
-    createTransfer(createTransferInput: CreateTransferInput!): TransferResult
+    createTransfer(createTransferInput: CreateTransferInput!): WXPayPrepare
 }

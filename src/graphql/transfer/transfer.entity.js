@@ -13,6 +13,7 @@ import { decodeNumberId } from "../../helper/id";
 import { Payment } from "../payment/payment.entity";
 import { WXPay } from "../payment/wxpay";
 import { Shop } from "../shop/shop.entity";
+import { format } from "date-fns"
 
 @Entity()
 export class Transfer extends BaseEntity {
@@ -39,7 +40,8 @@ export class Transfer extends BaseEntity {
   remark;
 
   @CreateDateColumn({
-    type: "timestamp"
+    type: "timestamp",
+    name: "created_at"
   })
   createdAt;
 
@@ -65,29 +67,29 @@ export class Transfer extends BaseEntity {
   }) {
     try {
       const recordNumber = Transfer.makeTransitionRecordNumber();
-      const makeUser = id =>
-        User.create({
-          id: decodeNumberId(id)
-        });
-      const { belongto: payeeUser } = await Shop.findOne({
-        id: decodeNumberId(payee)
-      });
-
+      const payerUser = await User.findOneOrFail(decodeNumberId(payer));
+      const shop = await Shop.createQueryBuilder("shop")
+        .leftJoinAndMapOne("shop.user", User, "user", "user.id = shop.belongto")
+        .andWhere("shop.id = :payee", { payee: decodeNumberId(payee) })
+        .getOne();
+      if (!shop) throw new Error("shop not exits");
+      const payment = await Payment.create({
+        totalFee,
+        paymentMethod
+      }).save()
       await Transfer.create({
+        remark,
+        payment,
         recordNumber,
-        payer: makeUser(payer),
-        payee: payeeUser,
-        payment: Payment.create({
-          paymentMethod,
-          totalFee
-        }),
-        remark
+        payer: payerUser,
+        payee: shop.user,
       }).save();
-
       return new WXPay()
         .setOrderNumber(recordNumber)
         .setTotalFee(totalFee)
-        .preparePayment();
+        .preparePayment().then(res => {
+          return res;
+        })
     } catch (e) {
       throw e;
     }
@@ -98,6 +100,6 @@ export class Transfer extends BaseEntity {
    * @returns {string}
    */
   static makeTransitionRecordNumber() {
-    return "T" + new Date() + Math.floor(Math.sort() * 1000);
+    return "T" + format(new Date(), 'YYYYMMDDHHmm') + Math.floor(Math.random() * 1000000);
   }
 }

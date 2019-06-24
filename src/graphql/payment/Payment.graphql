@@ -22,8 +22,8 @@ enum PAYMENTMETHOD {
     WXPAY
 }
 enum  PAYMENTSTATUS {
-    "待支付"
-    NOT_PAID
+    "支付中"
+    PENDING
 
     "已支付"
     PAID
@@ -35,7 +35,7 @@ enum  PAYMENTSTATUS {
     PAY_FAIL
 }
 
-type WXPayRrepare {
+type WXPayPrepare {
     "appid"
     appid: String
 

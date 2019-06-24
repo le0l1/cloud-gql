@@ -117,7 +117,8 @@ export const makeServer =  context => new ApolloServer({
     phone.resolvers,
     coupon.resolvers,
     order.resolvers,
-    transfer.resolvers
+    transfer.resolvers,
+    payment.resolvers
   ],
   context,
   schemaDirectives: {

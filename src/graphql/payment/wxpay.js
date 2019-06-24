@@ -1,7 +1,7 @@
 import axios from "axios";
 import crypto from "crypto";
-import { json2xml, xml2json, env } from "../../helper/util";
-
+import { env } from "../../helper/util";
+import { js2xml, xml2js } from "xml-js";
 
 export class WXPay {
   secretKey = env("WXPAY_SECRET_KEY");
@@ -12,7 +12,7 @@ export class WXPay {
     body: "大风歌-配件交易",
     out_trade_no: "20150806125346",
     total_fee: 0,
-    spbill_create_ip: "47.104.180.119",
+    spbill_create_ip: env("WXPAY_IP"),
     notify_url: env("WXPAY_NOTIFY_URL"),
     trade_type: "APP",
     nonce_str: this.getNonce_str()
@@ -54,12 +54,15 @@ export class WXPay {
   }
 
   get xmlParamter() {
-    return json2xml({
-      xml: {
-        ...this.basicPayInfo,
-        sign: this.sign
-      }
-    });
+    return js2xml(
+      {
+        xml: {
+          ...this.basicPayInfo,
+          sign: this.sign
+        }
+      },
+      { compact: true, ignoreComment: true, spaces: 4 }
+    );
   }
 
   md5(data) {
@@ -79,7 +82,13 @@ export class WXPay {
         }
       )
       .then(res => {
-        return xml2json(res.data);
+        const { xml } = xml2js(res.data, { compact: true });
+        return Object.keys(xml).reduce((a, b) => {
+          return {
+            ...a,
+            [b]: xml[b]._cdata
+          };
+        }, {});
       });
   }
 }
