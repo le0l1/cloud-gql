@@ -5,7 +5,7 @@ import {
   Column,
   Index
 } from "typeorm";
-import { formateID, decodeID, decodeNumberId } from "../../helper/id";
+import { formateID, decodeID, decodeNumberId } from "../../helper/util";
 
 @Entity()
 export class Sku extends BaseEntity {

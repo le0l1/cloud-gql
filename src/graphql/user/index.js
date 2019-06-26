@@ -1,28 +1,36 @@
-import UserSchema from "./User.gql";
-import { createUserModel } from "./user";
-import { db } from "../../helper/database/db";
-import { User } from "./user.entity";
-import { formateID } from "../../helper/id";
+import UserSchema from './User.gql';
+import { User } from './user.entity';
+import {
+  formateID, decodeNumberId, pipe,
+} from '../../helper/util';
+import { UserNotExistsError, InValidPasswordError } from '../../helper/error';
+import { comparePassword, generateToken } from '../../helper/encode';
+import { getQB, where, withPagination } from '../../helper/sql';
 
-const formateUserId = 
-    (v) => {
-      return v.id ? formateID('user', v.id) : null;
-    }
+const formateUserId = v => (v.id ? formateID('user', v.id) : null);
 
 const resolvers = {
   Query: {
     users: (_, { usersQueryInput }) => {
-      const user = createUserModel(db);
-      return user.fuzzySearchUser(usersQueryInput);
+      const {
+        tsQuery, limit = 8, offset = 1,
+      } = usersQueryInput;
+      return pipe(
+        getQB('user'),
+        where('(user.name like :tsQuery or user.phone like :tsQuery)', {
+          tsQuery: tsQuery ? `%${tsQuery}%` : null,
+        }),
+        withPagination(limit, offset),
+      )(User);
     },
-    user(_, { userQueryInput}) {
-      return User.getUser(userQueryInput)
-    }
+    user(_, { userQueryInput }) {
+      return User.getUser(userQueryInput);
+    },
   },
   Role: {
     CUSTOMER: 1,
     MERCHANT: 2,
-    ROOT: 3
+    ROOT: 3,
   },
   UserConnection: {
     edges(result) {
@@ -31,63 +39,81 @@ const resolvers = {
     pageInfo(result) {
       return {
         hasNextPage: result.length > 0,
-        total: result.length > 0 ? result[0].total : 0
+        total: result.length > 0 ? result[0].total : 0,
       };
-    }
+    },
   },
   User: {
-    id: formateUserId
+    id: formateUserId,
   },
   UserActionResult: {
-    id: formateUserId
+    id: formateUserId,
   },
   Mutation: {
     async register(obj, { userRegisterInput }, ctx) {
       const { phone } = userRegisterInput;
       // check smsCode
       if (userRegisterInput.smsCode !== ctx.session[phone]) {
-        throw new Error("验证码错误");
+        throw new Error('验证码错误');
       }
 
       // forbid root regsiter
       if (userRegisterInput.role === 3) {
-        throw new Error("禁止注册ROOT权限账户");
+        throw new Error('禁止注册ROOT权限账户');
       }
 
       if (await User.checkIfExists(phone)) {
-        throw new Error("该用户已注册");
+        throw new Error('该用户已注册');
       }
-      
 
-      ctx.session[phone] = "";
+      ctx.session[phone] = '';
       return User.createUser(userRegisterInput);
     },
-    loginIn(obj, { userLoginInput }) {
-      const user = createUserModel(db);
-      return user.findUserByPhone(userLoginInput);
+    // TODO: 重构user相关schema
+    async loginIn(_, { userLoginInput }) {
+      const user = await User.findByPhone(userLoginInput.phone);
+      if (!user) throw new UserNotExistsError();
+      if (
+        !comparePassword({
+          hash: user.password,
+          salt: user.salt,
+          pwd: userLoginInput.password,
+        })
+      ) {
+        throw new InValidPasswordError();
+      }
+      return {
+        ...user,
+        token: generateToken(user),
+      };
     },
-    deleteUser(_, { userDeleteInput }) {
-      const user = createUserModel(db);
-      return user.deleteUserByID(userDeleteInput);
+    async deleteUser(_, { userDeleteInput }) {
+      try {
+        const user = User.findOneOrFail({ id: decodeNumberId(userDeleteInput.id) });
+        user.deletedAt = new Date();
+        return user.save();
+      } catch (e) {
+        throw new UserNotExistsError();
+      }
     },
     async retrievePassword(_, { retrievePasswordInput }, ctx) {
       const { phone } = retrievePasswordInput;
       if (retrievePasswordInput.smsCode !== ctx.session[phone]) {
-        throw new Error("验证码错误");
+        throw new Error('验证码错误');
       }
       const { id } = await User.retrievePassword(retrievePasswordInput);
       return {
-        id: formateID("user", id),
-        status: true
+        id: formateID('user', id),
+        status: true,
       };
     },
     updateUser(_, { userUpdateInput }) {
       return User.updateUserInfo(userUpdateInput);
-    }
-  }
+    },
+  },
 };
 
 export const user = {
   typeDef: UserSchema,
-  resolvers
+  resolvers,
 };

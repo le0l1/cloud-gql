@@ -1,5 +1,5 @@
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { decodeIDAndType } from "../../helper/id";
+import { decodeIDAndType } from "../../helper/util";
 
 @Entity()
 export class Image extends BaseEntity {

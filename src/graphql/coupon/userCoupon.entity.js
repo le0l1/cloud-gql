@@ -1,7 +1,7 @@
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { User } from '../user/user.entity'
 import { Coupon } from './coupon.entity'
-import { decodeNumberId } from '../../helper/id'
+import { decodeNumberId } from '../../helper/util'
 
 @Entity()
 export class UserCoupon extends  BaseEntity {

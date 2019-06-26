@@ -1,109 +1,72 @@
-import { formateID } from './id'
-
-// 生成 postgres 占位符
-export const gPlaceholderForPostgres = length =>
-  Array.from({ length })
-    .map((_, i) => `$${i + 1}`)
-    .join(',')
-
-export const isValid = val => val !== null && val !== '' && val !== void 0
-
-// 添加sql 查询条件
-export const addCondition = (sql, condition) => {
-  const limitPart = sql.split(/limit/i)[1]
-  const queryPart = sql.split(/limit/i)[0]
-  let query = ''
-
-  if (/where/i.test(queryPart)) {
-    query = queryPart.split(/where/i).join(`where ${condition} and`)
-  } else {
-    query = `${queryPart} where ${condition}`
-  }
-
-  return limitPart ? query + ' limit' + limitPart : query
-}
-
-// 回调执行sql
-export const excuteQuery = db => async cb => {
-  const client = await db.connect()
-  try {
-    return cb(client)
-  } finally {
-    client.release()
-  }
-}
-
-//  condition arr
-export const withConditions = (conditions, defaultQuery) => {
-  return conditions.reduce((a, b) => {
-    return isValid(b.val)
-      ? {
-        sql: addCondition(a.sql, b.condition(a.payload.length + 1)),
-        payload: [...a.payload, b.val]
-      }
-      : a
-  }, defaultQuery)
-}
-
+export const isValid = val => val !== null && val !== '' && val !== undefined;
 // 生成随机验证码
-export const generateSMSCode = () => {
-  return parseInt(Math.random() * 1000000)
-}
+export const generateSMSCode = () => parseInt(Math.random() * 1000000);
 
 // 合并多个属性到对象
-export const mergeIfValid = (obj, target) =>
-  Object.keys(obj).reduce((a, b) => {
-    if (isValid(obj[b])) {
-      a[b] = obj[b]
-    }
-    return a
-  }, target)
+export const mergeIfValid = (obj, target) => Object.keys(obj).reduce((a, b) => {
+  if (isValid(obj[b])) {
+    a[b] = obj[b];
+  }
+  return a;
+}, target);
 
-// map alias
-export const mapAlias = (rules, obj) => {
-  return Object.keys(obj).reduce((a, b) => {}, a)
-}
 
 // transform entities to tree struct
 export const flatEntitiesTree = (entities, relationMap, chidKey = 'specs') => {
-  const findParent = node =>
-    relationMap.find(({ id }) => id === node.id).parent
-  const flatFn = (arr, child) =>
-    arr.forEach(item => {
-      if (findParent(child) === item.id) {
-        item[chidKey] = item[chidKey] ? [...item[chidKey], child] : [child]
-      } else if (item[chidKey]) {
-        flatFn(item[chidKey], child)
-      }
-    })
+  const findParent = node => relationMap.find(({ id }) => id === node.id).parent;
+  const flatFn = (arr, child) => arr.forEach((item) => {
+    if (findParent(child) === item.id) {
+      item[chidKey] = item[chidKey] ? [...item[chidKey], child] : [child];
+    } else if (item[chidKey]) {
+      flatFn(item[chidKey], child);
+    }
+  });
   return entities.reduce((a, b) => {
     if (findParent(b) === null) {
-      a.push(b)
+      a.push(b);
     } else {
-      flatFn(a, b)
+      flatFn(a, b);
     }
-    return a
-  }, [])
-}
+    return a;
+  }, []);
+};
 
-export const prop = key => obj => obj[key]
+export const prop = key => obj => obj[key];
+export const pipe = (...fns) => val => fns.reduce((a, b) => b(a), val);
+export const formateID = (type, id) => Buffer.from(`${type}/${id}`, 'binary').toString('base64');
+export const decodeIDAndType = str => (str
+  ? Buffer.from(str, 'base64')
+    .toString('binary')
+    .split('/')
+  : [null, null]);
+
+export const decodeID = str => decodeIDAndType(str)[1];
+
+export const decodeNumberId = pipe(
+  decodeID,
+  Number,
+);
+
 
 export const handleSuccessResult = (type, id) => ({
   id: formateID(type, id),
-  status: true
-})
+  status: true,
+});
 
-export const setIfValid = (key, fomate) => payload => {
-  return payload[key]
-    ? {
-      ...payload,
-      [key]: fomate(payload[key])
-    }
-    : payload
-}
+export const setIfValid = (key, fomate) => payload => (payload[key]
+  ? {
+    ...payload,
+    [key]: fomate(payload[key]),
+  }
+  : payload);
 
-export const isEmpty = (arg) => {
-  return arg === '' || Object.keys(arg).length === 0
-}
+export const isEmpty = arg => arg === '' || Object.keys(arg).length === 0;
 
 export const env = k => process.env[k];
+
+export const mapObjectArr = obj => Object.keys(obj).reduce((a, b) => {
+  return {
+    ...a,
+    [b]: obj[b][0],
+  };
+}, {});

@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { decodeNumberId } from '../../helper/id'
+import { decodeNumberId } from '../../helper/util'
 import { Good } from '../good/good.entity'
 import { UserCoupon } from './userCoupon.entity'
 

@@ -1,5 +1,5 @@
 import ShopSchema from "./Shop.graphql";
-import { formateID } from "../../helper/id";
+import { formateID } from "../../helper/util";
 import { Shop } from "./shop.entity";
 
 const resolvers = {

@@ -13,7 +13,7 @@ import {
   handleSuccessResult,
 } from '../../helper/util'
 import { Category } from '../category/category.entity'
-import { decodeNumberId } from '../../helper/id'
+import { decodeNumberId } from '../../helper/util'
 import { Banner } from '../banner/banner.entity'
 import { Comment } from '../comment/comment.entity'
 import {
@@ -22,7 +22,7 @@ import {
   pipe,
   getManyAndCount,
   withPagination
-} from '../../helper/database/sql'
+} from '../../helper/sql'
 import { Phone } from '../phone/phone.entity'
 import { Image } from '../image/image.entity'
 

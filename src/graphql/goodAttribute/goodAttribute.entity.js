@@ -8,9 +8,8 @@ import {
   TreeParent,
   getTreeRepository
 } from "typeorm";
-import { isValid, flatEntitiesTree } from "../../helper/util";
+import { isValid, flatEntitiesTree, formateID, decodeID, decodeNumberId } from "../../helper/util";
 import { decode } from "punycode";
-import { formateID, decodeID, decodeNumberId } from "../../helper/id";
 import { goodAttribute } from ".";
 
 @Entity()

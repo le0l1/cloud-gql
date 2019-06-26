@@ -1,19 +1,17 @@
-import RecommendSchema from "./Recommend.graphql";
-import { Recommend } from "./recommend.entity";
-import { pipe } from '../../helper/database/sql'
-import { prop } from '../../helper/util'
-import { formateID } from '../../helper/id'
+import RecommendSchema from './Recommend.graphql';
+import { Recommend } from './recommend.entity';
+import { prop, formateID, pipe } from '../../helper/util';
 
 const formateRecommendId = pipe(
   prop('key'),
-  formateID.bind(null, 'recommend')
-)
+  formateID.bind(null, 'recommend'),
+);
 
 const resolvers = {
   Query: {
     recommends(_, { searchRecommendInput }) {
       return Recommend.searchRecommend(searchRecommendInput);
-    }
+    },
   },
   Mutation: {
     createRecommend(_, { createRecommendInput }) {
@@ -24,17 +22,17 @@ const resolvers = {
     // },
     deleteRecommend(_, { deleteRecommendInput }) {
       return Recommend.deleteRecommend(deleteRecommendInput);
-    }
+    },
   },
   Recommend: {
-    id: formateRecommendId
+    id: formateRecommendId,
   },
   RecommendActionResult: {
-    id: formateRecommendId
-  }
+    id: formateRecommendId,
+  },
 };
 
 export const recommend = {
   typeDef: RecommendSchema,
-  resolvers
+  resolvers,
 };

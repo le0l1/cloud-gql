@@ -11,7 +11,7 @@ import {
   UserInputError,
   addSchemaLevelResolveFunction
 } from "apollo-server-koa";
-import { decodeID, decodeIDAndType } from "../../helper/id";
+import { decodeID, decodeIDAndType } from "../../helper/util";
 import { User } from "../user/user.entity";
 
 @Entity()

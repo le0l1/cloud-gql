@@ -8,8 +8,7 @@ import {
 } from "typeorm";
 import { Shop } from "../shop/shop.entity";
 import { Good } from "../good/good.entity";
-import { isValid, mergeIfValid } from "../../helper/util";
-import { decodeNumberId, formateID, decodeIDAndType } from "../../helper/id";
+import { isValid, mergeIfValid, decodeNumberId, formateID, decodeIDAndType } from "../../helper/util";
 
 @Entity()
 export class Banner extends BaseEntity {

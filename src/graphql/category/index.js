@@ -1,8 +1,6 @@
-import CategorySchema from "./Category.graphql";
-import { createCategoryModel } from "./category";
-import { db } from "../../helper/database/db";
-import { formateID } from "../../helper/id";
-import { Category } from "./category.entity";
+import CategorySchema from './Category.graphql';
+import { formateID, decodeNumberId } from '../../helper/util';
+import { Category } from './category.entity';
 
 const resolvers = {
   Query: {
@@ -10,23 +8,22 @@ const resolvers = {
       return Category.searchCategorys(query);
     },
     category(_, { query = {} }) {
-      const categoryModel = createCategoryModel(db);
-      return categoryModel.searchCategory(query);
-    }
+      return Category.findOneOrFail(decodeNumberId(query.id));
+    },
   },
   Category: {
     id(v) {
-      return formateID("category", v.id);
-    }
+      return formateID('category', v.id);
+    },
   },
   CategoryStatus: {
     HOT: 1,
-    NORMAL: 2
+    NORMAL: 2,
   },
   CategoryResult: {
     id(v) {
-      return formateID("category", v.id);
-    }
+      return formateID('category', v.id);
+    },
   },
   Mutation: {
     createCategory(_, { category }) {
@@ -36,12 +33,12 @@ const resolvers = {
       return Category.deleteCategory(category);
     },
     updateCategory(_, { category }) {
-      return Category.updateCategory(category)
-    }
-  }
+      return Category.updateCategory(category);
+    },
+  },
 };
 
 export const category = {
   resolvers,
-  typeDef: CategorySchema
+  typeDef: CategorySchema,
 };

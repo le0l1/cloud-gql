@@ -1,37 +1,35 @@
-import PhoneSchema from './Phone.graphql'
-import { Phone } from './phone.entity'
-import { formateID } from '../../helper/id'
-import { prop } from '../../helper/util'
-import { pipe } from '../../helper/database/sql'
+import PhoneSchema from './Phone.graphql';
+import { Phone } from './phone.entity';
+import { prop, formateID, pipe } from '../../helper/util';
 
 const formatePhoneId = pipe(
   prop('id'),
-  formateID.bind(null, 'phone')
-)
+  formateID.bind(null, 'phone'),
+);
 
 const resolvers = {
   Query: {
-    phones (_, { query }) {
-      return Phone.searchPhone(query)
-    }
+    phones(_, { query }) {
+      return Phone.searchPhone(query);
+    },
   },
   Mutation: {
-    updatePhone (_, { updatePhoneInput }) {
-      return Phone.updatePhone( updatePhoneInput )
-    }
+    updatePhone(_, { updatePhoneInput }) {
+      return Phone.updatePhone(updatePhoneInput);
+    },
   },
   Phone: {
-    shopId (v) {
-      return formateID('shop', v.shopId)
+    shopId(v) {
+      return formateID('shop', v.shopId);
     },
-    id: formatePhoneId
+    id: formatePhoneId,
   },
   PhoneActionResult: {
-    id: formatePhoneId
-  }
-}
+    id: formatePhoneId,
+  },
+};
 
 export const phone = {
   typeDef: PhoneSchema,
-  resolvers
-}
+  resolvers,
+};

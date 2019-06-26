@@ -4,6 +4,7 @@ import path from "path";
 import { makeServer, app } from "./app";
 import { createConnection } from "typeorm";
 import { setGraphqlContext } from "./helper/auth/setContextUser";
+import { env } from "./helper/util";
 
 makeServer(setGraphqlContext).applyMiddleware({ app });
 
@@ -14,9 +15,7 @@ dotenv.config({ path: getEnvPath() });
 
 // orm connection
 export default createConnection().then(() => {
-  app.listen({ port: process.env.PORT }, () => {
-    console.log(
-      `🚀 Server ready at http://localhost:${process.env.PORT}/graphql`
-    );
+  app.listen({ port: env("PORT") }, () => {
+    console.log(`🚀 Server ready at http://localhost:${env("PORT")}/graphql`);
   });
 });

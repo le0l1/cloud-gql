@@ -1,17 +1,17 @@
-import BusinessCircleSchema from "./BusinessCircle.gql";
-import { formateID } from "../../helper/id";
-import { BusinessCircle } from "./businessCircle.entity";
+import BusinessCircleSchema from './BusinessCircle.gql';
+import { formateID } from '../../helper/util';
+import { BusinessCircle } from './businessCircle.entity';
 
 const resolvers = {
   Query: {
-    businessCircles(_, { query = {}}) {
-      return BusinessCircle.searchBusinessCircle(query)
-    }
+    businessCircles(_, { query = {} }) {
+      return BusinessCircle.searchBusinessCircle(query);
+    },
   },
   Mutation: {
     createBusinessCircle(_, { createBusinessCircleInput }) {
       return BusinessCircle.createBusinessCircle(createBusinessCircleInput);
-    }
+    },
   },
   REPORTSTATUS: {
     IS_NOT_REPORT: 1,
@@ -21,14 +21,14 @@ const resolvers = {
     id(v) {
       return v.id ? formateID('businessCircle', v.id) : null;
     },
-  }, 
+  },
   BusinessCircle: {
     id(v) {
       return v.id ? formateID('businessCircle', v.id) : null;
     },
     images(v) {
-      return v.images ? v.images.map(a => a.path) : []
-    }
+      return v.images ? v.images.map(a => a.path) : [];
+    },
   },
   BusinessCircleConnection: {
     edges(v) {
@@ -36,11 +36,11 @@ const resolvers = {
     },
     pageInfo(v) {
       return v;
-    }
-  }
-}
+    },
+  },
+};
 
 export const businessCircle = {
   typeDef: BusinessCircleSchema,
-  resolvers
+  resolvers,
 };

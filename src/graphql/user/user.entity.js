@@ -5,12 +5,10 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
-  ManyToMany,
-  JoinTable,
 } from 'typeorm'
 import { Comment } from "../comment/comment.entity";
-import { hashPassword } from "../../helper/auth/encode";
-import { formateID, decodeNumberId } from "../../helper/id";
+import { hashPassword } from "../../helper/encode";
+import { formateID, decodeNumberId } from "../../helper/util";
 import { UserCoupon } from '../coupon/userCoupon.entity'
 import { Transfer } from '../transfer/transfer.entity';
 
@@ -77,6 +75,13 @@ export class User extends BaseEntity {
   })
   garage;
 
+  @Column({
+    type: 'bigint',
+    default: 0,
+    name: 'total_fee'
+  })
+  totalFee;
+
   @Column({ comment: "user`s area", type: "character varying", nullable: true })
   area;
 
@@ -88,15 +93,6 @@ export class User extends BaseEntity {
 
   @OneToMany(type => UserCoupon, userCoupon => userCoupon.user)
   userCoupon;
-
-  @ManyToMany(type => Transfer, transfer => transfer.payee)
-  @JoinTable()
-  transfer;
-
-
-  @ManyToMany(type => Transfer, transfer => transfer.payer)
-  @JoinTable()
-  transfer;
 
   static retrievePassword({ phone, password }) {
     return User.findOne({
@@ -151,5 +147,13 @@ export class User extends BaseEntity {
       id: realId,
       status: true,
     }))
+  }
+
+  static findByPhone(phone) {
+    return User.findOneOrFail({
+      where: {
+        phone
+      }
+    })
   }
 }

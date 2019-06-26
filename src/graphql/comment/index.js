@@ -1,22 +1,22 @@
-import CommentShema from "./Comment.gql";
-import { Comment } from "./comment.entity";
-import { formateID, decodeID } from "../../helper/id";
-import { User } from "../user/user.entity";
+import CommentShema from './Comment.gql';
+import { Comment } from './comment.entity';
+import { formateID, decodeID } from '../../helper/util';
+import { User } from '../user/user.entity';
 
 const resolvers = {
   Mutation: {
     async createComment(_, { createCommentInput }) {
       const { id } = await Comment.createComment(createCommentInput);
       return {
-        id: formateID("comment", id),
-        status: true
+        id: formateID('comment', id),
+        status: true,
       };
-    }
+    },
   },
   Query: {
     comments(_, { query }) {
       return Comment.getCommentList(query);
-    }
+    },
   },
   CommentConnection: {
     edges(v) {
@@ -24,11 +24,11 @@ const resolvers = {
     },
     pageInfo(v) {
       return v;
-    }
-  }
+    },
+  },
 };
 
 export const comment = {
   typeDef: CommentShema,
-  resolvers
+  resolvers,
 };

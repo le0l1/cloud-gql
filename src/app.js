@@ -1,78 +1,67 @@
-import Koa from "koa";
-import Router from "koa-router";
-import parameter from "koa-parameter";
-import bodyparser from "koa-bodyparser";
-import session from "koa-session";
-import { ApolloServer } from "apollo-server-koa";
-import { koa as voyagerMiddleware } from "graphql-voyager/middleware";
-import { banner } from "./graphql/banner";
-import { demand } from "./graphql/demand";
-import { good } from "./graphql/good";
-import { recommend } from "./graphql/recommend";
-import { dateResolver } from "./helper/scalar/Date";
-import { businessCircle } from "./graphql/businessCircle";
-import { user } from "./graphql/user";
-import { AuthDriective } from "./helper/auth/authDirective";
-import { root } from "./graphql/root";
-import { numberResolver } from "./helper/scalar/Number";
-import { category } from "./graphql/category";
-import { shop } from "./graphql/shop";
-import { thirdAPI } from "./graphql/thridAPI";
-import { comment } from "./graphql/comment";
-import { goodAttribute } from "./graphql/goodAttribute";
-import { sku } from "./graphql/sku";
-import { accessories } from "./graphql/accessories";
-import { rfq } from "./graphql/rfq";
-import { image } from "./graphql/image";
-import { phone } from "./graphql/phone"
-import { coupon } from './graphql/coupon/coupon'
-import { order } from "./graphql/order/order"
-import { payment } from './graphql/payment/payment'
-import { transfer } from './graphql/transfer/transfer'
+import Koa from 'koa';
+import parameter from 'koa-parameter';
+import bodyparser from 'koa-bodyparser';
+import xmlParser from 'koa-xml-body';
+import session from 'koa-session';
+import { ApolloServer } from 'apollo-server-koa';
+import { koa as voyagerMiddleware } from 'graphql-voyager/middleware';
+import { banner } from './graphql/banner';
+import { demand } from './graphql/demand';
+import { good } from './graphql/good';
+import { recommend } from './graphql/recommend';
+import { dateResolver } from './helper/scalar/Date';
+import { businessCircle } from './graphql/businessCircle';
+import { user } from './graphql/user';
+import { AuthDriective } from './helper/directive/authDirective';
+import { root } from './graphql/root';
+import { numberResolver } from './helper/scalar/Number';
+import { category } from './graphql/category';
+import { shop } from './graphql/shop';
+import { thirdAPI } from './graphql/thridAPI';
+import { comment } from './graphql/comment';
+import { goodAttribute } from './graphql/goodAttribute';
+import { sku } from './graphql/sku';
+import { accessories } from './graphql/accessories';
+import { rfq } from './graphql/rfq';
+import { image } from './graphql/image';
+import { phone } from './graphql/phone';
+import { coupon } from './graphql/coupon';
+import { order } from './graphql/order/order';
+import { payment } from './graphql/payment/payment';
+import { transfer } from './graphql/transfer/transfer';
+import router from './graphql/payment/payment.route';
 
 const app = new Koa();
-const router = new Router();
 
-router.get('/pay', res => {
-  console.log(res)
-})
+app.keys = ['asdqwdqwdqqwdqdqwd'];
 
-app.keys = ["asdqwdqwdqqwdqdqwd"];
-
-//body parser
+app.use(xmlParser());
 app.use(bodyparser());
-
-// session
 app.use(session(app));
-
-// paramter validate
 parameter(app);
 
-// error handing
 app.use(async (ctx, next) => {
   try {
     await next();
   } catch (err) {
     ctx.status = err.status || 500;
     ctx.body = {
-      error: err.message
+      error: err.message,
     };
   }
 });
 
-// router
 app.use(router.routes()).use(router.allowedMethods());
 
 // graphql voyager
 router.all(
-  "/voyager",
+  '/voyager',
   voyagerMiddleware({
-    endpointUrl: "/graphql"
-  })
+    endpointUrl: '/graphql',
+  }),
 );
 
-
-export const makeServer =  context => new ApolloServer({
+export const makeServer = context => new ApolloServer({
   typeDefs: [
     root.typeDef,
     banner.typeDef,
@@ -94,7 +83,7 @@ export const makeServer =  context => new ApolloServer({
     coupon.typeDef,
     order.typeDef,
     payment.typeDef,
-    transfer.typeDef
+    transfer.typeDef,
   ],
   resolvers: [
     dateResolver,
@@ -118,19 +107,17 @@ export const makeServer =  context => new ApolloServer({
     coupon.resolvers,
     order.resolvers,
     transfer.resolvers,
-    payment.resolvers
+    payment.resolvers,
   ],
   context,
   schemaDirectives: {
-    auth: AuthDriective
+    auth: AuthDriective,
   },
   playground: {
     settings: {
-      "request.credentials": "include"
-    }
-  }
+      'request.credentials': 'include',
+    },
+  },
 });
 
-
 export { app };
-

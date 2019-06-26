@@ -1,6 +1,6 @@
-import GoodSchema from "./Good.gql";
-import { Good } from "./good.entity";
-import { formateID } from "../../helper/id";
+import GoodSchema from './Good.gql';
+import { Good } from './good.entity';
+import { formateID } from '../../helper/util';
 
 const resolvers = {
   Mutation: {
@@ -12,15 +12,15 @@ const resolvers = {
     },
     deleteGood(_, { deleteGoodInput }) {
       return Good.deleteGood(deleteGoodInput);
-    }
+    },
   },
   Good: {
     id(v) {
-      return v.id ? formateID("good", v.id) : null;
+      return v.id ? formateID('good', v.id) : null;
     },
     shopId(v) {
-      return v.shopId ? formateID("shop", v.shopId) : null;
-    }
+      return v.shopId ? formateID('shop', v.shopId) : null;
+    },
   },
   Query: {
     good(_, { query = {} }) {
@@ -28,7 +28,7 @@ const resolvers = {
     },
     goods(_, { query = {} }) {
       return Good.searchGoodConnection(query);
-    }
+    },
   },
   GoodConnection: {
     edges(v) {
@@ -36,14 +36,14 @@ const resolvers = {
     },
     pageInfo(v) {
       return v;
-    }
+    },
   },
   GOODSTATUS: {
     ONLINE: 1,
-    OFFLINE: 2
-  }
+    OFFLINE: 2,
+  },
 };
 export const good = {
   typeDef: GoodSchema,
-  resolvers
+  resolvers,
 };

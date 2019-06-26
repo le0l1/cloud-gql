@@ -7,7 +7,7 @@ import {
 } from 'typeorm'
 import { Image } from '../image/image.entity'
 import { User } from '../user/user.entity'
-import { decodeNumberId } from '../../helper/id'
+import { decodeNumberId } from '../../helper/util'
 
 @Entity()
 export class BusinessCircle extends BaseEntity {

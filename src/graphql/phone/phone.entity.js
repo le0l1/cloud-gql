@@ -1,5 +1,5 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import {decodeNumberId} from "../../helper/id";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { decodeNumberId } from '../../helper/util';
 
 @Entity()
 export class Phone extends BaseEntity {
@@ -8,43 +8,43 @@ export class Phone extends BaseEntity {
 
   @Column({
     type: 'character varying',
-    nullable: true
+    nullable: true,
   })
   phone;
-  
+
   @Column({
     type: 'int',
-    name:'shop_id'
+    name: 'shop_id',
   })
   shopId;
 
   @Column({
     type: 'int',
-    default: 100
+    default: 100,
   })
-  count
+  count;
 
   static savePhone(phones, shopId) {
     const phoneArr = phones.map(p =>
-        Phone.create({
+      Phone.create({
         phone: p,
-        shopId
-      })
+        shopId,
+      }),
     );
     Phone.delete({
       where: {
-        shopId
-      }
-    })
+        shopId,
+      },
+    });
     return Phone.save(phoneArr);
   }
 
-  static  searchPhone({ shopId }) {
+  static searchPhone({ shopId }) {
     return Phone.find({
       where: {
-        shopId: decodeNumberId(shopId)
-      }
-    })
+        shopId: decodeNumberId(shopId),
+      },
+    });
   }
 
   /**
@@ -56,15 +56,18 @@ export class Phone extends BaseEntity {
   static async updatePhone({ id, ...rest }) {
     try {
       const realId = decodeNumberId(id);
-      await Phone.update({
-        id: realId
-      }, rest)
+      await Phone.update(
+        {
+          id: realId,
+        },
+        rest,
+      );
       return {
         id: realId,
-        status: true
-      }
-    } catch(e) {
-      throw  e;
+        status: true,
+      };
+    } catch (e) {
+      throw e;
     }
   }
 }

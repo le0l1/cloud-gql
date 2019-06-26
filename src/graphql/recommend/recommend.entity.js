@@ -5,7 +5,7 @@ import {
   Index,
   PrimaryGeneratedColumn
 } from 'typeorm'
-import { decodeID, decodeIDAndType, decodeNumberId } from '../../helper/id'
+import { decodeID, decodeIDAndType, decodeNumberId } from '../../helper/util'
 import { Good } from '../good/good.entity'
 import { Shop } from '../shop/shop.entity'
 import { tryStatement } from '@babel/types'
