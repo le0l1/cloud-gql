@@ -27,7 +27,7 @@ type Good implements Node {
   shopId: ID
 
   "商品状态"
-  status: GOODSTATUS
+  status: GoodStatus
 
   "商品副标题"
   subTitle: String
@@ -46,7 +46,7 @@ type Good implements Node {
 }
 
 "商品状态枚举"
-enum GOODSTATUS {
+enum GoodStatus {
   "在线"
   ONLINE
   "下线"
@@ -92,7 +92,7 @@ input GoodCreateInput {
   shopId: ID!
 
   "商品状态"
-  status: GOODSTATUS
+  status: GoodStatus
 
   "商品副标题"
   subTitle: String
@@ -130,7 +130,7 @@ input GoodUpdateInput {
   shopId: ID
 
   "商品状态"
-  status: GOODSTATUS
+  status: GoodStatus
 
   "商品副标题"
   subTitle: String

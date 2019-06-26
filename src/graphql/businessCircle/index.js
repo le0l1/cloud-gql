@@ -1,6 +1,7 @@
 import BusinessCircleSchema from './BusinessCircle.gql';
 import { formateID } from '../../helper/util';
 import { BusinessCircle } from './businessCircle.entity';
+import { ReportStatus } from '../../helper/status';
 
 const resolvers = {
   Query: {
@@ -13,10 +14,7 @@ const resolvers = {
       return BusinessCircle.createBusinessCircle(createBusinessCircleInput);
     },
   },
-  REPORTSTATUS: {
-    IS_NOT_REPORT: 1,
-    IS_REPORTED: 2,
-  },
+  ReportStatus,
   BusinessCircleOperationResult: {
     id(v) {
       return v.id ? formateID('businessCircle', v.id) : null;

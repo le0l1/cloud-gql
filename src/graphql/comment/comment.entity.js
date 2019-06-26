@@ -5,40 +5,35 @@ import {
   Column,
   UpdateDateColumn,
   ManyToOne,
-  OneToMany
-} from "typeorm";
-import {
-  UserInputError,
-  addSchemaLevelResolveFunction
-} from "apollo-server-koa";
-import { decodeID, decodeIDAndType } from "../../helper/util";
-import { User } from "../user/user.entity";
+} from 'typeorm';
+import { decodeID, decodeIDAndType } from '../../helper/util';
+import { User } from '../user/user.entity';
 
 @Entity()
 export class Comment extends BaseEntity {
   @PrimaryGeneratedColumn()
   id;
 
-  @Column({ type: "character varying", length: 60, comment: "评论内容" })
+  @Column({ type: 'character varying', length: 60, comment: '评论内容' })
   comment;
 
   @UpdateDateColumn({
-    name: 'updated_at'
+    name: 'updated_at',
   })
   updatedAt;
 
   @Column({
-    type: "character varying",
-    comment: "comment type",
-    name: "comment_type",
-    nullable: true
+    type: 'character varying',
+    comment: 'comment type',
+    name: 'comment_type',
+    nullable: true,
   })
   commentType;
 
   @Column({
-    type: "int",
-    name: "comment_type_id",
-    nullable: true
+    type: 'int',
+    name: 'comment_type_id',
+    nullable: true,
   })
   commentTypeId;
 
@@ -51,7 +46,7 @@ export class Comment extends BaseEntity {
       commentType,
       commentTypeId,
       belongto: User.create({ id: decodeID(belongto) }),
-      ...rest
+      ...rest,
     }).save();
   }
 
@@ -62,9 +57,9 @@ export class Comment extends BaseEntity {
     return Comment.findAndCount({
       where: {
         commentType,
-        commentTypeId
+        commentTypeId,
       },
-      relations: ["belongto"]
+      relations: ['belongto'],
     });
   }
 }

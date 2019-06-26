@@ -64,9 +64,7 @@ export const isEmpty = arg => arg === '' || Object.keys(arg).length === 0;
 
 export const env = k => process.env[k];
 
-export const mapObjectArr = obj => Object.keys(obj).reduce((a, b) => {
-  return {
-    ...a,
-    [b]: obj[b][0],
-  };
-}, {});
+export const mapObjectArr = obj => Object.keys(obj).reduce((a, b) => ({
+  ...a,
+  [b]: obj[b][0],
+}), {});

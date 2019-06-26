@@ -1,7 +1,6 @@
 import CommentShema from './Comment.gql';
 import { Comment } from './comment.entity';
-import { formateID, decodeID } from '../../helper/util';
-import { User } from '../user/user.entity';
+import { formateID } from '../../helper/util';
 
 const resolvers = {
   Mutation: {

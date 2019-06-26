@@ -5,11 +5,11 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
-} from 'typeorm'
-import { Comment } from "../comment/comment.entity";
-import { hashPassword } from "../../helper/encode";
-import { formateID, decodeNumberId } from "../../helper/util";
-import { UserCoupon } from '../coupon/userCoupon.entity'
+} from 'typeorm';
+import { Comment } from '../comment/comment.entity';
+import { hashPassword } from '../../helper/encode';
+import { formateID, decodeNumberId } from '../../helper/util';
+import { UserCoupon } from '../coupon/userCoupon.entity';
 import { Transfer } from '../transfer/transfer.entity';
 
 @Entity()
@@ -17,30 +17,30 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id;
 
-  @Column({ comment: "user name", type: "character varying", nullable: true })
+  @Column({ comment: 'user name', type: 'character varying', nullable: true })
   name;
 
-  @Column({ comment: "user age", type: "smallint", nullable: true })
+  @Column({ comment: 'user age', type: 'smallint', nullable: true })
   age;
 
   @Column({
-    comment: "user address",
-    type: "character varying",
-    nullable: true
+    comment: 'user address',
+    type: 'character varying',
+    nullable: true,
   })
   address;
 
   @Column({
-    type: "character varying",
-    nullable: true
+    type: 'character varying',
+    nullable: true,
   })
   profilePicture;
 
   @Column({
-    comment: "user password",
-    type: "character",
+    comment: 'user password',
+    type: 'character',
     length: 64,
-    nullable: true
+    nullable: true,
   })
   password;
 
@@ -48,44 +48,44 @@ export class User extends BaseEntity {
   created_at;
 
   @Column({
-    comment: "user phone number",
-    type: "character varying",
-    nullable: true
+    comment: 'user phone number',
+    type: 'character varying',
+    nullable: true,
   })
   phone;
 
   @Column({
-    comment: "salt for password",
-    type: "character varying",
-    nullable: true
+    comment: 'salt for password',
+    type: 'character varying',
+    nullable: true,
   })
   salt;
 
   @Column({
-    comment: "user role 1. customer 2. merchant 3. root",
-    type: "smallint",
-    default: 1
+    comment: 'user role 1. customer 2. merchant 3. root',
+    type: 'smallint',
+    default: 1,
   })
   role;
 
   @Column({
-    comment: "user`s garage",
-    type: "character varying",
-    nullable: true
+    comment: 'user`s garage',
+    type: 'character varying',
+    nullable: true,
   })
   garage;
 
   @Column({
     type: 'bigint',
     default: 0,
-    name: 'total_fee'
+    name: 'total_fee',
   })
   totalFee;
 
-  @Column({ comment: "user`s area", type: "character varying", nullable: true })
+  @Column({ comment: 'user`s area', type: 'character varying', nullable: true })
   area;
 
-  @Column({ comment: "user`s city", type: "character varying", nullable: true })
+  @Column({ comment: 'user`s city', type: 'character varying', nullable: true })
   city;
 
   @OneToMany(type => Comment, comment => comment.belongto)
@@ -96,9 +96,9 @@ export class User extends BaseEntity {
 
   static retrievePassword({ phone, password }) {
     return User.findOne({
-      where: { phone }
-    }).then(currentUser => {
-      if (!currentUser) throw new Error("用户不存在");
+      where: { phone },
+    }).then((currentUser) => {
+      if (!currentUser) throw new Error('用户不存在');
 
       const { hashed, salt } = hashPassword(password);
       currentUser.salt = salt;
@@ -110,8 +110,8 @@ export class User extends BaseEntity {
   static checkIfExists(phone) {
     return User.findOne({
       where: {
-        phone
-      }
+        phone,
+      },
     }).then(res => !!res);
   }
 
@@ -120,19 +120,19 @@ export class User extends BaseEntity {
     return User.create({
       password: hashed,
       salt,
-      ...rest
+      ...rest,
     })
       .save()
       .then(res => ({
-        id: formateID("user", res.id)
+        id: formateID('user', res.id),
       }));
   }
 
   static getUser({ id }) {
     return User.findOne({
       where: {
-        id: decodeNumberId(id)
-      }
+        id: decodeNumberId(id),
+      },
     });
   }
 
@@ -140,20 +140,20 @@ export class User extends BaseEntity {
     const realId = decodeNumberId(id);
     return User.update(
       {
-        id: realId
+        id: realId,
       },
-      rest
+      rest,
     ).then(() => ({
       id: realId,
       status: true,
-    }))
+    }));
   }
 
   static findByPhone(phone) {
     return User.findOneOrFail({
       where: {
-        phone
-      }
-    })
+        phone,
+      },
+    });
   }
 }

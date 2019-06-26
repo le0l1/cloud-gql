@@ -2,6 +2,7 @@ import CouponScheam from './coupon.graphql';
 import { Coupon } from './coupon.entity';
 import { prop, pipe, formateID } from '../../helper/util';
 import { UserCoupon } from './userCoupon.entity';
+import { CouponStatus } from '../../helper/status';
 
 const formateCouponId = pipe(
   prop('id'),
@@ -27,14 +28,9 @@ const resolvers = {
       return Coupon.searchCoupon(query);
     },
   },
+  CouponStatus,
   Coupon: {
     id: formateCouponId,
-  },
-  CouponStatus: {
-    HAS_EXPIRED: 1,
-    AVAILABLE: 2,
-    HAS_USED: 3,
-    HAS_COLLECTED: 4,
   },
   CouponActionResult: {
     id: formateCouponId,

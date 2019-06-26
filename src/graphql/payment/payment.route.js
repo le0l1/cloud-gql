@@ -36,7 +36,7 @@ router.post(
           recordNumber: xml.out_trade_no,
         })
         .getOne();
-        
+
       if (checkTransferStatus(transferRecord.payment.paymentStatus)) {
         return next();
       }

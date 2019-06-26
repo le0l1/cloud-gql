@@ -1,18 +1,20 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { User } from '../user/user.entity'
-import { Coupon } from './coupon.entity'
-import { decodeNumberId } from '../../helper/util'
+import {
+  BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from '../user/user.entity';
+import { Coupon } from './coupon.entity';
+import { decodeNumberId } from '../../helper/util';
 
 @Entity()
-export class UserCoupon extends  BaseEntity {
+export class UserCoupon extends BaseEntity {
   @PrimaryGeneratedColumn()
   id;
 
   @Column({
     name: 'use_status',
     type: 'boolean',
-    comment: "使用情况",
-    default: false
+    comment: '使用情况',
+    default: false,
   })
   useStatus;
 
@@ -28,9 +30,9 @@ export class UserCoupon extends  BaseEntity {
    * @param coupon
    */
   static async hasCollected(user, coupon) {
-    return  UserCoupon.createQueryBuilder("userCoupon")
+    return UserCoupon.createQueryBuilder('userCoupon')
       .innerJoin('userCoupon.user', 'user', 'user.id = :userId', { userId: user.id })
-      .innerJoin('userCoupon.coupon', 'coupon', 'coupon.id = :couponId', { couponId: coupon.id})
+      .innerJoin('userCoupon.coupon', 'coupon', 'coupon.id = :couponId', { couponId: coupon.id })
       .getOne();
   }
 
@@ -42,26 +44,26 @@ export class UserCoupon extends  BaseEntity {
    */
   static async collectCoupon({ userId, id: couponId }) {
     const user = User.create({
-      id: decodeNumberId(userId)
+      id: decodeNumberId(userId),
     });
 
     const coupon = await Coupon.findOne({
-      id: decodeNumberId(couponId)
+      id: decodeNumberId(couponId),
     });
 
     if (coupon.isExpired) {
-      throw new Error('优惠劵已过期')
+      throw new Error('优惠劵已过期');
     }
     if (await UserCoupon.hasCollected(user, coupon)) {
-      throw new Error('该用户已经领取了优惠劵')
+      throw new Error('该用户已经领取了优惠劵');
     }
 
     try {
-      await  UserCoupon.storeUserCoupon(user, coupon);
+      await UserCoupon.storeUserCoupon(user, coupon);
       return {
         id: coupon.id,
-        status: false
-      }
+        status: false,
+      };
     } catch (e) {
       throw e;
     }
@@ -70,7 +72,7 @@ export class UserCoupon extends  BaseEntity {
   static async storeUserCoupon(user, coupon) {
     await UserCoupon.create({
       user,
-      coupon
+      coupon,
     }).save();
   }
 }

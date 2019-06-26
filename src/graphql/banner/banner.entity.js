@@ -4,46 +4,48 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
-  BaseEntity
-} from "typeorm";
-import { Shop } from "../shop/shop.entity";
-import { Good } from "../good/good.entity";
-import { isValid, mergeIfValid, decodeNumberId, formateID, decodeIDAndType } from "../../helper/util";
+  BaseEntity,
+} from 'typeorm';
+import { Shop } from '../shop/shop.entity';
+import { Good } from '../good/good.entity';
+import {
+  isValid, mergeIfValid, decodeNumberId, formateID, decodeIDAndType,
+} from '../../helper/util';
 
 @Entity()
 export class Banner extends BaseEntity {
   @PrimaryGeneratedColumn()
   id;
 
-  @Column({ type: "character varying", nullable: true, comment: "轮播图标题" })
+  @Column({ type: 'character varying', nullable: true, comment: '轮播图标题' })
   title;
 
   @Column({
-    type: "character varying",
+    type: 'character varying',
     nullable: true,
-    comment: "轮播图图片地址"
+    comment: '轮播图图片地址',
   })
   path;
 
   @Column({
-    type: "character varying",
+    type: 'character varying',
     nullable: true,
-    comment: "轮播图文案内容"
+    comment: '轮播图文案内容',
   })
   content;
 
   @Column({
-    type: "character varying",
+    type: 'character varying',
     nullable: true,
     length: 10,
-    comment: "轮播图标签"
+    comment: '轮播图标签',
   })
   tag;
 
   @Column({
-    type: "character varying",
+    type: 'character varying',
     nullable: true,
-    comment: "轮播图跳转链接"
+    comment: '轮播图跳转链接',
   })
   link;
 
@@ -51,28 +53,28 @@ export class Banner extends BaseEntity {
   createdAt;
 
   @Column({
-    type: "character varying",
+    type: 'character varying',
     nullable: true,
-    comment: "轮播图所属类型",
-    name: "banner_type"
+    comment: '轮播图所属类型',
+    name: 'banner_type',
   })
   bannerType;
 
   @Column({
-    type: "int",
+    type: 'int',
     nullable: true,
-    comment: "轮播图所属的类型的id",
-    name: "banner_type_id"
+    comment: '轮播图所属的类型的id',
+    name: 'banner_type_id',
   })
   bannerTypeId;
 
-  @CreateDateColumn({ name: "created_at" })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt;
 
   @Column({
-    type: "timestamp",
-    name: "deleted_at",
-    nullable: true
+    type: 'timestamp',
+    name: 'deleted_at',
+    nullable: true,
   })
   deletedAt;
 
@@ -84,52 +86,50 @@ export class Banner extends BaseEntity {
       currentBanner.bannerTypeId = Number(bannerTypeId);
     }
     return currentBanner.save().then(({ id }) => ({
-      id: formateID("banner", id),
-      status: true
+      id: formateID('banner', id),
+      status: true,
     }));
   }
 
   static deleteBanner(id) {
     return Banner.delete({
-      id: decodeNumberId(id)
+      id: decodeNumberId(id),
     }).then(() => ({
       id,
-      status: true
+      status: true,
     }));
   }
 
   static searchBanner({ tag, bannerTypeId: formatedId }) {
     const [bannerType, bannerTypeId] = decodeIDAndType(formatedId);
     return Banner.find({
-      where: mergeIfValid({ tag, bannerType, bannerTypeId }, {})
+      where: mergeIfValid({ tag, bannerType, bannerTypeId }, {}),
     });
   }
 
   static updateBanner({ id, ...rest }) {
     return Banner.update(
       {
-        id: decodeNumberId(id)
+        id: decodeNumberId(id),
       },
-      { ...rest }
+      { ...rest },
     ).then(() => ({
       id,
-      status: true
+      status: true,
     }));
   }
 
   static createBannerArr(bannerType, bannerTypeId, bannerArr = []) {
-    const transformBanner = node => {
-      return {
-        path: node,
-        bannerType,
-        bannerTypeId
-      };
-    };
+    const transformBanner = node => ({
+      path: node,
+      bannerType,
+      bannerTypeId,
+    });
     // delete banner every time
     Banner.delete({
       bannerType,
-      bannerTypeId
-    })
+      bannerTypeId,
+    });
 
     Banner.save(bannerArr.map(transformBanner));
   }

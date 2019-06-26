@@ -1,21 +1,8 @@
 import PaymentSchema from 'Payment.graphql';
-
-// 已支付
-export const PAID = 2;
-// 支付中
-export const PENDING = 3;
-// 已取消
-export const CANCELED = 10;
-// 支付失败
-export const PAY_FAIL = 20;
+import { PaymentStatus } from '../../helper/status';
 
 const resolvers = {
-  PAYMENTSTATUS: {
-    PAID,
-    PENDING,
-    CANCELED,
-    PAY_FAIL,
-  },
+  PaymentStatus,
   PAYMENTMETHOD: {
     // 支付宝
     ALIPAY: 1,

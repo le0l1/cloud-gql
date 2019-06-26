@@ -3,9 +3,9 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Index
-} from "typeorm";
-import { formateID, decodeID, decodeNumberId } from "../../helper/util";
+  Index,
+} from 'typeorm';
+import { formateID, decodeID, decodeNumberId } from '../../helper/util';
 
 @Entity()
 export class Sku extends BaseEntity {
@@ -13,62 +13,58 @@ export class Sku extends BaseEntity {
   id;
 
   @Column({
-    type: "character varying",
-    name: "sku_attrs"
+    type: 'character varying',
+    name: 'sku_attrs',
   })
   skuAttrs;
 
   @Column({
-    type: "character varying",
-    name: "sku_code"
+    type: 'character varying',
+    name: 'sku_code',
   })
   skuCode;
 
   @Column({
-    type: "int",
-    name: "good_id"
+    type: 'int',
+    name: 'good_id',
   })
   goodId;
 
   @Column({
-    type: "numeric",
-    name: "sku_price"
+    type: 'numeric',
+    name: 'sku_price',
   })
   skuPrice;
 
   static createSku({ skuAttrs, goodId, skuPrice }) {
-    const generateSkuCode = (sku, goodId) => {
-      return formateID("skuCode", sku.join(","));
-    };
+    const generateSkuCode = (sku, goodId) => formateID('skuCode', sku.join(','));
     const decodedGoodId = decodeNumberId(goodId);
     const decodedSku = skuAttrs.map(decodeNumberId);
     return Sku.create({
       skuAttrs: JSON.stringify(decodedSku),
       skuCode: generateSkuCode(decodedSku, decodedGoodId),
       goodId: decodedGoodId,
-      skuPrice
+      skuPrice,
     })
       .save()
       .then(({ id }) => ({
-        id: formateID("sku", id),
-        status: true
+        id: formateID('sku', id),
+        status: true,
       }));
   }
 
   static searchSku({ goodId }) {
-    const transformSkuAttrs = obj => {
+    const transformSkuAttrs = (obj) => {
       const skuAttrs = JSON.parse(obj.skuAttrs);
       return {
         ...obj,
-        skuAttrs: skuAttrs ? skuAttrs.map(a => formateID("attribute", a)) : []
+        skuAttrs: skuAttrs ? skuAttrs.map(a => formateID('attribute', a)) : [],
       };
     };
     return Sku.find({
       where: {
-        goodId: decodeNumberId(goodId)
-      }
-    }).then(res => {
-      return res.map(transformSkuAttrs);
-    });
+        goodId: decodeNumberId(goodId),
+      },
+    }).then(res => res.map(transformSkuAttrs));
   }
 }

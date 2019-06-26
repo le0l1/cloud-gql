@@ -1,4 +1,6 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  BaseEntity, Entity, PrimaryGeneratedColumn, Column,
+} from 'typeorm';
 import { decodeNumberId } from '../../helper/util';
 
 @Entity()
@@ -25,12 +27,10 @@ export class Phone extends BaseEntity {
   count;
 
   static savePhone(phones, shopId) {
-    const phoneArr = phones.map(p =>
-      Phone.create({
-        phone: p,
-        shopId,
-      }),
-    );
+    const phoneArr = phones.map(p => Phone.create({
+      phone: p,
+      shopId,
+    }));
     Phone.delete({
       where: {
         shopId,

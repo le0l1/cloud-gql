@@ -6,12 +6,14 @@ import {
   CreateDateColumn,
   Index,
   ManyToMany,
-  JoinTable, In, IsNull, OneToMany
-} from 'typeorm'
-import { Banner } from '../banner/banner.entity'
-import { isValid, decodeID, formateID, decodeNumberId  } from '../../helper/util'
-import { Category } from '../category/category.entity'
-import { Coupon } from '../coupon/coupon.entity'
+  JoinTable, In, IsNull, OneToMany,
+} from 'typeorm';
+import { Banner } from '../banner/banner.entity';
+import {
+  isValid, decodeID, formateID, decodeNumberId,
+} from '../../helper/util';
+import { Category } from '../category/category.entity';
+import { Coupon } from '../coupon/coupon.entity';
 
 @Entity()
 export class Good extends BaseEntity {
@@ -41,14 +43,14 @@ export class Good extends BaseEntity {
     type: 'int',
     name: 'good_status',
     comment: '1. online 2. offline',
-    default: 1
+    default: 1,
   })
   status
 
   @Column({
     type: 'int',
     name: 'goods_sales',
-    default: 100
+    default: 100,
   })
   goodsSales
 
@@ -56,42 +58,42 @@ export class Good extends BaseEntity {
     type: 'character varying',
     nullable: true,
     name: 'shipping_address',
-    comment: '配送地址'
+    comment: '配送地址',
   })
   shippingAddress
 
   @Column({
     type: 'character varying',
     nullable: true,
-    comment: '条款'
+    comment: '条款',
   })
   terms
 
   @Column({
     type: 'character varying',
     nullable: true,
-    comment: '运费'
+    comment: '运费',
   })
   freight
 
   @Column({
     type: 'int',
     name: 'goods_stocks',
-    default: 0
+    default: 0,
   })
   goodsStocks
 
   @Column({
     type: 'numeric',
     name: 'good_sale_price',
-    nullable: true
+    nullable: true,
   })
   goodSalePrice
 
   @Column({
     type: 'timestamp',
     nullable: true,
-    name: 'deleted_at'
+    name: 'deleted_at',
   })
   deletedAt
 
@@ -105,82 +107,80 @@ export class Good extends BaseEntity {
   @OneToMany(type => Coupon, coupon => coupon.good)
   coupon;
 
-  static createGood ({ shopId, banners = [], categories = [], ...rest }) {
+  static createGood({
+    shopId, banners = [], categories = [], ...rest
+  }) {
     return Good.create({
       shopId: decodeID(shopId),
       cover: isValid(banners[0]) ? banners[0] : null,
-      categories: categories.map(a =>
-        Category.create({
-          id: decodeNumberId(a)
-        })
-      ),
-      ...rest
+      categories: categories.map(a => Category.create({
+        id: decodeNumberId(a),
+      })),
+      ...rest,
     })
       .save()
       .then(({ id: goodId }) => {
-        Banner.createBannerArr('good', goodId, banners)
+        Banner.createBannerArr('good', goodId, banners);
         return {
           id: formateID('good', goodId),
-          status: true
-        }
-      })
+          status: true,
+        };
+      });
   }
 
-  static updateGood ({ id: goodId, ...rest }) {
+  static updateGood({ id: goodId, ...rest }) {
     return this.createGood({
       id: decodeNumberId(goodId),
-      ...rest
-    })
+      ...rest,
+    });
   }
 
-  static deleteGood ({ id }) {
+  static deleteGood({ id }) {
     return Good.update(decodeID(id), { deletedAt: new Date() }).then(
       ({ id: goodId }) => ({
         id: formateID('good', goodId),
-        status: true
-      })
-    )
+        status: true,
+      }),
+    );
   }
 
-  static searchGood ({ id }) {
-    const realId = decodeNumberId(id)
+  static searchGood({ id }) {
+    const realId = decodeNumberId(id);
     return Good.createQueryBuilder('good')
       .leftJoinAndSelect('good.categories', 'category')
       .where({
-        id: realId
+        id: realId,
       })
       .getOne()
-      .then(res => {
-        return {
-          ...res,
-          id: realId
-        }
-      })
+      .then(res => ({
+        ...res,
+        id: realId,
+      }));
   }
 
-  static searchGoodConnection ({ shopId, offset = 1, limit = 10 }) {
+  static searchGoodConnection({ shopId, offset = 1, limit = 10 }) {
     const goodQb = this.createQueryBuilder('good')
       .skip(Math.max(offset - 1, 0))
-      .take(limit)
+      .take(limit);
 
     return (isValid(shopId)
-        ? goodQb.andWhere({
-          shopId: decodeNumberId(shopId)
-        })
-        : goodQb
+      ? goodQb.andWhere({
+        shopId: decodeNumberId(shopId),
+      })
+      : goodQb
     )
       .leftJoinAndSelect('good.categories', 'category')
-      .getManyAndCount()
+      .getManyAndCount();
   }
 
-  static findByIds (goodIds) {
+  static findByIds(goodIds) {
     return Good.find({
       where: {
 
         id: In(goodIds),
         deletedAt: IsNull(),
       },
-      relations: ['categories']
-    })
+      relations: ['categories'],
+    });
   }
 }

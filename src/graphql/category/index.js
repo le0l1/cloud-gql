@@ -1,6 +1,7 @@
 import CategorySchema from './Category.graphql';
 import { formateID, decodeNumberId } from '../../helper/util';
 import { Category } from './category.entity';
+import { CategoryStatus } from '../../helper/status';
 
 const resolvers = {
   Query: {
@@ -16,10 +17,7 @@ const resolvers = {
       return formateID('category', v.id);
     },
   },
-  CategoryStatus: {
-    HOT: 1,
-    NORMAL: 2,
-  },
+  CategoryStatus,
   CategoryResult: {
     id(v) {
       return formateID('category', v.id);

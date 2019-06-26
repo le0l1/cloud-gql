@@ -9,7 +9,7 @@ type Payment {
     paymentMethod: PAYMENTMETHOD
 
     "支付状态"
-    paymentStatus: PAYMENTSTATUS
+    paymentStatus: PaymentStatus
 
     "总金额"
     totalFee: Float
@@ -21,7 +21,7 @@ enum PAYMENTMETHOD {
     "微信"
     WXPAY
 }
-enum  PAYMENTSTATUS {
+enum  PaymentStatus {
     "支付中"
     PENDING
 

@@ -12,7 +12,7 @@ export class businessCircleTestData1559976340242 {
          VALUES(test, '测试生意圈内容', 12, 12);
          END LOOP;
       END;$$;
-      `
+      `,
     );
   }
 
@@ -20,6 +20,7 @@ export class businessCircleTestData1559976340242 {
     queryRunnerr.query(
       `
         DELETE FROM cloud_business_circle where content = '测试生意圈内容'
-      `)
+      `,
+    );
   }
 }

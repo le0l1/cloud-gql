@@ -6,27 +6,29 @@ import {
   Column,
   TreeChildren,
   TreeParent,
-  getTreeRepository
-} from "typeorm";
-import { isValid, flatEntitiesTree, formateID, decodeID, decodeNumberId } from "../../helper/util";
-import { decode } from "punycode";
-import { goodAttribute } from ".";
+  getTreeRepository,
+} from 'typeorm';
+import { decode } from 'punycode';
+import {
+  isValid, flatEntitiesTree, formateID, decodeID, decodeNumberId,
+} from '../../helper/util';
+import { goodAttribute } from '.';
 
 @Entity()
-@Tree("closure-table")
+@Tree('closure-table')
 export class GoodAttribute extends BaseEntity {
   @PrimaryGeneratedColumn()
   id;
 
   @Column({
-    type: "character varying",
-    name: "attr_value"
+    type: 'character varying',
+    name: 'attr_value',
   })
   attrValue;
 
   @Column({
-    type: "int",
-    name: "good_id"
+    type: 'int',
+    name: 'good_id',
   })
   goodId;
 
@@ -39,48 +41,48 @@ export class GoodAttribute extends BaseEntity {
   static createAttribute({ attrValue, parentId, goodId }) {
     const currenAttribute = GoodAttribute.create({
       attrValue,
-      goodId: decodeNumberId(goodId)
+      goodId: decodeNumberId(goodId),
     });
 
     if (isValid(parentId)) {
       currenAttribute.parent = GoodAttribute.create({
-        id: decodeNumberId(parentId)
+        id: decodeNumberId(parentId),
       });
     }
 
     return currenAttribute.save().then(({ id }) => ({
-      id: formateID("attribute", id),
-      status: true
+      id: formateID('attribute', id),
+      status: true,
     }));
   }
 
   static searchAttribute({ goodId }) {
-    return GoodAttribute.createQueryBuilder("goodAttribute")
+    return GoodAttribute.createQueryBuilder('goodAttribute')
       .innerJoin(
         getTreeRepository(GoodAttribute).metadata.closureJunctionTable
           .tableName,
-        "goodAttributeClosure",
-        "goodAttributeClosure.id_descendant = goodAttribute.id"
+        'goodAttributeClosure',
+        'goodAttributeClosure.id_descendant = goodAttribute.id',
       )
-      .where(qb => {
+      .where((qb) => {
         const subQuery = qb
           .subQuery()
-          .select("id")
-          .from(GoodAttribute, "goodAttribute")
+          .select('id')
+          .from(GoodAttribute, 'goodAttribute')
           .where(
-            "goodAttribute.goodId = :goodId and goodAttribute.parent is null"
+            'goodAttribute.goodId = :goodId and goodAttribute.parent is null',
           )
           .getQuery();
-        return "goodAttributeClosure.id_ancestor IN" + subQuery;
+        return `goodAttributeClosure.id_ancestor IN${subQuery}`;
       })
-      .setParameter("goodId", decodeNumberId(goodId))
+      .setParameter('goodId', decodeNumberId(goodId))
       .getRawAndEntities()
-      .then(res => {
+      .then((res) => {
         const relationMap = res.raw.map(
           ({ goodAttribute_id: id, goodAttribute_parentId: parent }) => ({
             id,
-            parent
-          })
+            parent,
+          }),
         );
         return flatEntitiesTree(res.entities, relationMap);
       });

@@ -1,5 +1,7 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { decodeIDAndType } from "../../helper/util";
+import {
+  BaseEntity, Entity, PrimaryGeneratedColumn, Column,
+} from 'typeorm';
+import { decodeIDAndType } from '../../helper/util';
 
 @Entity()
 export class Image extends BaseEntity {
@@ -7,37 +9,35 @@ export class Image extends BaseEntity {
   id;
 
   @Column({
-    type: "character varying",
-    nullable: true
+    type: 'character varying',
+    nullable: true,
   })
   path;
 
   @Column({
-    type: "character varying",
-    name: "image_type",
-    nullable: true
+    type: 'character varying',
+    name: 'image_type',
+    nullable: true,
   })
   imageType;
 
   @Column({
-    type: "int",
-    name: "image_type_id",
-    nullable: true
+    type: 'int',
+    name: 'image_type_id',
+    nullable: true,
   })
   imageTypeId;
 
   static createImageArr(imageType, imageTypeId, imageArr = []) {
-    const transformImage = node => {
-      return {
-        path: node,
-        imageType,
-        imageTypeId
-      };
-    };
+    const transformImage = node => ({
+      path: node,
+      imageType,
+      imageTypeId,
+    });
     // delete old images every time
     Image.delete({
       imageType,
-      imageTypeId
+      imageTypeId,
     });
     return Image.save(imageArr.map(transformImage));
   }
@@ -47,8 +47,8 @@ export class Image extends BaseEntity {
     return Image.find({
       where: {
         imageType: type,
-        imageTypeId: id
-      }
+        imageTypeId: id,
+      },
     });
   }
 }

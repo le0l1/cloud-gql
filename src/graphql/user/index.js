@@ -1,20 +1,18 @@
 import UserSchema from './User.gql';
 import { User } from './user.entity';
-import {
-  formateID, decodeNumberId, pipe,
-} from '../../helper/util';
+import { formateID, decodeNumberId, pipe } from '../../helper/util';
 import { UserNotExistsError, InValidPasswordError } from '../../helper/error';
 import { comparePassword, generateToken } from '../../helper/encode';
 import { getQB, where, withPagination } from '../../helper/sql';
+import { Role } from '../../helper/status';
 
 const formateUserId = v => (v.id ? formateID('user', v.id) : null);
 
 const resolvers = {
   Query: {
     users: (_, { usersQueryInput }) => {
-      const {
-        tsQuery, limit = 8, offset = 1,
-      } = usersQueryInput;
+      const { tsQuery, limit = 8, offset = 1 } = usersQueryInput;
+      // TODO: user filter 参数
       return pipe(
         getQB('user'),
         where('(user.name like :tsQuery or user.phone like :tsQuery)', {
@@ -26,11 +24,6 @@ const resolvers = {
     user(_, { userQueryInput }) {
       return User.getUser(userQueryInput);
     },
-  },
-  Role: {
-    CUSTOMER: 1,
-    MERCHANT: 2,
-    ROOT: 3,
   },
   UserConnection: {
     edges(result) {
@@ -49,6 +42,7 @@ const resolvers = {
   UserActionResult: {
     id: formateUserId,
   },
+  Role,
   Mutation: {
     async register(obj, { userRegisterInput }, ctx) {
       const { phone } = userRegisterInput;

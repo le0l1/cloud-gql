@@ -1,10 +1,10 @@
-import Merchant from "./Merchant.gql";
-import resolvers from "./resolver";
-import { gql } from "apollo-server-koa";
+import { gql } from 'apollo-server-koa';
+import Merchant from './Merchant.gql';
+import resolvers from './resolver';
 
 export const merchant = {
   typeDef: gql`
     ${Merchant}
   `,
-  resolvers
+  resolvers,
 };

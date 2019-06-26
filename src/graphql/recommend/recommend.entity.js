@@ -3,12 +3,12 @@ import {
   Entity,
   Column,
   Index,
-  PrimaryGeneratedColumn
-} from 'typeorm'
-import { decodeID, decodeIDAndType, decodeNumberId } from '../../helper/util'
-import { Good } from '../good/good.entity'
-import { Shop } from '../shop/shop.entity'
-import { tryStatement } from '@babel/types'
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { tryStatement } from '@babel/types';
+import { decodeID, decodeIDAndType, decodeNumberId } from '../../helper/util';
+import { Good } from '../good/good.entity';
+import { Shop } from '../shop/shop.entity';
 
 @Entity()
 export class Recommend extends BaseEntity {
@@ -21,13 +21,13 @@ export class Recommend extends BaseEntity {
 
   @Column({
     type: 'character varying',
-    name: 'recommend_type'
+    name: 'recommend_type',
   })
   recommendType
 
   @Column({
     type: 'character varying',
-    name: 'recommend_type_id'
+    name: 'recommend_type_id',
   })
   recommendTypeId
 
@@ -35,48 +35,48 @@ export class Recommend extends BaseEntity {
     type: 'timestamp',
     comment: 'when the record has been deleted',
     name: 'delete_at',
-    nullable: true
+    nullable: true,
   })
   deletedAt
 
-  static async createRecommend ({ route, typeId }) {
-    return Recommend.storeRecommends(route, typeId)
+  static async createRecommend({ route, typeId }) {
+    return Recommend.storeRecommends(route, typeId);
   }
 
-  static async storeRecommends (route, recommnedNode) {
+  static async storeRecommends(route, recommnedNode) {
     try {
-      const [recommendType, recommendTypeId] = decodeIDAndType(recommnedNode)
+      const [recommendType, recommendTypeId] = decodeIDAndType(recommnedNode);
       const { id } = await Recommend.create({
         route,
         recommendType,
-        recommendTypeId
-      }).save()
+        recommendTypeId,
+      }).save();
       return {
         id,
-        status: true
-      }
+        status: true,
+      };
     } catch (e) {
-      throw  e
+      throw e;
     }
   }
 
-  static async searchRecommend ({ route }) {
+  static async searchRecommend({ route }) {
     const recommends = await Recommend.find({
-      where: { route }
-    })
-    if (!recommends.length) return []
+      where: { route },
+    });
+    if (!recommends.length) return [];
 
     const recommendClass = {
       good: Good,
-      shop: Shop
-    }
-    const nodeIds = recommends.map(a => a.recommendTypeId)
-    const res = await recommendClass[recommends[0].recommendType].findByIds(nodeIds)
+      shop: Shop,
+    };
+    const nodeIds = recommends.map(a => a.recommendTypeId);
+    const res = await recommendClass[recommends[0].recommendType].findByIds(nodeIds);
 
     return res.map(node => ({
       route,
-      recommendNode: node
-    }))
+      recommendNode: node,
+    }));
   }
 
   // static async updateRecommend ({ route, typeIds }) {
@@ -92,18 +92,18 @@ export class Recommend extends BaseEntity {
   //   }
   // }
 
-  static async deleteRecommend ({ id }) {
+  static async deleteRecommend({ id }) {
     try {
-      const realId = decodeNumberId(id)
+      const realId = decodeNumberId(id);
       await Recommend.delete({
-        id: realId
-      })
+        id: realId,
+      });
       return {
         id: realId,
-        status: true
-      }
+        status: true,
+      };
     } catch (e) {
-      throw e
+      throw e;
     }
   }
 }

@@ -1,18 +1,23 @@
 module.exports = {
   env: {
     browser: true,
-    es6: true,
+    es6: true
   },
-  extends: 'airbnb-base',
+  extends: "airbnb-base",
   globals: {
-    Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly',
+    Atomics: "readonly",
+    SharedArrayBuffer: "readonly"
   },
+  parser: "babel-eslint",
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: 'module',
+    ecmaFeatures: {
+      legacyDecorators: true
+    },
+    sourceType: "module"
   },
   rules: {
-    'import/prefer-default-export': "off"
-  },
+    "import/prefer-default-export": "off",
+    "import/no-cycle": "off"
+  }
 };

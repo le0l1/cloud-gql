@@ -22,12 +22,12 @@ type BusinessCircle implements Node {
   commentCount: Int
 
   "举报状态"
-  reportStatus: REPORTSTATUS
+  reportStatus: ReportStatus
 }
 
 
 "举报状态枚举"
-enum REPORTSTATUS {
+enum ReportStatus {
   "已被举报"
   IS_REPORTED
   "未被举报"

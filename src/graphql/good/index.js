@@ -1,6 +1,7 @@
 import GoodSchema from './Good.gql';
 import { Good } from './good.entity';
 import { formateID } from '../../helper/util';
+import { GooDStatus } from '../../helper/status';
 
 const resolvers = {
   Mutation: {
@@ -38,10 +39,7 @@ const resolvers = {
       return v;
     },
   },
-  GOODSTATUS: {
-    ONLINE: 1,
-    OFFLINE: 2,
-  },
+  GooDStatus,
 };
 export const good = {
   typeDef: GoodSchema,

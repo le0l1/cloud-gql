@@ -4,17 +4,15 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToMany,
   PrimaryGeneratedColumn,
   OneToOne,
-  OneToMany,
 } from 'typeorm';
+import { format } from 'date-fns';
 import { User } from '../user/user.entity';
 import { decodeNumberId } from '../../helper/util';
 import { Payment } from '../payment/payment.entity';
 import { WXPay } from '../payment/wxpay';
 import { Shop } from '../shop/shop.entity';
-import { format } from 'date-fns';
 
 @Entity()
 export class Transfer extends BaseEntity {
@@ -61,7 +59,9 @@ export class Transfer extends BaseEntity {
    * @param remark 备注
    * @returns {Promise<any | never>}
    */
-  static async createTransfer({ payer, payee, totalFee, paymentMethod, remark }) {
+  static async createTransfer({
+    payer, payee, totalFee, paymentMethod, remark,
+  }) {
     try {
       const recordNumber = Transfer.makeTransitionRecordNumber();
       const payerUser = await User.findOneOrFail(decodeNumberId(payer));
@@ -85,9 +85,7 @@ export class Transfer extends BaseEntity {
         .setOrderNumber(recordNumber)
         .setTotalFee(totalFee)
         .preparePayment()
-        .then(res => {
-          return res;
-        });
+        .then(res => res);
     } catch (e) {
       throw e;
     }
@@ -98,6 +96,6 @@ export class Transfer extends BaseEntity {
    * @returns {string}
    */
   static makeTransitionRecordNumber() {
-    return 'T' + format(new Date(), 'YYYYMMDDHHmm') + Math.floor(Math.random() * 1000000);
+    return `T${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(Math.random() * 1000000)}`;
   }
 }

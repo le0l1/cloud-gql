@@ -20,7 +20,7 @@ export class businessCircleCommentTestData1560041103543 {
 
         END;
         $$;
-        `
+        `,
     );
   }
 

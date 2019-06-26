@@ -14,7 +14,9 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { Shop } from '../shop/shop.entity';
-import { getQB, where, getMany, getOne } from '../../helper/sql';
+import {
+  getQB, where, getMany, getOne,
+} from '../../helper/sql';
 import {
   isValid,
   flatEntitiesTree,
@@ -109,25 +111,23 @@ export class Category extends BaseEntity {
         'categoryClosure',
         'categoryClosure.id_descendant = category.id',
       )
-      .where(qb => {
+      .where((qb) => {
         const subQuery = qb
           .subQuery()
           .select('id')
           .from(Category)
           .where('route = :root')
           .getQuery();
-        return 'categoryClosure.id_ancestor IN' + subQuery;
+        return `categoryClosure.id_ancestor IN${subQuery}`;
       })
       .andWhere('category.deletedAt is null')
       .setParameter('root', root)
       .getRawAndEntities()
-      .then(res => {
-        const relationMap = res.raw.map(({ category_id: id, category_parentId: parent }) => {
-          return {
-            id,
-            parent,
-          };
-        });
+      .then((res) => {
+        const relationMap = res.raw.map(({ category_id: id, category_parentId: parent }) => ({
+          id,
+          parent,
+        }));
         return flatEntitiesTree(res.entities, relationMap, 'children');
       });
   }
@@ -140,10 +140,9 @@ export class Category extends BaseEntity {
       .createDescendantsQueryBuilder('category', 'categoryClosure', parentCategory)
       .andWhere('category.deletedAt is null')
       .getMany()
-      .then(res => {
+      .then(res =>
         // filter parent node
-        return res.filter(node => node.id !== decodeNumberId(id));
-      });
+        res.filter(node => node.id !== decodeNumberId(id)));
   }
 
   static createCategory({ parentId = null, ...rest }) {
@@ -151,8 +150,8 @@ export class Category extends BaseEntity {
       ...rest,
       parent: isValid(parentId)
         ? Category.create({
-            id: decodeNumberId(parentId),
-          })
+          id: decodeNumberId(parentId),
+        })
         : null,
     })
       .save()

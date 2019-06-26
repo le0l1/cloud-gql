@@ -1,6 +1,7 @@
-import ShopSchema from "./Shop.graphql";
-import { formateID } from "../../helper/util";
-import { Shop } from "./shop.entity";
+import ShopSchema from './Shop.graphql';
+import { formateID } from '../../helper/util';
+import { Shop } from './shop.entity';
+import { ShopStatus } from '../../helper/status';
 
 const resolvers = {
   Query: {
@@ -9,7 +10,7 @@ const resolvers = {
     },
     shop(_, { query }) {
       return Shop.searchShop(query);
-    }
+    },
   },
   ShopConnection: {
     edges(result) {
@@ -17,23 +18,20 @@ const resolvers = {
     },
     pageInfo(v) {
       return v;
-    }
+    },
   },
   Shop: {
     id(v) {
-      return formateID("shop", v.id);
+      return formateID('shop', v.id);
     },
     shopImages(v) {
-      return (v.shopImages || []).map(a => a.path)
+      return (v.shopImages || []).map(a => a.path);
     },
     shopBanners(v) {
-      return (v.shopBanners || []).map(a => a.path)
-    }
+      return (v.shopBanners || []).map(a => a.path);
+    },
   },
-  ShopStatus: {
-    NORMAL: 1,
-    SUSPEND: 2
-  },
+  ShopStatus,
   Mutation: {
     createShop(_, { shopCreateInput }) {
       return Shop.createShop(shopCreateInput);
@@ -43,11 +41,11 @@ const resolvers = {
     },
     updateShop(_, { shopUpdateInput }) {
       return Shop.updateShop(shopUpdateInput);
-    }
-  }
+    },
+  },
 };
 
 export const shop = {
   typeDef: ShopSchema,
-  resolvers
+  resolvers,
 };

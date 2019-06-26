@@ -1,7 +1,9 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { decodeNumberId } from '../../helper/util'
-import { Good } from '../good/good.entity'
-import { UserCoupon } from './userCoupon.entity'
+import {
+  BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn,
+} from 'typeorm';
+import { decodeNumberId } from '../../helper/util';
+import { Good } from '../good/good.entity';
+import { UserCoupon } from './userCoupon.entity';
 
 @Entity()
 export class Coupon extends BaseEntity {
@@ -12,26 +14,25 @@ export class Coupon extends BaseEntity {
    * 优惠劵状态 1. 已失效 2. 可使用 3.已使用 4. 已领取
    * @returns {number}
    */
-  get status () {
-    console.log(this.userCouponStatus)
-    return this.userCouponStatus ?
-      this.userCouponStatus :
-      this.couponExpiredStatus
+  get status() {
+    return this.userCouponStatus
+      ? this.userCouponStatus
+      : this.couponExpiredStatus;
   }
 
-  get isExpired () {
-    return this.coupunExpiredStatus === 1
+  get isExpired() {
+    return this.coupunExpiredStatus === 1;
   }
 
   get couponExpiredStatus() {
-    return this.expiredAt < Date.now() ? 1 : 3
+    return this.expiredAt < Date.now() ? 1 : 3;
   }
+
   /**
    * 用户使用优惠券情况
    * @returns {null|number}
    */
   get userCouponStatus() {
-    console.log(this)
     if (this.userCoupon) {
       return this.userCoupon.useStatus ? 3 : 4;
     }
@@ -51,14 +52,14 @@ export class Coupon extends BaseEntity {
 
   @Column({
     type: 'bigint',
-    name: 'expired_at'
+    name: 'expired_at',
   })
   expiredAt
 
   @Column({
     type: 'int',
     nullable: true,
-    name: 'deleted_at'
+    name: 'deleted_at',
   })
   deletedAt
 
@@ -68,54 +69,54 @@ export class Coupon extends BaseEntity {
   @OneToMany(type => UserCoupon, userCoupon => userCoupon.coupon)
   userCoupon
 
-  static createCoupon ({
-                         goodId,
-                         ...rest
-                       }) {
+  static createCoupon({
+    goodId,
+    ...rest
+  }) {
     return Coupon.store({
       good: Good.create({ id: decodeNumberId(goodId) }),
-      ...rest
-    })
+      ...rest,
+    });
   }
 
-  static async store (params) {
+  static async store(params) {
     try {
       const { id } = await Coupon.create(
-        params
-      ).save()
+        params,
+      ).save();
       return {
         id,
-        status: true
-      }
+        status: true,
+      };
     } catch (e) {
-      throw e
+      throw e;
     }
   }
 
-  static updateCoupon ({
-                         id,
-                         ...rest
-                       }) {
+  static updateCoupon({
+    id,
+    ...rest
+  }) {
     return Coupon.store({
       id: decodeNumberId(id),
-      ...rest
-    })
+      ...rest,
+    });
   }
 
-  static deleteCoupon ({ id }) {
+  static deleteCoupon({ id }) {
     return Coupon.store({
       id: decodeNumberId(id),
-      deletedAt: Date.now()
-    })
+      deletedAt: Date.now(),
+    });
   }
 
-  static searchCoupon ({ goodId, userId }) {
+  static searchCoupon({ goodId, userId }) {
     if (!userId) {
       return Coupon.find({
         where: {
-          good: Good.create({ id: decodeNumberId(goodId) })
-        }
-      })
+          good: Good.create({ id: decodeNumberId(goodId) }),
+        },
+      });
     }
 
     return Coupon.createQueryBuilder('coupon')
@@ -125,9 +126,9 @@ export class Coupon extends BaseEntity {
         'userCoupon',
         'userCoupon.user.id = :userId',
         {
-          userId: decodeNumberId(userId)
-        }
+          userId: decodeNumberId(userId),
+        },
       )
-      .getMany()
+      .getMany();
   }
 }
