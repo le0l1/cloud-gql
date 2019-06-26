@@ -1,4 +1,4 @@
-import { isValid } from './util';
+import { isValid, prop } from './util';
 
 export const addIfValid = cb => (val, orm) => (isValid(val) ? cb(val, orm) : val);
 export const withLimit = addIfValid((val, orm) => orm.limit(val));
@@ -8,3 +8,4 @@ export const getMany = orm => orm.getMany();
 export const getOne = orm => orm.getOne();
 export const getManyAndCount = query => query.getManyAndCount();
 export const withPagination = (limit, offset = 1) => query => query.take(limit).skip(Math.min(0, offset - 1));
+export const leftJoinAndSelect = (property, entity) => orm => orm.leftJoinAndSelect(prop, entity);

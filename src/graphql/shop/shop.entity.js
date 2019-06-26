@@ -20,6 +20,7 @@ import {
 } from '../../helper/sql';
 import { Phone } from '../phone/phone.entity';
 import { Image } from '../image/image.entity';
+import { Transfer } from '../transfer/transfer.entity';
 
 const transform = type => arr => arr.map(a => type.create({
   id: decodeNumberId(a),
@@ -112,6 +113,9 @@ export class Shop extends BaseEntity {
 
   @OneToMany(type => Comment, comment => comment.shop)
   shopComments;
+
+  @OneToMany(type => Transfer, transfer => transfer.payee)
+  receipt;
 
   static async createShop(params) {
     params.name && (await this.checkNameUnique(params.name));

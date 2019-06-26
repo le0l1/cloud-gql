@@ -5,13 +5,15 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
-  ManyToMany,
+  VersionColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Comment } from '../comment/comment.entity';
 import { hashPassword } from '../../helper/encode';
 import { formateID, decodeNumberId } from '../../helper/util';
 import { UserCoupon } from '../coupon/userCoupon.entity';
 import { Transfer } from '../transfer/transfer.entity';
+import Cart from '../cart/cart.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -97,11 +99,18 @@ export class User extends BaseEntity {
   @OneToMany(type => UserCoupon, userCoupon => userCoupon.user)
   userCoupon;
 
-  @OneToMany(type => Transfer, transfer => transfer.payer)
-  receipt
-
   @OneToMany(type => Transfer, transfer => transfer.payee)
-  transfer
+  transfer;
+
+  @VersionColumn({
+    nullable: true,
+  })
+  version
+
+  @UpdateDateColumn({
+    name: 'updated_at',
+  })
+  updatedAt
 
   static retrievePassword({ phone, password }) {
     return User.findOne({

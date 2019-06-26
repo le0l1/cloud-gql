@@ -1,10 +1,6 @@
 type Payment {
-    "订单号"
-    orderNumber: String
-
-    "支付订单号"
-    transactionId: String
-
+    id: ID
+    
     "支付方式"
     paymentMethod: PAYMENTMETHOD
 

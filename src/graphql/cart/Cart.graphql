@@ -1,0 +1,56 @@
+type Cart {
+  id: ID
+
+  "店铺"
+  shop: Shop
+
+  "商品"
+  good: Good
+
+  "数量"
+  quantity: Int
+}
+
+input CreateCartInput {
+  "用户id"
+  userId: ID!
+
+  "商品id"
+  goodId: ID!
+
+  "数量"
+  quantity: Int
+}
+
+input UpdateCartInput {
+  id: ID
+
+  "数量"
+  quantity: Int
+}
+
+input DeleteCartInput {
+  id: ID
+}
+
+input CartsQuery {
+  userId: ID!
+}
+
+type CartActionResult {
+  id: ID
+  status: Boolean
+}
+
+extend type Query {
+  carts(cartsQuery: CartsQuery!): [Cart!]
+}
+
+extend type Mutation {
+  "添加到购物车"
+  createCart(createCartInput: CreateCartInput!): CartActionResult
+  "更新购物车"
+  updateCart(updateCartInput: UpdateCartInput!): CartActionResult
+  "删除购物车"
+  deleteCart(deleteCartInput: DeleteCartInput!): CartActionResult
+}
