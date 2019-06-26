@@ -155,7 +155,7 @@ type RetrievePasswordResult {
 }
 
 "用户列表"
-type UserConnection {
+type UserConnection  implements Connection {
   pageInfo: PageInfo!
   edges: [User!]
 }

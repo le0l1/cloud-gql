@@ -37,7 +37,7 @@ export const CouponStatus = {
  * ONLINE: 上架
  * OFFLINE: 下架
  */
-export const GooDStatus = {
+export const GoodStatus = {
   ONLINE: 1,
   OFFLINE: 2,
 };

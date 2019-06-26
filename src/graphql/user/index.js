@@ -3,7 +3,9 @@ import { User } from './user.entity';
 import { formateID, decodeNumberId, pipe } from '../../helper/util';
 import { UserNotExistsError, InValidPasswordError } from '../../helper/error';
 import { comparePassword, generateToken } from '../../helper/encode';
-import { getQB, where, withPagination } from '../../helper/sql';
+import {
+  getQB, where, withPagination, getManyAndCount,
+} from '../../helper/sql';
 import { Role } from '../../helper/status';
 
 const formateUserId = v => (v.id ? formateID('user', v.id) : null);
@@ -11,14 +13,19 @@ const formateUserId = v => (v.id ? formateID('user', v.id) : null);
 const resolvers = {
   Query: {
     users: (_, { usersQueryInput }) => {
-      const { tsQuery, limit = 8, offset = 1 } = usersQueryInput;
+      const {
+        tsQuery, limit = 8, filters = {}, offset = 1,
+      } = usersQueryInput;
       // TODO: user filter 参数
       return pipe(
         getQB('user'),
         where('(user.name like :tsQuery or user.phone like :tsQuery)', {
           tsQuery: tsQuery ? `%${tsQuery}%` : null,
         }),
+        where('user.area = :area', { area: filters.area }),
+        where('user.role = :role', { role: filters.role }),
         withPagination(limit, offset),
+        getManyAndCount,
       )(User);
     },
     user(_, { userQueryInput }) {
@@ -26,14 +33,11 @@ const resolvers = {
     },
   },
   UserConnection: {
-    edges(result) {
-      return result;
+    edges(v) {
+      return v[0];
     },
-    pageInfo(result) {
-      return {
-        hasNextPage: result.length > 0,
-        total: result.length > 0 ? result[0].total : 0,
-      };
+    pageInfo(v) {
+      return v;
     },
   },
   User: {
