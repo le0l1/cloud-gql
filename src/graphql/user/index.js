@@ -16,7 +16,6 @@ const resolvers = {
       const {
         tsQuery, limit = 8, filters = {}, offset = 1,
       } = usersQueryInput;
-      // TODO: user filter 参数
       return pipe(
         getQB('user'),
         where('(user.name like :tsQuery or user.phone like :tsQuery)', {

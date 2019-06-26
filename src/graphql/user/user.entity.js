@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { Comment } from '../comment/comment.entity';
 import { hashPassword } from '../../helper/encode';
@@ -44,8 +45,10 @@ export class User extends BaseEntity {
   })
   password;
 
-  @CreateDateColumn()
-  created_at;
+  @CreateDateColumn({
+    name: 'created_at',
+  })
+  createdAt;
 
   @Column({
     comment: 'user phone number',
@@ -93,6 +96,12 @@ export class User extends BaseEntity {
 
   @OneToMany(type => UserCoupon, userCoupon => userCoupon.user)
   userCoupon;
+
+  @OneToMany(type => Transfer, transfer => transfer.payer)
+  receipt
+
+  @OneToMany(type => Transfer, transfer => transfer.payee)
+  transfer
 
   static retrievePassword({ phone, password }) {
     return User.findOne({

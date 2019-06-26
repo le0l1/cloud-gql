@@ -76,13 +76,29 @@ export class WXPay {
       .then((res) => {
         const { xml } = xml2js(res.data, { compact: true });
         // TODO: 需要对签名进行二次加密 否则会签名错误
-        return Object.keys(xml).reduce(
+        const {
+          appid,
+          mch_id: partnerid,
+          prepay_id: prepayid,
+          nonce_str: noncestr,
+          timestamp = +new Date(),
+        } = Object.keys(xml).reduce(
           (a, b) => ({
             ...a,
+            // eslint-disable-next-line no-underscore-dangle
             [b]: xml[b]._cdata,
           }),
           {},
         );
+        this.basicInfo = {
+          appid,
+          partnerid,
+          prepayid,
+          noncestr,
+          timestamp,
+          package: 'Sign=WXPay',
+        };
+        return { ...this.basicInfo, sign: this.sign };
       });
   }
 }

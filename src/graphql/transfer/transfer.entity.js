@@ -6,6 +6,7 @@ import {
   JoinColumn,
   PrimaryGeneratedColumn,
   OneToOne,
+  ManyToOne,
 } from 'typeorm';
 import { format } from 'date-fns';
 import { User } from '../user/user.entity';
@@ -26,12 +27,10 @@ export class Transfer extends BaseEntity {
   })
   recordNumber;
 
-  @OneToOne(type => User, user => user.transfer)
-  @JoinColumn()
+  @ManyToOne(type => User, user => user.transfer)
   payer;
 
-  @OneToOne(type => User, user => user.receipt)
-  @JoinColumn()
+  @ManyToOne(type => User, user => user.receipt)
   payee;
 
   @Column({

@@ -40,20 +40,17 @@ type WXPayPrepare {
     appid: String
 
     "商户id"
-    mch_id: String
+    partnerid: String
+
+    "预支付交易会话标识"
+    prepayid: String
 
     "随机字符串"
-    nonce_str: String
+    noncestr: String
+
+    "时间戳"
+    timestamp: String
 
     "微信支付签名"
     sign: String
-
-    "业务结果"
-    result_code: String
-
-    "交易类型"
-    trade_type: String
-
-    "预支付交易会话标识"
-    prepay_id: String
 }
