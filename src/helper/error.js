@@ -5,3 +5,8 @@ export class UserNotExistsError extends Error {
 export class InValidPasswordError extends Error {
   message = '密码错误'
 }
+
+
+export class ShopNotExistsError extends Error {
+  message = '店铺不存在'
+}

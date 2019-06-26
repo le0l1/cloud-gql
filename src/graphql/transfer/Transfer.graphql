@@ -1,27 +1,24 @@
-"转账"
-type Transfer {
-    id: ID
+type Transfer  implements Node {
+    id: ID!
+
+    "交易号"
+    recordNumber: String
 
     "付款方(用户id)"
-    payer: ID
+    payer: User
 
-    "收款方(用户id)"
-    payee: ID
-
-    "总金额"
-    totalFee: Float
-
-    "支付时间(unix timestamp)"
-    createdAt: Number
+    "收款方(商户)"
+    payee: Shop
 
     "支付状态"
-    paymentStatus: PaymentStatus
-
-    "支付方式"
-    paymentMethod: PAYMENTMETHOD
+    payment: Payment
 
     "支付备注"
     remark: String
+
+    "创建时间(unix timestamp)"
+    createdAt: Number
+
 }
 
 
@@ -46,6 +43,22 @@ input CreateTransferInput {
 type TransferResult {
     id: ID
     status: Boolean
+}
+
+input TransfersQuery {
+  "偏离值"
+  offset: Int
+  "分页条数"
+  limit: Int
+}
+
+type TransferConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [Transfer!]
+}
+
+extend type Query {
+  transfers(transfersQuery: TransfersQuery!): TransferConnection
 }
 
 extend type Mutation  {

@@ -27,8 +27,8 @@ import { image } from './graphql/image';
 import { phone } from './graphql/phone';
 import { coupon } from './graphql/coupon';
 import { order } from './graphql/order/order';
-import { payment } from './graphql/payment/payment';
-import { transfer } from './graphql/transfer/transfer';
+import  payment  from './graphql/payment';
+import transfer from './graphql/transfer';
 import router from './graphql/payment/payment.route';
 
 const app = new Koa();

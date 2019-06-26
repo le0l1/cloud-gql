@@ -3,20 +3,20 @@ import { js2xml } from 'xml-js';
 import { getManager, TransactionManager } from 'typeorm';
 import { Transfer } from '../transfer/transfer.entity';
 import { Payment } from './payment.entity';
-import { PAY_FAIL, PAID } from './payment';
 import { mapObjectArr } from '../../helper/util';
 import { User } from '../user/user.entity';
+import { PaymentStatus } from '../../helper/status';
 
 const router = new Router();
 
 const failPaid = async (transferRecord) => {
   const { payment } = transferRecord;
-  payment.paymentStatus = PAY_FAIL;
+  payment.paymentStatus = PaymentStatus.PAY_FAIL;
   return Payment.save(payment);
 };
 
 const checkReqStatus = body => !body.return_msg === 'SUCCESS' || !body.return_code === 'OK';
-const checkTransferStatus = paymentStatus => paymentStatus === PAID;
+const checkTransferStatus = paymentStatus => paymentStatus === PaymentStatus.PAID;
 
 router.post(
   '/pay',
@@ -49,13 +49,20 @@ router.post(
       }
 
       const { payment, payee } = transferRecord;
-      payment.paymentStatus = PAID;
-      payee.totalFee += payment.totalFee;
+      const merchant = await transactionManager
+        .getRepository(User)
+        .createQueryBuilder('user')
+        .where('user.id = :id', {
+          id: payee.belongto,
+        })
+        .setLock('optimistic')
+        .getOne();
+      payment.paymentStatus = PaymentStatus.PAID;
+      merchant.totalFee = Number(payment.totalFee) + Number(merchant.totalFee);
       await transactionManager.getRepository(Payment).save(payment);
-      await transactionManager.getRepository(User).save(payee);
-      next();
+      await transactionManager.getRepository(User).save(merchant);
+      return next();
     });
-    // TODO: 支付成功后更新交易状态
   },
   async (ctx) => {
     ctx.body = js2xml(
