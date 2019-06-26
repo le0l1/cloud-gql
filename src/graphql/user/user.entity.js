@@ -13,6 +13,7 @@ import { hashPassword } from '../../helper/encode';
 import { formateID, decodeNumberId } from '../../helper/util';
 import { UserCoupon } from '../coupon/userCoupon.entity';
 import { Transfer } from '../transfer/transfer.entity';
+import Cart from '../cart/cart.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -99,7 +100,7 @@ export class User extends BaseEntity {
   userCoupon;
 
   @OneToMany(type => Transfer, transfer => transfer.payee)
-  transfer
+  transfer;
 
   @VersionColumn({
     nullable: true,

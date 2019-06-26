@@ -27,9 +27,10 @@ import { image } from './graphql/image';
 import { phone } from './graphql/phone';
 import { coupon } from './graphql/coupon';
 import { order } from './graphql/order/order';
-import  payment  from './graphql/payment';
+import payment from './graphql/payment';
 import transfer from './graphql/transfer';
 import router from './graphql/payment/payment.route';
+import cart from './graphql/cart';
 
 const app = new Koa();
 
@@ -84,6 +85,7 @@ export const makeServer = context => new ApolloServer({
     order.typeDef,
     payment.typeDef,
     transfer.typeDef,
+    cart.typeDef,
   ],
   resolvers: [
     dateResolver,
@@ -108,6 +110,7 @@ export const makeServer = context => new ApolloServer({
     order.resolvers,
     transfer.resolvers,
     payment.resolvers,
+    cart.resolvers,
   ],
   context,
   schemaDirectives: {

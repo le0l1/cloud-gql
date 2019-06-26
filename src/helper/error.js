@@ -10,3 +10,7 @@ export class InValidPasswordError extends Error {
 export class ShopNotExistsError extends Error {
   message = '店铺不存在'
 }
+
+export class StockLackError extends Error {
+  message = '商品数量不足'
+}

@@ -14,6 +14,7 @@ import {
 } from '../../helper/util';
 import { Category } from '../category/category.entity';
 import { Coupon } from '../coupon/coupon.entity';
+import Cart from '../cart/cart.entity';
 
 @Entity()
 export class Good extends BaseEntity {
@@ -106,6 +107,7 @@ export class Good extends BaseEntity {
 
   @OneToMany(type => Coupon, coupon => coupon.good)
   coupon;
+
 
   static createGood({
     shopId, banners = [], categories = [], ...rest
