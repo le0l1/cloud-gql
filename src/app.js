@@ -6,7 +6,6 @@ import session from 'koa-session';
 import { ApolloServer } from 'apollo-server-koa';
 import { koa as voyagerMiddleware } from 'graphql-voyager/middleware';
 import { banner } from './graphql/banner';
-import { demand } from './graphql/demand';
 import { good } from './graphql/good';
 import { recommend } from './graphql/recommend';
 import { dateResolver } from './helper/scalar/Date';
@@ -65,7 +64,6 @@ export const makeServer = context => new ApolloServer({
   typeDefs: [
     root.typeDef,
     banner.typeDef,
-    demand.typeDef,
     good.typeDef,
     recommend.typeDef,
     businessCircle.typeDef,
