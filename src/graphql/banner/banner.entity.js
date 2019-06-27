@@ -3,11 +3,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  ManyToOne,
   BaseEntity,
 } from 'typeorm';
-import { Shop } from '../shop/shop.entity';
-import { Good } from '../good/good.entity';
 import {
   isValid, mergeIfValid, decodeNumberId, formateID, decodeIDAndType,
 } from '../../helper/util';
@@ -78,10 +75,10 @@ export class Banner extends BaseEntity {
   })
   deletedAt;
 
-  static createBanner({ bannerTypeId, ...rest }) {
+  static createBanner({ bannerTypeId: typeId, ...rest }) {
     const currentBanner = Banner.create({ ...rest });
-    if (isValid(bannerTypeId)) {
-      const [bannerType, bannerTypeId] = decodeIDAndType(bannerTypeId);
+    if (isValid(typeId)) {
+      const [bannerType, bannerTypeId] = decodeIDAndType(typeId);
       currentBanner.bannerType = bannerType;
       currentBanner.bannerTypeId = Number(bannerTypeId);
     }

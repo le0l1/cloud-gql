@@ -30,6 +30,7 @@ import payment from './graphql/payment';
 import transfer from './graphql/transfer';
 import router from './graphql/payment/payment.route';
 import cart from './graphql/cart';
+import address from './graphql/address';
 
 const app = new Koa();
 
@@ -84,6 +85,7 @@ export const makeServer = context => new ApolloServer({
     payment.typeDef,
     transfer.typeDef,
     cart.typeDef,
+    address.typeDef,
   ],
   resolvers: [
     dateResolver,
@@ -109,6 +111,7 @@ export const makeServer = context => new ApolloServer({
     transfer.resolvers,
     payment.resolvers,
     cart.resolvers,
+    address.resolvers,
   ],
   context,
   schemaDirectives: {
