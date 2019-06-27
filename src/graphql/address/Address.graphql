@@ -1,0 +1,99 @@
+type Address {
+  id: ID
+
+  "收货人姓名"
+  name: String
+
+  "收货人联系方式"
+  phone: String
+
+  "省份"
+  province: String
+
+  "城市"
+  city: String
+
+  "地区"
+  district: String
+
+  "详细地址"
+  address: String
+
+  "是否为默认"
+  isDefault: Boolean
+}
+
+input AddressQuery {
+  userId: ID
+}
+
+input CreateAddressInput {
+  userId: ID!
+
+  "收货人姓名"
+  name: String!
+
+  "收货人联系方式"
+  phone: String!
+
+  "省份"
+  province: String!
+
+  "城市"
+  city: String!
+
+  "地区"
+  district: String!
+
+  "详细地址"
+  address: String!
+
+  "是否为默认"
+  isDefault: Boolean!
+}
+
+input UpdateAddressInput {
+  id: ID!
+
+  "收货人姓名"
+  name: String
+
+  "收货人联系方式"
+  phone: String
+
+  "省份"
+  province: String
+
+  "城市"
+  city: String
+
+  "地区"
+  district: String
+
+  "详细地址"
+  address: String
+
+  "是否为默认"
+  isDefault: Boolean
+
+}
+
+input DeleteAddressInput {
+  id: ID
+}
+
+type AddressActionResult {
+  id: ID
+  status: Boolean
+}
+
+extend type Query {
+  address(addressQuery: AddressQuery!): [Address!]
+}
+
+extend type Mutation {
+  createAddress(createAddressInput: CreateAddressInput!): AddressActionResult
+  updateAddress(updateAddressInput: UpdateAddressInput!): AddressActionResult
+  deleteAddress(deleteAddressInput: DeleteAddressInput!): AddressActionResult
+}
+
