@@ -18,7 +18,7 @@ export const hashPassword = (pwd) => {
 
 export const comparePassword = ({ pwd, hash, salt }) => hashTo({ pwd, salt }) === hash;
 
-export const generateToken = payload => jwt.sign(payload, process.env.PRIVATE_TOKEN_KEY, {
+export const generateToken = payload => jwt.sign({ ...payload }, process.env.PRIVATE_TOKEN_KEY, {
   expiresIn: '1d',
 });
 
