@@ -8,26 +8,14 @@ import {
   ManyToMany,
   OneToMany,
   Index,
-  In,
-  IsNull, OneToOne,
+  OneToOne,
 } from 'typeorm';
-import { handleSuccessResult, decodeNumberId, pipe } from '../../helper/util';
 import { Category } from '../category/category.entity';
 import { Banner } from '../banner/banner.entity';
-import { Comment } from '../comment/comment.entity';
-import {
-  where, getQB, getManyAndCount, withPagination,
-} from '../../helper/sql';
 import { Phone } from '../phone/phone.entity';
 import { Image } from '../image/image.entity';
-import { Transfer } from '../transfer/transfer.entity';
-import {User} from "../user/user.entity";
+import { User } from '../user/user.entity';
 
-const transform = type => arr => arr.map(a => type.create({
-  id: decodeNumberId(a),
-}));
-
-const getCategories = transform(Category);
 
 @Entity()
 export class Shop extends BaseEntity {
@@ -50,7 +38,6 @@ export class Shop extends BaseEntity {
   get belongto() {
     return this.user.id;
   }
-
 
   @Column({
     type: 'integer',
