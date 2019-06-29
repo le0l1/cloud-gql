@@ -8,7 +8,7 @@ import {
   ManyToMany,
   OneToMany,
   Index,
-  OneToOne,
+  OneToOne, JoinColumn, RelationId,
 } from 'typeorm';
 import { Category } from '../category/category.entity';
 import { Banner } from '../banner/banner.entity';
@@ -34,10 +34,6 @@ export class Shop extends BaseEntity {
 
   @Column({ type: 'text', comment: '商户描述', nullable: true })
   description;
-
-  get belongto() {
-    return this.user.id;
-  }
 
   @Column({
     type: 'integer',
@@ -111,5 +107,9 @@ export class Shop extends BaseEntity {
   phones;
 
   @OneToOne(type => User)
+  @JoinColumn()
   user;
+
+  @RelationId(shop => shop.user)
+  belongto;
 }

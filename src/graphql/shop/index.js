@@ -25,6 +25,9 @@ const resolvers = {
     id(v) {
       return formateID('shop', v.id);
     },
+    belongto(v) {
+      return formateID('user', v.belongto);
+    },
   },
   ShopStatus,
   ShopResult: idResolver('shop'),

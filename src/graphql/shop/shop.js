@@ -99,12 +99,14 @@ export default class ShopResolver {
   }
 
   static async searchShop({ id }) {
-    return Shop.findOneOrFail({
+    const res = await Shop.findOneOrFail({
       where: {
         id: decodeNumberId(id),
       },
       relations: ['categories'],
     });
+    console.log(res)
+    return res;
   }
 
   static async searchShops({
