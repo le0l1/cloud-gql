@@ -25,14 +25,13 @@ input BannerInput {
   tag: String
   "banner 跳转链接"
   link: String
-  "轮播图类型id"
-  bannerTypeId: ID
 }
 
 "轮播查询"
 input BannerQueryInput {
   "轮播标签"
   tag: String
+
   "轮播图类型id"
   bannerTypeId: ID
 }
@@ -51,8 +50,6 @@ input BannerUpdateInput {
   "banner 跳转链接"
   link: String
 
-  "当前查询的主体id  若是商户就传商户id 以此类推"
-  bannerTypeId: ID
 }
 
 "添加/删除 轮播图结果"

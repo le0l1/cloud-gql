@@ -1,11 +1,12 @@
-import BannerSchema from './Banner.gql';
+import BannerSchema from './Banner.graphql';
 import { Banner } from './banner.entity';
 import { formateID } from '../../helper/util';
+import BannerResolver from './banner';
 
 const resolvers = {
   Query: {
     banners(_, { bannerQueryInput }) {
-      return Banner.searchBanner(bannerQueryInput);
+      return BannerResolver.searchBanners(bannerQueryInput);
     },
   },
   Mutation: {
