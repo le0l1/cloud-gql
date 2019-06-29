@@ -33,9 +33,20 @@ export default class ShopResolver {
 
 
     await trx.save(phonesEntities);
-    await trx.save(Shop.merge(shop, { categories: categoryEntitles }));
     await trx.save(bannerEntities);
     await trx.save(imageEntities);
+    await trx.save(Shop.merge(shop, {
+      categories: categoryEntitles,
+    }));
+  }
+
+  static async rmOldRelations(trx, shop) {
+    const oldPhones = await Phone.find({ shop });
+    const oldBanners = await Banner.find({ shop });
+    const oldImages = await Image.find({ shop });
+    await trx.remove(oldPhones);
+    await trx.remove(oldImages);
+    await trx.remove(oldBanners);
   }
 
   static async createShop({
@@ -80,13 +91,15 @@ export default class ShopResolver {
     }
     const shop = await Shop.findOneOrFail(realId);
     return getManager().transaction(async (trx) => {
-      await trx.save(Shop.merge(shop, rest));
-      await ShopResolver.storeShopRelation(trx, shop, {
+      const params = {
         phones,
         categories,
         shopBanners,
         shopImages,
-      });
+      };
+      await trx.save(Shop.merge(shop, rest));
+      await ShopResolver.rmOldRelations(trx, shop);
+      await ShopResolver.storeShopRelation(trx, shop, params);
       return shop;
     });
   }
