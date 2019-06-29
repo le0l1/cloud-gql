@@ -1,10 +1,9 @@
-"评论"
 type Comment implements Node {
   "评论id"
   id: ID!
 
   "评论用户"
-  belongto: User
+  userId: User
 
   "评论内容"
   comment: String
@@ -15,7 +14,7 @@ type Comment implements Node {
 
 input CreateCommentInput {
   "用户id"
-  belongto: ID!
+  userId: ID!
 
   "评论类型id 若是商户就传商户id 以此类推"
   typeId: ID!

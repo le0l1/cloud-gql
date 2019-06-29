@@ -1,4 +1,4 @@
-import CommentShema from './Comment.gql';
+import CommentShema from './Comment.graphql';
 import { Comment } from './comment.entity';
 import { formateID } from '../../helper/util';
 
