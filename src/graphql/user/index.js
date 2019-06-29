@@ -7,6 +7,7 @@ import {
   getQB, where, withPagination, getManyAndCount,
 } from '../../helper/sql';
 import { Role } from '../../helper/status';
+import {idResolver} from "../../helper/resolver";
 
 const formateUserId = v => (v.id ? formateID('user', v.id) : null);
 
@@ -45,6 +46,8 @@ const resolvers = {
   UserActionResult: {
     id: formateUserId,
   },
+  UserRegisterResult: idResolver('user'),
+  UserLoginResult: idResolver('user'),
   Role,
   Mutation: {
     async register(obj, { userRegisterInput }, ctx) {
