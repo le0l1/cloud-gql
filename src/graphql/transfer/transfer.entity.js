@@ -24,10 +24,10 @@ export class Transfer extends BaseEntity {
   })
   recordNumber;
 
-  @ManyToOne(type => User, user => user.transfer)
+  @ManyToOne(type => User)
   payer;
 
-  @ManyToOne(type => Shop, shop => shop.receipt)
+  @ManyToOne(type => Shop)
   payee;
 
   @Column({
