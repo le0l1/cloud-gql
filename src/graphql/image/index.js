@@ -1,10 +1,10 @@
 import ImageSchema from './Image.gql';
-import { Image } from './image.entity';
+import ImageResolver from './image';
 
 const resolvers = {
   Query: {
     images(_, { query }) {
-      return Image.searchImages(query);
+      return ImageResolver.searchImages(query);
     },
   },
 };
