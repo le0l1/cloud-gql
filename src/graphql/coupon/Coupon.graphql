@@ -62,7 +62,7 @@ input DeleteCouponInput {
 
 input QueryCouponInput {
     "商户id"
-    shopId: ID!
+    shopId: ID
 
     "用户id"
     userId: ID
@@ -82,7 +82,7 @@ type CouponActionResult {
 }
 
 extend  type Query {
-    "通过商家id返回商家的优惠劵 若传入了userId，则会返回用户领取优惠劵的状态"
+    "通过商品id返回商品的优惠劵 若传入了userId，则会返回用户领取优惠劵的状态"
     coupons(query: QueryCouponInput!): [Coupon!]
 }
 

@@ -101,7 +101,7 @@ export class Good extends BaseEntity {
   @CreateDateColumn({ name: 'created_at' })
   createdAt
 
-  @ManyToMany(type => Category, category => category.good)
+  @ManyToMany(type => Category)
   @JoinTable()
   categories
 

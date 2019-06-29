@@ -1,37 +1,32 @@
 import CategorySchema from './Category.graphql';
-import { formateID, decodeNumberId } from '../../helper/util';
-import { Category } from './category.entity';
 import { CategoryStatus } from '../../helper/status';
+import CategoryResolver from './category';
+import { idResolver } from '../../helper/resolver';
 
 const resolvers = {
   Query: {
     categorys(_, { query = {} }) {
-      return Category.searchCategorys(query);
+      return CategoryResolver.searchCategories(query);
     },
     category(_, { query = {} }) {
-      return Category.findOneOrFail(decodeNumberId(query.id));
+      return CategoryResolver.searchCategory(query);
     },
   },
-  Category: {
-    id(v) {
-      return formateID('category', v.id);
-    },
-  },
+  Category: idResolver('category'),
   CategoryStatus,
   CategoryResult: {
-    id(v) {
-      return formateID('category', v.id);
-    },
+    ...idResolver('category'),
+    status: () => true,
   },
   Mutation: {
     createCategory(_, { category }) {
-      return Category.createCategory(category);
+      return CategoryResolver.createCategory(category);
     },
     deleteCategory(_, { category }) {
-      return Category.deleteCategory(category);
+      return CategoryResolver.deleteCategory(category);
     },
     updateCategory(_, { category }) {
-      return Category.updateCategory(category);
+      return CategoryResolver.updateCategory(category);
     },
   },
 };

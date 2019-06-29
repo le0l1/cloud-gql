@@ -64,9 +64,6 @@ export class Category extends BaseEntity {
   @TreeChildren()
   children;
 
-  @ManyToMany(type => Good, good => good.categories)
-  good;
-
   @CreateDateColumn({ name: 'created_at' })
   createdAt;
 
@@ -76,108 +73,4 @@ export class Category extends BaseEntity {
     nullable: true,
   })
   deletedAt;
-
-  static searchCategorys({ route, id, root }) {
-    if (isValid(id)) {
-      return this.searchCategorysDescends(id);
-    }
-
-    if (isValid(route)) {
-      return this.searchCategorysByRoute(route);
-    }
-
-    if (isValid(root)) {
-      return this.searchCategorysRoot(root);
-    }
-  }
-
-  static searchCategorysByRoute(route) {
-    return Category.find({
-      where: {
-        route,
-        parent: null,
-        deletedAt: null,
-      },
-    });
-  }
-
-  static searchCategorysRoot(root) {
-    return Category.createQueryBuilder('category')
-      .innerJoin(
-        getTreeRepository(Category).metadata.closureJunctionTable.tableName,
-        'categoryClosure',
-        'categoryClosure.id_descendant = category.id',
-      )
-      .where((qb) => {
-        const subQuery = qb
-          .subQuery()
-          .select('id')
-          .from(Category)
-          .where('route = :root')
-          .getQuery();
-        return `categoryClosure.id_ancestor IN${subQuery}`;
-      })
-      .andWhere('category.deletedAt is null')
-      .setParameter('root', root)
-      .getRawAndEntities()
-      .then((res) => {
-        const relationMap = res.raw.map(({ category_id: id, category_parentId: parent }) => ({
-          id,
-          parent,
-        }));
-        return flatEntitiesTree(res.entities, relationMap, 'children');
-      });
-  }
-
-  static searchCategorysDescends(id) {
-    const parentCategory = Category.create({
-      id: decodeNumberId(id),
-    });
-    return getTreeRepository(Category)
-      .createDescendantsQueryBuilder('category', 'categoryClosure', parentCategory)
-      .andWhere('category.deletedAt is null')
-      .getMany()
-      .then(res =>
-        // filter parent node
-        res.filter(node => node.id !== decodeNumberId(id)));
-  }
-
-  static createCategory({ parentId = null, ...rest }) {
-    return Category.create({
-      ...rest,
-      parent: isValid(parentId)
-        ? Category.create({
-          id: decodeNumberId(parentId),
-        })
-        : null,
-    })
-      .save()
-      .then(({ id }) => ({
-        id,
-        status: true,
-      }));
-  }
-
-  static deleteCategory({ id }) {
-    return Category.update(
-      {
-        id: decodeNumberId(id),
-      },
-      {
-        deletedAt: new Date(),
-      },
-    ).then(() => ({
-      id,
-      status: true,
-    }));
-  }
-
-  static updateCategory({ id, ...rest }) {
-    return Category.update(
-      {
-        id: decodeNumberId(id),
-      },
-      rest,
-    );
-  }
 }

@@ -1,6 +1,6 @@
 import { decodeNumberId } from '../../helper/util';
-import { Coupon } from './coupon.entity';
-import { UserCoupon } from './userCoupon.entity';
+import Coupon from './coupon.entity';
+import UserCoupon from './userCoupon.entity';
 import { Shop } from '../shop/shop.entity';
 import { User } from '../user/user.entity';
 import { CouponExpiredError, CouponHasCollectedError } from '../../helper/error';
@@ -35,26 +35,24 @@ export default class CouponResolver {
   }
 
   static async searchCoupon({ shopId, userId }) {
-    if (!userId) {
+    if (shopId) {
       const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
       return Coupon.find({
         shop,
       });
     }
-    const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
-    const user = await User.findOneOrFail(decodeNumberId(userId));
-    return Coupon.createQueryBuilder('coupon')
-      .leftJoinAndMapOne(
-        'coupon.userCoupon',
-        'coupon.userCoupon',
-        'userCoupon',
-        'userCoupon.user.id = :userId',
-        {
-          userId: user.id,
-        },
-      )
-      .andWhere('coupon.shop = :shop', { shop: shop.id })
-      .getMany();
+
+    if (userId) {
+      const user = await User.findOneOrFail(decodeNumberId(userId));
+      return Coupon.find({
+        user,
+      });
+    }
+
+    if (shopId && userId) {
+      const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
+      const user = await User.findOneOrFail(decodeNumberId(userId));
+    }
   }
 
   /**

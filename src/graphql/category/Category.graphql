@@ -1,13 +1,13 @@
 "分类"
 type Category {
   "分类id"
-  id: ID!
+  id: ID
   "名称"
-  name: String!
+  name: String
   "状态"
-  status: CategoryStatus!
+  status: CategoryStatus
   "标签"
-  tag: String!
+  tag: String
   "路由地址"
   route: String
 

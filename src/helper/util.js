@@ -68,3 +68,15 @@ export const mapObjectArr = obj => Object.keys(obj).reduce((a, b) => ({
   ...a,
   [b]: obj[b][0],
 }), {});
+
+export const select = (conditions, def) => (payload) => {
+  let index = 0;
+  while (index < conditions.length) {
+    const condition = conditions[index];
+    if (condition[0](payload)) {
+      return condition[1](payload);
+    }
+    index += 1;
+  }
+  return def;
+};
