@@ -4,6 +4,12 @@ import { js2xml, xml2js } from 'xml-js';
 import { env } from '../../helper/util';
 
 export class WXPay {
+  constructor(basicPayInfo) {
+    if (basicPayInfo) {
+      this.basicPayInfo = basicPayInfo;
+    }
+  }
+
   secretKey = env('WXPAY_SECRET_KEY');
 
   basicPayInfo = {
@@ -68,6 +74,13 @@ export class WXPay {
       .digest('hex');
   }
 
+  toJSON() {
+    return {
+      ...this.basicPayInfo,
+      sign: this.sign,
+    };
+  }
+
   preparePayment() {
     return axios
       .post('https://api.mch.weixin.qq.com/pay/unifiedorder', this.xmlParamter, {
@@ -90,15 +103,14 @@ export class WXPay {
           }),
           {},
         );
-        this.basicInfo = {
+        return new WXPay({
           appid,
           partnerid,
           prepayid,
           noncestr,
           timestamp,
           package: 'Sign=WXPay',
-        };
-        return { ...this.basicInfo, sign: this.sign };
+        }).toJSON();
       });
   }
 }
