@@ -19,18 +19,9 @@ export default class ShopResolver {
       phone: p,
       shop,
     }));
-    let categoryEntities = await Promise.all(categories.map(
-      c => Category.findOneOrFail({
-        where: {
-          id: decodeNumberId(c),
-        },
-        relations: ['shops'],
-      }),
+    const categoryEntitles = await Promise.all(categories.map(
+      c => Category.findOneOrFail(decodeNumberId(c)),
     ));
-    categoryEntities = categoryEntities.map((a) => {
-      a.shops = a.shops ? [...a.shops, shop] : [shop];
-      return a;
-    });
     const bannerEntities = shopBanners.map(b => Banner.create({
       path: b,
       shop,
@@ -39,8 +30,10 @@ export default class ShopResolver {
       path: i,
       shop,
     }));
+
+
     await trx.save(phonesEntities);
-    await trx.save(categoryEntities);
+    await trx.save(Shop.merge(shop, { categories: categoryEntitles }));
     await trx.save(bannerEntities);
     await trx.save(imageEntities);
   }
@@ -105,14 +98,14 @@ export default class ShopResolver {
       },
       relations: ['categories'],
     });
-    console.log(res)
+    console.log(res);
     return res;
   }
 
   static async searchShops({
     tsQuery,
     filter = {
-      status: null
+      status: null,
     },
     limit,
     offset,

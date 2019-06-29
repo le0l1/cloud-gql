@@ -64,9 +64,6 @@ export class Category extends BaseEntity {
   @TreeChildren()
   children;
 
-  @ManyToMany(type => Shop, shop => shop.categories)
-  shops;
-
   @ManyToMany(type => Good, good => good.categories)
   good;
 
