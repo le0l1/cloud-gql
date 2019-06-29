@@ -90,6 +90,7 @@ export default class ShopResolver {
       throw new DumplicateShopNameError();
     }
     const shop = await Shop.findOneOrFail(realId);
+    // TODO: 需要先检查下参数再更新  不然会丢失所有的关系
     return getManager().transaction(async (trx) => {
       const params = {
         phones,

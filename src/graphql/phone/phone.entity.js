@@ -1,8 +1,7 @@
 import {
   BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne,
 } from 'typeorm';
-import { decodeNumberId } from '../../helper/util';
-import {Shop} from "../shop/shop.entity";
+import { Shop } from '../shop/shop.entity';
 
 @Entity()
 export class Phone extends BaseEntity {
@@ -15,12 +14,6 @@ export class Phone extends BaseEntity {
   })
   phone;
 
-  @Column({
-    type: 'int',
-    name: 'shop_id',
-    nullable: true,
-  })
-  shopId;
 
   @Column({
     type: 'int',
@@ -30,49 +23,4 @@ export class Phone extends BaseEntity {
 
   @ManyToOne(type => Shop, shop => shop.phones)
   shop;
-
-  static savePhone(phones, shopId) {
-    const phoneArr = phones.map(p => Phone.create({
-      phone: p,
-      shopId,
-    }));
-    Phone.delete({
-      where: {
-        shopId,
-      },
-    });
-    return Phone.save(phoneArr);
-  }
-
-  static searchPhone({ shopId }) {
-    return Phone.find({
-      where: {
-        shopId: decodeNumberId(shopId),
-      },
-    });
-  }
-
-  /**
-   * Update Phone Count
-   * @param id
-   * @param rest
-   * @returns {Promise<UpdateResult>}
-   */
-  static async updatePhone({ id, ...rest }) {
-    try {
-      const realId = decodeNumberId(id);
-      await Phone.update(
-        {
-          id: realId,
-        },
-        rest,
-      );
-      return {
-        id: realId,
-        status: true,
-      };
-    } catch (e) {
-      throw e;
-    }
-  }
 }
