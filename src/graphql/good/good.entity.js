@@ -105,10 +105,6 @@ export class Good extends BaseEntity {
   @JoinTable()
   categories
 
-  @OneToMany(type => Coupon, coupon => coupon.good)
-  coupon;
-
-
   static createGood({
     shopId, banners = [], categories = [], ...rest
   }) {

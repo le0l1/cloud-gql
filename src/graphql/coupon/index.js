@@ -1,31 +1,31 @@
-import CouponScheam from './coupon.graphql';
-import { Coupon } from './coupon.entity';
+import CouponScheam from './Coupon.graphql';
 import { prop, pipe, formateID } from '../../helper/util';
-import { UserCoupon } from './userCoupon.entity';
 import { CouponStatus } from '../../helper/status';
+import CouponResolver from './coupon';
 
 const formateCouponId = pipe(
   prop('id'),
   formateID.bind(null, 'coupon'),
 );
+// TODO: 查询user的优惠券
 const resolvers = {
   Mutation: {
     createCoupon(_, { createCouponInput }) {
-      return Coupon.createCoupon(createCouponInput);
+      return CouponResolver.createCoupon(createCouponInput);
     },
     updateCoupon(_, { updateCouponInput }) {
-      return Coupon.updateCoupon(updateCouponInput);
+      return CouponResolver.updateCoupon(updateCouponInput);
     },
     deleteCoupon(_, { deleteCouponInput }) {
-      return Coupon.deleteCoupon(deleteCouponInput);
+      return CouponResolver.deleteCoupon(deleteCouponInput);
     },
     collectCoupon(_, { collectCouponInput }) {
-      return UserCoupon.collectCoupon(collectCouponInput);
+      return CouponResolver.collectCoupon(collectCouponInput);
     },
   },
   Query: {
     coupons(_, { query }) {
-      return Coupon.searchCoupon(query);
+      return CouponResolver.searchCoupon(query);
     },
   },
   CouponStatus,
@@ -34,6 +34,7 @@ const resolvers = {
   },
   CouponActionResult: {
     id: formateCouponId,
+    status: () => true,
   },
 };
 

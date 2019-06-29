@@ -14,3 +14,11 @@ export class ShopNotExistsError extends Error {
 export class StockLackError extends Error {
   message = '商品数量不足'
 }
+
+export class CouponExpiredError extends Error {
+  message = '优惠券已过期'
+}
+
+export class CouponHasCollectedError extends Error {
+  message = '已领取过该优惠券'
+}

@@ -1,9 +1,8 @@
 import {
   BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn,
 } from 'typeorm';
-import { decodeNumberId } from '../../helper/util';
-import { Good } from '../good/good.entity';
 import { UserCoupon } from './userCoupon.entity';
+import { Shop } from '../shop/shop.entity';
 
 @Entity()
 export class Coupon extends BaseEntity {
@@ -63,72 +62,9 @@ export class Coupon extends BaseEntity {
   })
   deletedAt
 
-  @ManyToOne(type => Good, good => Good.coupon)
-  good
+  @ManyToOne(type => Shop)
+  shop
 
   @OneToMany(type => UserCoupon, userCoupon => userCoupon.coupon)
   userCoupon
-
-  static createCoupon({
-    goodId,
-    ...rest
-  }) {
-    return Coupon.store({
-      good: Good.create({ id: decodeNumberId(goodId) }),
-      ...rest,
-    });
-  }
-
-  static async store(params) {
-    try {
-      const { id } = await Coupon.create(
-        params,
-      ).save();
-      return {
-        id,
-        status: true,
-      };
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  static updateCoupon({
-    id,
-    ...rest
-  }) {
-    return Coupon.store({
-      id: decodeNumberId(id),
-      ...rest,
-    });
-  }
-
-  static deleteCoupon({ id }) {
-    return Coupon.store({
-      id: decodeNumberId(id),
-      deletedAt: Date.now(),
-    });
-  }
-
-  static searchCoupon({ goodId, userId }) {
-    if (!userId) {
-      return Coupon.find({
-        where: {
-          good: Good.create({ id: decodeNumberId(goodId) }),
-        },
-      });
-    }
-
-    return Coupon.createQueryBuilder('coupon')
-      .leftJoinAndMapOne(
-        'coupon.userCoupon',
-        'coupon.userCoupon',
-        'userCoupon',
-        'userCoupon.user.id = :userId',
-        {
-          userId: decodeNumberId(userId),
-        },
-      )
-      .getMany();
-  }
 }

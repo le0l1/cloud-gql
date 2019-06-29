@@ -6,7 +6,7 @@ module.exports = process.env.NODE_ENV === 'development'
     username: 'postgres',
     password: '',
     database: 'cloud',
-    entities: ['src/graphql/**/*.entity.js'],
+    entities: ['src/graphql/**/**.entity.js'],
     migrations: ['src/migration/*.js'],
     // logging: true,
     synchronize: true,

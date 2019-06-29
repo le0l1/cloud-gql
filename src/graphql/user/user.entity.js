@@ -95,9 +95,6 @@ export class User extends BaseEntity {
   @OneToMany(type => Comment, comment => comment.belongto)
   comments;
 
-  @OneToMany(type => UserCoupon, userCoupon => userCoupon.user)
-  userCoupon;
-
   @OneToMany(type => Transfer, transfer => transfer.payee)
   transfer;
 
