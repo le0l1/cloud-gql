@@ -3,11 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  BaseEntity,
+  BaseEntity, ManyToOne,
 } from 'typeorm';
 import {
   isValid, mergeIfValid, decodeNumberId, formateID, decodeIDAndType,
 } from '../../helper/util';
+import {Shop} from "../shop/shop.entity";
 
 @Entity()
 export class Banner extends BaseEntity {
@@ -74,6 +75,9 @@ export class Banner extends BaseEntity {
     nullable: true,
   })
   deletedAt;
+
+  @ManyToOne(type => Shop, shop => shop.banners)
+  shop;
 
   static createBanner({ bannerTypeId: typeId, ...rest }) {
     const currentBanner = Banner.create({ ...rest });

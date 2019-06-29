@@ -1,7 +1,8 @@
 import {
-  BaseEntity, Entity, PrimaryGeneratedColumn, Column,
+  BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne,
 } from 'typeorm';
 import { decodeNumberId } from '../../helper/util';
+import {Shop} from "../shop/shop.entity";
 
 @Entity()
 export class Phone extends BaseEntity {
@@ -17,6 +18,7 @@ export class Phone extends BaseEntity {
   @Column({
     type: 'int',
     name: 'shop_id',
+    nullable: true,
   })
   shopId;
 
@@ -25,6 +27,9 @@ export class Phone extends BaseEntity {
     default: 100,
   })
   count;
+
+  @ManyToOne(type => Shop, shop => shop.phones)
+  shop;
 
   static savePhone(phones, shopId) {
     const phoneArr = phones.map(p => Phone.create({

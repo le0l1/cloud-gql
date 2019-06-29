@@ -1,7 +1,9 @@
 import {
   BaseEntity, Entity, PrimaryGeneratedColumn, Column,
+  ManyToOne,
 } from 'typeorm';
 import { decodeIDAndType } from '../../helper/util';
+import { Shop } from '../shop/shop.entity';
 
 @Entity()
 export class Image extends BaseEntity {
@@ -27,6 +29,9 @@ export class Image extends BaseEntity {
     nullable: true,
   })
   imageTypeId;
+
+  @ManyToOne(type => Shop, shop => shop.images)
+  shop;
 
   static createImageArr(imageType, imageTypeId, imageArr = []) {
     const transformImage = node => ({

@@ -1,15 +1,16 @@
 import ShopSchema from './Shop.graphql';
 import { formateID } from '../../helper/util';
-import { Shop } from './shop.entity';
 import { ShopStatus } from '../../helper/status';
+import ShopResolver from './shop';
+import { idResolver } from '../../helper/resolver';
 
 const resolvers = {
   Query: {
     shops(_, { query = {} }) {
-      return Shop.searchShopList(query);
+      return ShopResolver.searchShops(query);
     },
     shop(_, { query }) {
-      return Shop.searchShop(query);
+      return ShopResolver.searchShop(query);
     },
   },
   ShopConnection: {
@@ -24,23 +25,18 @@ const resolvers = {
     id(v) {
       return formateID('shop', v.id);
     },
-    shopImages(v) {
-      return (v.shopImages || []).map(a => a.path);
-    },
-    shopBanners(v) {
-      return (v.shopBanners || []).map(a => a.path);
-    },
   },
   ShopStatus,
+  ShopResult: idResolver('shop'),
   Mutation: {
     createShop(_, { shopCreateInput }) {
-      return Shop.createShop(shopCreateInput);
+      return ShopResolver.createShop(shopCreateInput);
     },
     deleteShop(_, { shopDeleteInput }) {
-      return Shop.deleteShop(shopDeleteInput);
+      return ShopResolver.deleteShop(shopDeleteInput);
     },
     updateShop(_, { shopUpdateInput }) {
-      return Shop.updateShop(shopUpdateInput);
+      return ShopResolver.updateShop(shopUpdateInput);
     },
   },
 };

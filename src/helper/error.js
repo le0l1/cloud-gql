@@ -22,3 +22,7 @@ export class CouponExpiredError extends Error {
 export class CouponHasCollectedError extends Error {
   message = '已领取过该优惠券'
 }
+
+export class DumplicateShopNameError extends Error {
+  message = '店铺名称重复'
+}
