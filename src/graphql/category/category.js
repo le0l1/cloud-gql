@@ -48,7 +48,7 @@ export default class CategoryResolver {
         deletedAt: null,
       });
     };
-    const res = await select([
+    return select([
       [
         prop('route'),
         findByRoute,
@@ -62,8 +62,6 @@ export default class CategoryResolver {
         findRoot,
       ],
     ], [])(params);
-    console.log(res);
-    return res;
   }
 
   static async deleteCategory({ id }) {
