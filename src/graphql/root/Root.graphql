@@ -9,7 +9,6 @@ interface Node {
 }
 
 type PageInfo {
-  hasNextPage: Boolean!
   total: Int!
 }
 

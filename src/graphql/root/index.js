@@ -5,9 +5,6 @@ const resolvers = {
     total(v) {
       return v[1] || 0;
     },
-    hasNextPage(v) {
-      return v[1] > 0;
-    },
   },
   Node: {
     __resolveType(data) {
