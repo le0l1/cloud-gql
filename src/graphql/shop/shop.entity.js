@@ -111,11 +111,6 @@ export class Shop extends BaseEntity {
   @JoinTable()
   categories;
 
-  @OneToMany(type => Comment, comment => comment.shop)
-  shopComments;
-
-  @OneToMany(type => Transfer, transfer => transfer.payee)
-  receipt;
 
   static async createShop(params) {
     params.name && (await this.checkNameUnique(params.name));
@@ -152,7 +147,7 @@ export class Shop extends BaseEntity {
 
   static deleteShop({ id }) {
     return Shop.update(id, {
-      deletedAt: new Datate(),
+      deletedAt: new Date(),
     }).then(() => ({
       id,
       status: true,
@@ -162,8 +157,8 @@ export class Shop extends BaseEntity {
   static searchShopList({
     tsQuery,
     filter = { status: null },
-    limit = 10,
-    offset = 1,
+    limit,
+    offset,
     categoryId,
     isPassed,
   }) {
@@ -181,7 +176,7 @@ export class Shop extends BaseEntity {
       }),
       where('deletedAt is :deletedAt', { deletedAt: null }),
       withRelation,
-      withPagination(limit, offset - 1),
+      withPagination(limit, offset),
       getManyAndCount,
     )(Shop);
   }
