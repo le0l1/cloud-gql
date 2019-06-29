@@ -109,7 +109,9 @@ export default class ShopResolver {
 
   static async searchShops({
     tsQuery,
-    filter,
+    filter = {
+      status: null
+    },
     limit,
     offset,
     isPassed,
@@ -130,7 +132,7 @@ export default class ShopResolver {
       where('deletedAt is :deletedAt', { deletedAt: null }),
       withRelation,
       withPagination(limit, offset),
-      getManyAndCount(),
+      getManyAndCount,
     )(Shop);
   }
 
