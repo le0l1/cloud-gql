@@ -1,5 +1,4 @@
 import GoodSchema from './Good.graphql';
-import { Good } from './good.entity';
 import { formateID } from '../../helper/util';
 import { GoodStatus } from '../../helper/status';
 import GoodResolver from './good';
