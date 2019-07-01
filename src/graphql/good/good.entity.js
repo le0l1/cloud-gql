@@ -4,41 +4,43 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  Index,
   ManyToMany,
-  JoinTable, In, IsNull, OneToMany,
+  JoinTable,
+  In,
+  IsNull,
+  RelationId,
+  ManyToOne,
 } from 'typeorm';
 import { Banner } from '../banner/banner.entity';
 import {
-  isValid, decodeID, formateID, decodeNumberId,
+  isValid,
+  decodeID,
+  formateID,
+  decodeNumberId,
 } from '../../helper/util';
 import { Category } from '../category/category.entity';
-import { Coupon } from '../coupon/coupon.entity';
-import Cart from '../cart/cart.entity';
+import { Shop } from '../shop/shop.entity';
 
 @Entity()
 export class Good extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id
+  id;
 
   @Column({ type: 'character varying', nullable: true })
-  name
+  name;
 
   @Column({ type: 'character varying', nullable: true })
-  cover
+  cover;
 
   @Column({ type: 'character varying', nullable: true })
-  subTitle
+  subTitle;
 
   @Column({ type: 'text', nullable: true })
-  description
+  description;
 
   @Column({ type: 'text', nullable: true, name: 'good_paramter' })
-  goodParamter
+  goodParamter;
 
-  @Column({ type: 'int', name: 'shop_id', nullable: true })
-  @Index()
-  shopId
 
   @Column({
     type: 'int',
@@ -46,14 +48,14 @@ export class Good extends BaseEntity {
     comment: '1. online 2. offline',
     default: 1,
   })
-  status
+  status;
 
   @Column({
     type: 'int',
     name: 'goods_sales',
     default: 100,
   })
-  goodsSales
+  goodsSales;
 
   @Column({
     type: 'character varying',
@@ -61,49 +63,56 @@ export class Good extends BaseEntity {
     name: 'shipping_address',
     comment: '配送地址',
   })
-  shippingAddress
+  shippingAddress;
 
   @Column({
     type: 'character varying',
     nullable: true,
     comment: '条款',
   })
-  terms
+  terms;
 
   @Column({
     type: 'character varying',
     nullable: true,
     comment: '运费',
   })
-  freight
+  freight;
 
   @Column({
     type: 'int',
     name: 'goods_stocks',
     default: 0,
   })
-  goodsStocks
+  goodsStocks;
 
   @Column({
     type: 'numeric',
     name: 'good_sale_price',
     nullable: true,
   })
-  goodSalePrice
+  goodSalePrice;
 
   @Column({
     type: 'timestamp',
     nullable: true,
     name: 'deleted_at',
   })
-  deletedAt
+  deletedAt;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt
+  createdAt;
 
   @ManyToMany(type => Category)
   @JoinTable()
-  categories
+  categories;
+
+
+  @RelationId(good => good.shop)
+  shopId;
+
+  @ManyToOne(type => Shop)
+  shop;
 
   static createGood({
     shopId, banners = [], categories = [], ...rest
@@ -174,7 +183,6 @@ export class Good extends BaseEntity {
   static findByIds(goodIds) {
     return Good.find({
       where: {
-
         id: In(goodIds),
         deletedAt: IsNull(),
       },

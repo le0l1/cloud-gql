@@ -1,12 +1,14 @@
-import GoodSchema from './Good.gql';
+import GoodSchema from './Good.graphql';
 import { Good } from './good.entity';
 import { formateID } from '../../helper/util';
 import { GoodStatus } from '../../helper/status';
+import GoodResolver from './good';
+import {idResolver} from "../../helper/resolver";
 
 const resolvers = {
   Mutation: {
     createGood(_, { createGoodInput }) {
-      return Good.createGood(createGoodInput);
+      return GoodResolver.createGoods(createGoodInput);
     },
     updateGood(_, { updateGoodInput }) {
       return Good.updateGood(updateGoodInput);
@@ -23,6 +25,7 @@ const resolvers = {
       return v.shopId ? formateID('shop', v.shopId) : null;
     },
   },
+  GoodActionResult: idResolver('good'),
   Query: {
     good(_, { query = {} }) {
       return Good.searchGood(query);
