@@ -94,7 +94,7 @@ export class WXPay {
           mch_id: partnerid,
           prepay_id: prepayid,
           nonce_str: noncestr,
-          timestamp = +new Date(),
+          timestamp = Number(Date.now().toString().slice(0, 10)),
         } = Object.keys(xml).reduce(
           (a, b) => ({
             ...a,
