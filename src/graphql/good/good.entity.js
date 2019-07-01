@@ -6,18 +6,9 @@ import {
   CreateDateColumn,
   ManyToMany,
   JoinTable,
-  In,
-  IsNull,
   RelationId,
   ManyToOne,
 } from 'typeorm';
-import { Banner } from '../banner/banner.entity';
-import {
-  isValid,
-  decodeID,
-  formateID,
-  decodeNumberId,
-} from '../../helper/util';
 import { Category } from '../category/category.entity';
 import { Shop } from '../shop/shop.entity';
 
@@ -113,80 +104,4 @@ export class Good extends BaseEntity {
 
   @ManyToOne(type => Shop)
   shop;
-
-  static createGood({
-    shopId, banners = [], categories = [], ...rest
-  }) {
-    return Good.create({
-      shopId: decodeID(shopId),
-      cover: isValid(banners[0]) ? banners[0] : null,
-      categories: categories.map(a => Category.create({
-        id: decodeNumberId(a),
-      })),
-      ...rest,
-    })
-      .save()
-      .then(({ id: goodId }) => {
-        Banner.createBannerArr('good', goodId, banners);
-        return {
-          id: formateID('good', goodId),
-          status: true,
-        };
-      });
-  }
-
-  static updateGood({ id: goodId, ...rest }) {
-    return this.createGood({
-      id: decodeNumberId(goodId),
-      ...rest,
-    });
-  }
-
-  static deleteGood({ id }) {
-    return Good.update(decodeID(id), { deletedAt: new Date() }).then(
-      ({ id: goodId }) => ({
-        id: formateID('good', goodId),
-        status: true,
-      }),
-    );
-  }
-
-  static searchGood({ id }) {
-    const realId = decodeNumberId(id);
-    return Good.createQueryBuilder('good')
-      .leftJoinAndSelect('good.categories', 'category')
-      .where({
-        id: realId,
-      })
-      .getOne()
-      .then(res => ({
-        ...res,
-        id: realId,
-      }));
-  }
-
-  static searchGoodConnection({ shopId, offset = 1, limit = 10 }) {
-    const goodQb = this.createQueryBuilder('good')
-      .skip(Math.max(offset - 1, 0))
-      .take(limit);
-
-    return (isValid(shopId)
-      ? goodQb.andWhere({
-        shopId: decodeNumberId(shopId),
-      })
-      : goodQb
-    )
-      .leftJoinAndSelect('good.categories', 'category')
-      .getManyAndCount();
-  }
-
-  static findByIds(goodIds) {
-    return Good.find({
-      where: {
-        id: In(goodIds),
-        deletedAt: IsNull(),
-      },
-      relations: ['categories'],
-    });
-  }
 }

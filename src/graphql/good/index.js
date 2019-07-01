@@ -3,7 +3,7 @@ import { Good } from './good.entity';
 import { formateID } from '../../helper/util';
 import { GoodStatus } from '../../helper/status';
 import GoodResolver from './good';
-import {idResolver} from "../../helper/resolver";
+import { idResolver } from '../../helper/resolver';
 
 const resolvers = {
   Mutation: {
@@ -11,10 +11,10 @@ const resolvers = {
       return GoodResolver.createGoods(createGoodInput);
     },
     updateGood(_, { updateGoodInput }) {
-      return Good.updateGood(updateGoodInput);
+      return GoodResolver.updateGood(updateGoodInput);
     },
     deleteGood(_, { deleteGoodInput }) {
-      return Good.deleteGood(deleteGoodInput);
+      return GoodResolver.deleteGood(deleteGoodInput);
     },
   },
   Good: {
@@ -28,10 +28,10 @@ const resolvers = {
   GoodActionResult: idResolver('good'),
   Query: {
     good(_, { query = {} }) {
-      return Good.searchGood(query);
+      return GoodResolver.searchGood(query);
     },
     goods(_, { query = {} }) {
-      return Good.searchGoodConnection(query);
+      return GoodResolver.searchGoods(query);
     },
   },
   GoodConnection: {

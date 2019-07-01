@@ -165,6 +165,8 @@ input GoodsSearchInput {
   offset: Int
   "分页条数"
   limit: Int
+  "模糊搜索"
+  tsQuery: String
 }
 
 type GoodConnection implements Connection {

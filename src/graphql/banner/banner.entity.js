@@ -9,6 +9,7 @@ import {
   isValid, mergeIfValid, decodeNumberId, formateID, decodeIDAndType,
 } from '../../helper/util';
 import {Shop} from "../shop/shop.entity";
+import {Good} from "../good/good.entity";
 
 @Entity()
 export class Banner extends BaseEntity {
@@ -78,6 +79,9 @@ export class Banner extends BaseEntity {
 
   @ManyToOne(type => Shop, shop => shop.banners)
   shop;
+
+  @ManyToOne(type => Good)
+  good;
 
   static createBanner({ bannerTypeId: typeId, ...rest }) {
     const currentBanner = Banner.create({ ...rest });
