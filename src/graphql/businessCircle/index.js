@@ -1,17 +1,20 @@
-import BusinessCircleSchema from './BusinessCircle.gql';
+import BusinessCircleSchema from './BusinessCircle.graphql';
 import { formateID } from '../../helper/util';
-import { BusinessCircle } from './businessCircle.entity';
 import { ReportStatus } from '../../helper/status';
+import BusinessCircleResolver from './businessCircle';
 
 const resolvers = {
   Query: {
     businessCircles(_, { query = {} }) {
-      return BusinessCircle.searchBusinessCircle(query);
+      return BusinessCircleResolver.searchBusinessCircles(query);
     },
   },
   Mutation: {
     createBusinessCircle(_, { createBusinessCircleInput }) {
-      return BusinessCircle.createBusinessCircle(createBusinessCircleInput);
+      return BusinessCircleResolver.createBusinessCircle(createBusinessCircleInput);
+    },
+    deleteBusinessCircle(_, { deleteBusinessCircleInput }) {
+      return BusinessCircleResolver.deleteBusinessCircles(deleteBusinessCircleInput);
     },
   },
   ReportStatus,
@@ -19,12 +22,14 @@ const resolvers = {
     id(v) {
       return v.id ? formateID('businessCircle', v.id) : null;
     },
+    status: () => true,
   },
   BusinessCircle: {
     id(v) {
       return v.id ? formateID('businessCircle', v.id) : null;
     },
     images(v) {
+      console.log(v)
       return v.images ? v.images.map(a => a.path) : [];
     },
   },

@@ -66,6 +66,9 @@ input BusinessCircleCreateInput {
   "图片"
   images: [String!]
 }
+input BusinessCircleDeleteInput {
+  id: ID!
+}
 
 type BusinessCircleOperationResult {
   "操作id"
@@ -85,4 +88,6 @@ extend type Query {
 extend type Mutation {
   "创建生意圈"
   createBusinessCircle(createBusinessCircleInput: BusinessCircleCreateInput!): BusinessCircleOperationResult
+  "删除生意圈"
+  deleteBusinessCircle(deleteBusinessCircleInput: BusinessCircleDeleteInput!):BusinessCircleOperationResult
 }

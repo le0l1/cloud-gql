@@ -45,7 +45,7 @@ type WXPayPrepare {
     noncestr: String
 
     "时间戳"
-    timestamp: String
+    timestamp: Number
 
     "微信支付签名"
     sign: String

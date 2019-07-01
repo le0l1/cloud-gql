@@ -3,11 +3,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, ManyToOne, OneToMany,
 } from 'typeorm';
 import { Image } from '../image/image.entity';
 import { User } from '../user/user.entity';
-import { decodeNumberId } from '../../helper/util';
 
 @Entity()
 export class BusinessCircle extends BaseEntity {
@@ -54,38 +53,9 @@ export class BusinessCircle extends BaseEntity {
   })
   createdAt
 
-  static createBusinessCircle({ userId, images, content }) {
-    return BusinessCircle.create({
-      userId: decodeNumberId(userId),
-      content,
-    })
-      .save()
-      .then(async ({ id }) => BusinessCircle.saveBusinessCircleImages(id, images).then(() => ({
-        id,
-        status: true,
-      })));
-  }
+  @ManyToOne(type => User)
+  user;
 
-  static saveBusinessCircleImages(id, images) {
-    return Image.createImageArr('businessCircle', id, images);
-  }
-
-  static searchBusinessCircle({ offset = 1, limit = 10 }) {
-    return BusinessCircle.createQueryBuilder('businessCircle')
-      .leftJoinAndMapOne(
-        'businessCircle.user',
-        User,
-        'user',
-        'user.id = businessCircle.userId',
-      )
-      .leftJoinAndMapMany(
-        'businessCircle.images',
-        Image,
-        'image',
-        'image.imageType = \'businessCircle\' and businessCircle.id = image.imageTypeId',
-      )
-      .skip(Math.max(offset - 1, 0))
-      .take(limit)
-      .getManyAndCount();
-  }
+  @OneToMany(type => Image, image => image.businessCircle)
+  images;
 }

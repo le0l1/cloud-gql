@@ -3,6 +3,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { Shop } from '../shop/shop.entity';
+import { BusinessCircle } from '../businessCircle/businessCircle.entity';
 
 @Entity()
 export class Image extends BaseEntity {
@@ -31,4 +32,7 @@ export class Image extends BaseEntity {
 
   @ManyToOne(type => Shop)
   shop;
+
+  @ManyToOne(type => BusinessCircle, businessCircle => businessCircle.images)
+  businessCircle;
 }
