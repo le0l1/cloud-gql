@@ -161,12 +161,12 @@ input GoodSearchInput {
 input GoodsSearchInput {
   "商户id"
   shopId: ID
+  "分类id"
+  categoryId: ID
   "偏离值"
   offset: Int
   "分页条数"
   limit: Int
-  "模糊搜索"
-  tsQuery: String
 }
 
 type GoodConnection implements Connection {

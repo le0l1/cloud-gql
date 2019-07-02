@@ -4,7 +4,9 @@ import { decodeNumberId, pipe } from '../../helper/util';
 import { Category } from '../category/category.entity';
 import { Banner } from '../banner/banner.entity';
 import { Good } from './good.entity';
-import { getQB, where, withPagination } from '../../helper/sql';
+import {
+  getQB, where, withPagination, getManyAndCount, leftJoinAndSelect
+} from '../../helper/sql';
 
 export default class GoodResolver {
   static createGoods({
@@ -77,24 +79,20 @@ export default class GoodResolver {
   }
 
   static async searchGoods({
-    shopId, offset, limit, tsQuery,
+    shopId, offset, limit, tsQuery, categoryId,
   }) {
-    const qb = pipe(
+    return pipe(
       getQB('good'),
+      leftJoinAndSelect('good.categories', 'category'),
       where('good.name like :tsQuery', {
         tsQuery: tsQuery ? `%${tsQuery}%` : null,
       }),
       where('good.deletedAt is null'),
+      where('good.shop = :shop', { shop: shopId ? decodeNumberId(shopId) : null }),
+      where('category.id = :category', { category: categoryId ? decodeNumberId(categoryId) : null }),
       withPagination(limit, offset),
+      getManyAndCount,
     )(Good);
-
-    if (shopId) {
-      const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
-      return qb.andWhere('good.shop = :shop', {
-        shop: shop.id,
-      }).getManyAndCount();
-    }
-    return qb.getManyAndCount();
   }
 
   static async deleteGood({
