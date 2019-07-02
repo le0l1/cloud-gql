@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { decodeID, decodeIDAndType } from '../../helper/util';
+import { decodeID, decodeTypeAndId } from '../../helper/util';
 import { User } from '../user/user.entity';
 
 @Entity()
@@ -41,7 +41,7 @@ export class Comment extends BaseEntity {
   belongto;
 
   static createComment({ typeId, belongto, ...rest }) {
-    const [commentType, commentTypeId] = decodeIDAndType(typeId);
+    const [commentType, commentTypeId] = decodeTypeAndId(typeId);
     return Comment.create({
       commentType,
       commentTypeId,
@@ -52,7 +52,7 @@ export class Comment extends BaseEntity {
 
   // 通过条件查找对应的评论
   static getCommentList({ typeId }) {
-    const [commentType, commentTypeId] = decodeIDAndType(typeId);
+    const [commentType, commentTypeId] = decodeTypeAndId(typeId);
 
     return Comment.findAndCount({
       where: {

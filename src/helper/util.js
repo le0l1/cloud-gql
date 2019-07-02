@@ -34,13 +34,13 @@ export const flatEntitiesTree = (entities, relationMap, chidKey = 'specs') => {
 export const prop = key => obj => obj[key];
 export const pipe = (...fns) => val => fns.reduce((a, b) => b(a), val);
 export const formateID = (type, id) => Buffer.from(`${type}/${id}`, 'binary').toString('base64');
-export const decodeIDAndType = str => (str
+export const decodeTypeAndId = str => (str
   ? Buffer.from(str, 'base64')
     .toString('binary')
     .split('/')
   : [null, null]);
 
-export const decodeID = str => decodeIDAndType(str)[1];
+export const decodeID = str => decodeTypeAndId(str)[1];
 
 export const decodeNumberId = pipe(
   decodeID,

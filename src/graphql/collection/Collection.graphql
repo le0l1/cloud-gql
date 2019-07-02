@@ -1,0 +1,36 @@
+union Collection = Shop | Good
+
+
+type CollectionActionResult {
+  status: Boolean
+}
+
+input CreateCollectionInput {
+  userId: ID!
+  typeId: ID!
+}
+
+input DeleteCollectionInput {
+  userId: ID!
+  typeId: ID!
+}
+
+enum CollectionType {
+  shop
+  good
+}
+
+input CollectionsQuery {
+  userId: ID!
+  type: CollectionType!
+}
+
+extend type Query {
+  collections(query: CollectionsQuery!): [Collection]
+}
+
+extend type Mutation {
+  "目前仅支持店铺和商品收藏"
+  createCollection(createCollectionInput: CreateCollectionInput!): CollectionActionResult
+  deleteCollection(deleteCollectionInput: DeleteCollectionInput!): CollectionActionResult
+}

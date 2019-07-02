@@ -5,7 +5,7 @@ import {
   handleActionResult,
   handleSuccessResult,
   mergeIfValid,
-  formateID, decodeNumberId, decodeIDAndType,
+  formateID, decodeNumberId, decodeTypeAndId,
 } from '../../helper/util';
 import { Banner } from '../banner/banner.entity';
 

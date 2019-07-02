@@ -1,5 +1,5 @@
 import { Banner } from './banner.entity';
-import { decodeIDAndType } from '../../helper/util';
+import { decodeTypeAndId } from '../../helper/util';
 import { Shop } from '../shop/shop.entity';
 import { Good } from '../good/good.entity';
 
@@ -12,7 +12,7 @@ export default class BannerResolver {
     }
 
     if (bannerTypeId) {
-      const [type, typeId] = decodeIDAndType(bannerTypeId);
+      const [type, typeId] = decodeTypeAndId(bannerTypeId);
       const findMap = {
         shop: BannerResolver.findShopBanners,
         good: BannerResolver.findGoodsBanners,

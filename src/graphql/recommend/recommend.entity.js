@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { tryStatement } from '@babel/types';
-import { decodeID, decodeIDAndType, decodeNumberId } from '../../helper/util';
+import { decodeID, decodeTypeAndId, decodeNumberId } from '../../helper/util';
 import { Good } from '../good/good.entity';
 import { Shop } from '../shop/shop.entity';
 
@@ -45,7 +45,7 @@ export class Recommend extends BaseEntity {
 
   static async storeRecommends(route, recommnedNode) {
     try {
-      const [recommendType, recommendTypeId] = decodeIDAndType(recommnedNode);
+      const [recommendType, recommendTypeId] = decodeTypeAndId(recommnedNode);
       const { id } = await Recommend.create({
         route,
         recommendType,

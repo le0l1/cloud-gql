@@ -6,7 +6,7 @@ import {
   BaseEntity, ManyToOne,
 } from 'typeorm';
 import {
-  isValid, mergeIfValid, decodeNumberId, formateID, decodeIDAndType,
+  isValid, mergeIfValid, decodeNumberId, formateID, decodeTypeAndId,
 } from '../../helper/util';
 import {Shop} from "../shop/shop.entity";
 import {Good} from "../good/good.entity";
@@ -86,7 +86,7 @@ export class Banner extends BaseEntity {
   static createBanner({ bannerTypeId: typeId, ...rest }) {
     const currentBanner = Banner.create({ ...rest });
     if (isValid(typeId)) {
-      const [bannerType, bannerTypeId] = decodeIDAndType(typeId);
+      const [bannerType, bannerTypeId] = decodeTypeAndId(typeId);
       currentBanner.bannerType = bannerType;
       currentBanner.bannerTypeId = Number(bannerTypeId);
     }
@@ -106,7 +106,7 @@ export class Banner extends BaseEntity {
   }
 
   static searchBanner({ tag, bannerTypeId: formatedId }) {
-    const [bannerType, bannerTypeId] = decodeIDAndType(formatedId);
+    const [bannerType, bannerTypeId] = decodeTypeAndId(formatedId);
     return Banner.find({
       where: mergeIfValid({ tag, bannerType, bannerTypeId }, {}),
     });
