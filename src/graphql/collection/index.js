@@ -6,6 +6,9 @@ const resolvers = {
     collections(_, { query }) {
       return CollectionResolver.searchCollections(query);
     },
+    collected(_, { query }) {
+      return CollectionResolver.isCollected(query);
+    },
   },
   Mutation: {
     createCollection(_, { createCollectionInput }) {

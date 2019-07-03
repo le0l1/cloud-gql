@@ -23,10 +23,20 @@ enum CollectionType {
 input CollectionsQuery {
   userId: ID!
   type: CollectionType!
+  "页面size"
+  limit: Int
+  "页数"
+  offset: Int
+}
+
+input CollectedQuery {
+  userId: ID!
+  typeId: ID!
 }
 
 extend type Query {
   collections(query: CollectionsQuery!): [Collection]
+  collected(query: CollectedQuery!): Boolean
 }
 
 extend type Mutation {
