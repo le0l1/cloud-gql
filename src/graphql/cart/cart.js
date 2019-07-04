@@ -46,7 +46,7 @@ export default class CartResolver {
     const user = await User.findOneOrFail(decodeNumberId(userId));
     return Cart.createQueryBuilder('cart')
       .leftJoinAndSelect('cart.good', 'good')
-      .leftJoinAndMapOne('cart.shop', Shop, 'shop', 'shop.id = good.shopId')
+      .leftJoinAndMapOne('cart.shop', Shop, 'shop', 'shop.id = good.shop')
       .andWhere('cart.user = :user', { user: user.id })
       .getMany();
   }
