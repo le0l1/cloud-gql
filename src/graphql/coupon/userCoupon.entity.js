@@ -21,7 +21,7 @@ export class UserCoupon extends BaseEntity {
   @ManyToOne(type => User, user => user.userCoupon)
   user
 
-  @ManyToOne(type => Coupon, coupon => coupon.userCoupon)
+  @ManyToOne(type => Coupon)
   coupon;
 
   /**

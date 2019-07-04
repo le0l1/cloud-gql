@@ -1,15 +1,12 @@
 import { decodeNumberId } from '../../helper/util';
-import Coupon from './coupon.entity';
-import UserCoupon from './userCoupon.entity';
+import { Coupon } from './coupon.entity';
+import { UserCoupon } from './userCoupon.entity';
 import { Shop } from '../shop/shop.entity';
 import { User } from '../user/user.entity';
 import { CouponExpiredError, CouponHasCollectedError } from '../../helper/error';
 
 export default class CouponResolver {
-  static async createCoupon({
-    shopId,
-    ...rest
-  }) {
+  static async createCoupon({ shopId, ...rest }) {
     const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
     return Coupon.create({
       shop,
@@ -17,17 +14,12 @@ export default class CouponResolver {
     }).save();
   }
 
-  static async updateCoupon({
-    id,
-    ...rest
-  }) {
+  static async updateCoupon({ id, ...rest }) {
     const coupon = await Coupon.findOneOrFail(decodeNumberId(id));
     return Coupon.merge(coupon, rest).save();
   }
 
-  static async deleteCoupon({
-    id,
-  }) {
+  static async deleteCoupon({ id }) {
     const realId = decodeNumberId(id);
     return Coupon.delete(realId).then(() => ({
       id: realId,
@@ -35,24 +27,28 @@ export default class CouponResolver {
   }
 
   static async searchCoupon({ shopId, userId }) {
-    if (shopId) {
+    if (!userId) {
       const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
       return Coupon.find({
         shop,
       });
     }
 
-    if (userId) {
+    if (!shopId) {
       const user = await User.findOneOrFail(decodeNumberId(userId));
       return Coupon.find({
         user,
       });
     }
 
-    if (shopId && userId) {
-      const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
-      const user = await User.findOneOrFail(decodeNumberId(userId));
-    }
+    const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
+    const user = await User.findOneOrFail(decodeNumberId(userId));
+    return Coupon.createQueryBuilder('coupon')
+      .leftJoinAndMapOne('coupon.userCoupon', 'coupon.userCoupon', 'userCoupon', 'userCoupon.user = :user', {
+        user: user.id,
+      })
+      .andWhere('coupon.shop = :shop', { shop: shop.id })
+      .getMany();
   }
 
   /**
@@ -65,10 +61,12 @@ export default class CouponResolver {
     const user = await User.findOneOrFail(decodeNumberId(userId));
     const coupon = await Coupon.findOneOrFail(decodeNumberId(couponId));
     if (coupon.isExpired) throw new CouponExpiredError();
-    if (await UserCoupon.findOne({
-      user,
-      coupon,
-    })) throw new CouponHasCollectedError();
+    if (
+      await UserCoupon.findOne({
+        user,
+        coupon,
+      })
+    ) throw new CouponHasCollectedError();
     await UserCoupon.save({
       user,
       coupon,
@@ -77,5 +75,4 @@ export default class CouponResolver {
       id: coupon.id,
     };
   }
-
 }
