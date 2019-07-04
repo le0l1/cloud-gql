@@ -1,0 +1,61 @@
+type News implements Node {
+  id: ID!
+
+  cover: String
+
+  title: String
+  
+  content: String
+  
+  createdAt: String
+}
+
+input CreateNewsInput {
+
+  cover: String!
+
+  title: String!
+  
+  content: String!
+}
+
+input UpdateNewsInput {
+  id: ID!
+
+  cover: String
+
+  title: String
+  
+  content: String
+}
+
+input DeleteNewsInput {
+  id: ID!
+}
+
+type NewsConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [News!]
+}
+
+input NewsQueryInput {
+  "页面size"
+  limit: Int
+  "页数"
+  offset: Int
+}
+
+type NewsActionResult {
+  id: ID
+  status: Boolean
+}
+
+extend type Query {
+  news(query: NewsQueryInput!):NewsConnection
+}
+
+extend type Mutation {
+  createNews(createNewsInput: CreateNewsInput!): NewsActionResult
+  updateNews(updateNewsInput: UpdateNewsInput!): NewsActionResult
+  deleteNews(deleteNewsInput: DeleteNewsInput!): NewsActionResult
+}
