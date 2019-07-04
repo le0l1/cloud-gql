@@ -72,11 +72,12 @@ export class Recommend extends BaseEntity {
     };
     const nodeIds = recommends.map(a => a.recommendTypeId);
     const res = await recommendClass[recommends[0].recommendType].findByIds(nodeIds);
-
-    return res.map(node => ({
+    
+    return res.map((node, idx) => ({
+      id: recommends[idx].id,
       route,
       recommendNode: node,
-    }));
+    }))
   }
 
   // static async updateRecommend ({ route, typeIds }) {

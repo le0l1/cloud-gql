@@ -3,7 +3,7 @@ import { Recommend } from './recommend.entity';
 import { prop, formateID, pipe } from '../../helper/util';
 
 const formateRecommendId = pipe(
-  prop('key'),
+  prop('id'),
   formateID.bind(null, 'recommend'),
 );
 
