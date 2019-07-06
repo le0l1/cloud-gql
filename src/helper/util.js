@@ -1,6 +1,6 @@
 export const isValid = val => val !== null && val !== '' && val !== undefined;
 // 生成随机验证码
-export const generateSMSCode = () => parseInt(Math.random() * 1000000);
+export const generateSMSCode = () => Math.floor(100000000 + Math.random() * 900000000);
 
 // 合并多个属性到对象
 export const mergeIfValid = (obj, target) => Object.keys(obj).reduce((a, b) => {

@@ -11,10 +11,14 @@ const resolvers = {
     },
     async smsCode(_, { phone }, ctx) {
       const smsCode = generateSMSCode();
-      await sendSMS({ phone, smsCode });
-      // set smsCode to session
-      ctx.session[phone] = smsCode;
-      return true;
+      try {
+        await sendSMS({ phone, smsCode });
+        // set smsCode to session
+        ctx.session[phone] = smsCode;
+        return true;
+      } catch (e) {
+        throw e;
+      }
     },
   },
 };
