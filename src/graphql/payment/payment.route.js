@@ -71,21 +71,21 @@ router.post(env('WXPAY_NOTIFY_URL'), async (ctx, next) => {
   //     return next();
   //   });
   // } catch (e) {
-  const res = js2xml(
-    {
-      xml: {
-        return_msg: {
-          _cdata: '错误签名',
-        },
-        return_code: {
-          _cdata: 'FAIL',
-        },
-      },
-    },
-    { compact: true, ignoreComment: true, spaces: 4 },
-  );
-  console.log('response:', res);
-  ctx.body = res;
+  // const res = js2xml(
+  //   {
+  //     xml: {
+  //       return_msg: {
+  //         _cdata: '错误签名',
+  //       },
+  //       return_code: {
+  //         _cdata: 'FAIL',
+  //       },
+  //     },
+  //   },
+  //   { compact: true, ignoreComment: true, spaces: 4 },
+  // );
+  // console.log('response:', res);
+  ctx.body = '<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[签名失败]]></return_msg></xml>';
 });
 // },
 // async (ctx) => {
