@@ -36,6 +36,10 @@ router.post(
         })
         .getOne();
 
+      console.log('交易记录单号:', xml.out_trade_no);
+      console.log('交易记录支付状态:', transferRecord.payment);
+      console.log('交易记录:', transferRecord);
+
       if (checkTransferStatus(transferRecord.payment.paymentStatus)) {
         return next();
       }
