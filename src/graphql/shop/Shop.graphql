@@ -149,7 +149,7 @@ type ShopResult {
 
 extend type Query {
     "商户列表查询 支持模糊查询 筛选条件"
-    shops(query: ShopsQueryInput): ShopConnection! @auth
+    shops(query: ShopsQueryInput): ShopConnection! 
     "单一商户查询"
     shop(query: ShopQueryInput): Shop!
 }

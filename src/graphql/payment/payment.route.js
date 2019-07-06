@@ -39,7 +39,8 @@ router.post(
       if (checkTransferStatus(transferRecord.payment.paymentStatus)) {
         return next();
       }
-      if (transferRecord.payment.totalFee !== xml.total_fee) {
+
+      if (Number(transferRecord.payment.totalFee) !== xml.total_fee) {
         failPaid(transferRecord);
         ctx.body = {
           error: '支付失败',
