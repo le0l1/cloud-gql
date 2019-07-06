@@ -66,13 +66,13 @@ router.post(
           .getOne();
         payment.paymentStatus = PaymentStatus.PAID;
         merchant.totalFee = Number(payment.totalFee) + Number(merchant.totalFee);
-        console.log('收款商家:', merchant);
+        console.log('payee:', merchant);
         await transactionManager.getRepository(Payment).save(payment);
         await transactionManager.getRepository(User).save(merchant);
         return next();
       });
     } catch (e) {
-      console.log('支付失败', e);
+      console.log('pay fail', e);
       ctx.body = js2xml(
         {
           xml: {
@@ -89,7 +89,7 @@ router.post(
     }
   },
   async (ctx) => {
-    console.log('支付成功');
+    console.log('pay success!!');
     ctx.body = js2xml(
       {
         xml: {
