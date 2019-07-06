@@ -29,7 +29,6 @@ router.post(
       const transferRecord = await transactionManager
         .getRepository(Transfer)
         .createQueryBuilder('transfer')
-        .setLock('pessimistic_read')
         .innerJoinAndSelect('transfer.payment', 'payment')
         .innerJoinAndSelect('transfer.payee', 'payee')
         .where({
