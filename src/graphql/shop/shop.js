@@ -7,7 +7,7 @@ import { Banner } from '../banner/banner.entity';
 import { Image } from '../image/image.entity';
 import { User } from '../user/user.entity';
 import {
-  getQB, where, withPagination, getManyAndCount,
+  getQB, where, withPagination, getManyAndCount, leftJoinAndSelect,
 } from '../../helper/sql';
 import { DumplicateShopNameError } from '../../helper/error';
 
@@ -19,9 +19,9 @@ export default class ShopResolver {
       phone: p,
       shop,
     }));
-    const categoryEntitles = await Promise.all(categories.map(
-      c => Category.findOneOrFail(decodeNumberId(c)),
-    ));
+    const categoryEntitles = await Promise.all(
+      categories.map(c => Category.findOneOrFail(decodeNumberId(c))),
+    );
     const bannerEntities = shopBanners.map(b => Banner.create({
       path: b,
       shop,
@@ -31,13 +31,14 @@ export default class ShopResolver {
       shop,
     }));
 
-
     await trx.save(phonesEntities);
     await trx.save(bannerEntities);
     await trx.save(imageEntities);
-    await trx.save(Shop.merge(shop, {
-      categories: categoryEntitles,
-    }));
+    await trx.save(
+      Shop.merge(shop, {
+        categories: categoryEntitles,
+      }),
+    );
   }
 
   static async rmOldRelations(trx, shop) {
@@ -51,22 +52,30 @@ export default class ShopResolver {
 
   static async createShop({
     belongto,
-    phones = [], categories = [], shopBanners = [], shopImages = [],
+    phones = [],
+    categories = [],
+    shopBanners = [],
+    shopImages = [],
     ...rest
   }) {
-    if (rest.name && await Shop.findOne({
-      name: rest.name,
-    })) {
+    if (
+      rest.name
+      && (await Shop.findOne({
+        name: rest.name,
+      }))
+    ) {
       throw new DumplicateShopNameError();
     }
     const user = await User.findOneOrFail(decodeNumberId(belongto));
     return getManager().transaction(async (trx) => {
-      const shop = await trx.save(Shop.create({
-        rest,
-        user,
-        cover: shopBanners[0] || null,
-        phone: phones[0] || null,
-      }));
+      const shop = await trx.save(
+        Shop.create({
+          rest,
+          user,
+          cover: shopBanners[0] || null,
+          phone: phones[0] || null,
+        }),
+      );
       await ShopResolver.storeShopRelation(trx, shop, {
         phones,
         categories,
@@ -79,14 +88,20 @@ export default class ShopResolver {
 
   static async updateShop({
     id,
-    phones = [], categories = [], shopBanners = [], shopImages = [],
+    phones = [],
+    categories = [],
+    shopBanners = [],
+    shopImages = [],
     ...rest
   }) {
     const realId = decodeNumberId(id);
-    if (rest.name && await Shop.findOne({
-      name: rest.name,
-      id: Not(realId),
-    })) {
+    if (
+      rest.name
+      && (await Shop.findOne({
+        name: rest.name,
+        id: Not(realId),
+      }))
+    ) {
       throw new DumplicateShopNameError();
     }
     const shop = await Shop.findOneOrFail(realId);
@@ -105,10 +120,19 @@ export default class ShopResolver {
     });
   }
 
-  static async searchShop({ id }) {
+  static async searchShop({ id, user }) {
+    if (!user) {
+      return Shop.findOneOrFail({
+        where: {
+          id: decodeNumberId(id),
+        },
+        relations: ['categories'],
+      });
+    }
+    const owner = await User.findOneOrFail(decodeNumberId(user));
     return Shop.findOneOrFail({
       where: {
-        id: decodeNumberId(id),
+        user: owner,
       },
       relations: ['categories'],
     });
