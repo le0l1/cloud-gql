@@ -72,8 +72,8 @@ router.post(
       ctx.body = js2xml(
         {
           xml: {
-            return_msg: 'Error',
-            return_code: 'fail',
+            return_msg: e.message,
+            return_code: 'FAIL',
           },
         },
         { compact: true, ignoreComment: true, spaces: 4 },
