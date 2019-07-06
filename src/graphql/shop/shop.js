@@ -7,7 +7,7 @@ import { Banner } from '../banner/banner.entity';
 import { Image } from '../image/image.entity';
 import { User } from '../user/user.entity';
 import {
-  getQB, where, withPagination, getManyAndCount, leftJoinAndSelect,
+  getQB, where, withPagination, getManyAndCount,
 } from '../../helper/sql';
 import { DumplicateShopNameError } from '../../helper/error';
 

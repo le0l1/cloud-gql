@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Comment } from '../comment/comment.entity';
 import { hashPassword } from '../../helper/encode';
-import { formateID, decodeNumberId } from '../../helper/util';
+import { decodeNumberId } from '../../helper/util';
 import { Transfer } from '../transfer/transfer.entity';
 
 @Entity()

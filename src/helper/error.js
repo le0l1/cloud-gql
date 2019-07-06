@@ -26,3 +26,15 @@ export class CouponHasCollectedError extends Error {
 export class DumplicateShopNameError extends Error {
   message = '店铺名称重复'
 }
+
+export class ValidSmsCodeError extends Error {
+  message = '短信验证码错误'
+}
+
+export class RootRegistryError extends Error {
+  message = '禁止注册ROOT权限账户'
+}
+
+export class UserHasRegisterdError extends Error {
+  message = '该用户已注册'
+}

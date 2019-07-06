@@ -54,24 +54,8 @@ const resolvers = {
   UserLoginResult: idResolver('user'),
   Role,
   Mutation: {
-    async register(obj, { userRegisterInput }, ctx) {
-      const { phone } = userRegisterInput;
-      // check smsCode
-      if (userRegisterInput.smsCode !== ctx.session[phone]) {
-        throw new Error('验证码错误');
-      }
-
-      // forbid root regsiter
-      if (userRegisterInput.role === 3) {
-        throw new Error('禁止注册ROOT权限账户');
-      }
-
-      if (await User.checkIfExists(phone)) {
-        throw new Error('该用户已注册');
-      }
-
-      ctx.session[phone] = '';
-      return User.createUser(userRegisterInput);
+    async register(obj, { userRegisterInput }) {
+      return UserResolver.register(userRegisterInput);
     },
     // TODO: 重构user相关schema
     async loginIn(_, { userLoginInput }) {
