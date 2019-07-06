@@ -1,9 +1,9 @@
 import Router from 'koa-router';
 import { js2xml } from 'xml-js';
-import { getManager, TransactionManager } from 'typeorm';
+import { getManager } from 'typeorm';
 import { Transfer } from '../transfer/transfer.entity';
 import { Payment } from './payment.entity';
-import { mapObjectArr } from '../../helper/util';
+import { mapObjectArr, env } from '../../helper/util';
 import { User } from '../user/user.entity';
 import { PaymentStatus } from '../../helper/status';
 
@@ -19,7 +19,7 @@ const checkReqStatus = body => !body.return_msg === 'SUCCESS' || !body.return_co
 const checkTransferStatus = paymentStatus => paymentStatus === PaymentStatus.PAID;
 
 router.post(
-  '/pay',
+  env('WXPAY_NOTIFY_URL'),
   async (ctx, next) => {
     const xml = mapObjectArr(ctx.request.body.xml);
     if (checkReqStatus(xml)) {
