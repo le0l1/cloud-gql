@@ -53,7 +53,6 @@ app.use(async (ctx, next) => {
     };
   }
 });
-
 app.use(router.routes()).use(router.allowedMethods());
 
 // graphql voyager

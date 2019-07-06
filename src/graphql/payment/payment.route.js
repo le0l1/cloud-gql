@@ -26,46 +26,51 @@ router.post(
     if (checkReqStatus(xml)) {
       return false;
     }
-    await getManager().transaction(async (transactionManager) => {
-      const transferRecord = await transactionManager
-        .getRepository(Transfer)
-        .createQueryBuilder('transfer')
-        .innerJoinAndSelect('transfer.payment', 'payment')
-        .innerJoinAndSelect('transfer.payee', 'payee')
-        .where({
-          recordNumber: xml.out_trade_no,
-        })
-        .getOne();
+    try {
+      await getManager().transaction(async (transactionManager) => {
+        const transferRecord = await transactionManager
+          .getRepository(Transfer)
+          .createQueryBuilder('transfer')
+          .innerJoinAndSelect('transfer.payment', 'payment')
+          .innerJoinAndSelect('transfer.payee', 'payee')
+          .where({
+            recordNumber: xml.out_trade_no,
+          })
+          .getOne();
 
-      console.log('回调参数', xml);
-      console.log('交易记录单号:', xml.out_trade_no);
-      console.log('交易记录支付状态:', transferRecord.payment);
-      console.log('交易记录:', transferRecord);
+        console.log('回调参数', xml);
 
-      if (checkTransferStatus(transferRecord.payment.paymentStatus)) {
+        console.log('交易记录单号:', xml.out_trade_no);
+        console.log('交易记录支付状态:', transferRecord.payment);
+        console.log('交易记录:', transferRecord);
+
+        if (checkTransferStatus(transferRecord.payment.paymentStatus)) {
+          return next();
+        }
+
+        if (transferRecord.payment.totalFee !== xml.total_fee) {
+          failPaid(transferRecord);
+          throw new UnmatchedAmountError();
+        }
+
+        const { payment, payee } = transferRecord;
+        const merchant = await transactionManager
+          .getRepository(User)
+          .createQueryBuilder('user')
+          .where('user.id = :id', {
+            id: payee.belongto,
+          })
+          .setLock('optimistic')
+          .getOne();
+        payment.paymentStatus = PaymentStatus.PAID;
+        merchant.totalFee = Number(payment.totalFee) + Number(merchant.totalFee);
+        await transactionManager.getRepository(Payment).save(payment);
+        await transactionManager.getRepository(User).save(merchant);
         return next();
-      }
-
-      if (transferRecord.payment.totalFee !== xml.total_fee) {
-        failPaid(transferRecord);
-        throw new UnmatchedAmountError();
-      }
-
-      const { payment, payee } = transferRecord;
-      const merchant = await transactionManager
-        .getRepository(User)
-        .createQueryBuilder('user')
-        .where('user.id = :id', {
-          id: payee.belongto,
-        })
-        .setLock('optimistic')
-        .getOne();
-      payment.paymentStatus = PaymentStatus.PAID;
-      merchant.totalFee = Number(payment.totalFee) + Number(merchant.totalFee);
-      await transactionManager.getRepository(Payment).save(payment);
-      await transactionManager.getRepository(User).save(merchant);
-      return next();
-    });
+      });
+    } catch (e) {
+      throw e;
+    }
   },
   async (ctx) => {
     ctx.body = js2xml(
