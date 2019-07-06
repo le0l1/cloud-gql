@@ -73,7 +73,7 @@ router.post(
         {
           xml: {
             return_msg: 'Error',
-            return_code: 'FAIL',
+            return_code: 'fail',
           },
         },
         { compact: true, ignoreComment: true, spaces: 4 },
