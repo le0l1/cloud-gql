@@ -75,7 +75,6 @@ input UpdateAddressInput {
 
   "是否为默认"
   isDefault: Boolean
-
 }
 
 input DeleteAddressInput {
@@ -87,8 +86,11 @@ type AddressActionResult {
   status: Boolean
 }
 
+
+
 extend type Query {
   address(addressQuery: AddressQuery!): [Address!]
+  defaultAddress(defaultAddressQuery: AddressQuery!): Address
 }
 
 extend type Mutation {

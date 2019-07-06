@@ -7,6 +7,9 @@ const resolvers = {
     address(_, { addressQuery }) {
       return AddressResolver.searchAddress(addressQuery);
     },
+    defaultAddress(_, { defaultAddressQuery }) {
+      return AddressResolver.searchDefaultAddress(defaultAddressQuery);
+    },
   },
   Mutation: {
     createAddress(_, { createAddressInput }) {

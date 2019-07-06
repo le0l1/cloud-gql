@@ -31,4 +31,14 @@ export default class AddressResolver {
       },
     });
   }
+
+  static async searchDefaultAddress({ userId }) {
+    const user = await User.findOneOrFail(decodeNumberId(userId));
+    return Address.findOne({
+      where: {
+        user,
+        isDefault: true,
+      },
+    });
+  }
 }
