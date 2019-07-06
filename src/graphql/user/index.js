@@ -57,9 +57,9 @@ const resolvers = {
     async register(obj, { userRegisterInput }, ctx) {
       const { phone } = userRegisterInput;
       // check smsCode
-      // if (userRegisterInput.smsCode !== ctx.session[phone]) {
-      //   throw new Error('验证码错误');
-      // }
+      if (userRegisterInput.smsCode !== ctx.session[phone]) {
+        throw new Error('验证码错误');
+      }
 
       // forbid root regsiter
       if (userRegisterInput.role === 3) {
