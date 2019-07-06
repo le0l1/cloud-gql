@@ -22,6 +22,8 @@ const checkTransferStatus = paymentStatus => paymentStatus === PaymentStatus.PAI
 router.post(
   env('WXPAY_NOTIFY_URL'),
   async (ctx, next) => {
+    // set content type as xml;
+    ctx.type = 'application/xml';
     const xml = mapObjectArr(ctx.request.body.xml);
     if (checkReqStatus(xml)) {
       return false;
