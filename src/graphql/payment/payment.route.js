@@ -85,7 +85,9 @@ router.post(env('WXPAY_NOTIFY_URL'), async (ctx, next) => {
   //   { compact: true, ignoreComment: true, spaces: 4 },
   // );
   // console.log('response:', res);
-  ctx.body = '<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[签名失败]]></return_msg></xml>';
+  const res = -1;
+  console.log('response:', res);
+  ctx.body = res;
 });
 // },
 // async (ctx) => {
