@@ -38,3 +38,7 @@ export class RootRegistryError extends Error {
 export class UserHasRegisterdError extends Error {
   message = '该用户已注册'
 }
+
+export class UnmatchedAmountError extends Error {
+  message = '支付金额不匹配'
+}

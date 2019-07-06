@@ -6,6 +6,7 @@ import { Payment } from './payment.entity';
 import { mapObjectArr, env } from '../../helper/util';
 import { User } from '../user/user.entity';
 import { PaymentStatus } from '../../helper/status';
+import { UnmatchedAmountError } from '../../helper/error';
 
 const router = new Router();
 
@@ -36,6 +37,7 @@ router.post(
         })
         .getOne();
 
+      console.log('回调参数', xml);
       console.log('交易记录单号:', xml.out_trade_no);
       console.log('交易记录支付状态:', transferRecord.payment);
       console.log('交易记录:', transferRecord);
@@ -44,12 +46,9 @@ router.post(
         return next();
       }
 
-      if (Number(transferRecord.payment.totalFee) !== xml.total_fee) {
+      if (transferRecord.payment.totalFee !== xml.total_fee) {
         failPaid(transferRecord);
-        ctx.body = {
-          error: '支付失败',
-        };
-        return ctx;
+        throw new UnmatchedAmountError();
       }
 
       const { payment, payee } = transferRecord;
