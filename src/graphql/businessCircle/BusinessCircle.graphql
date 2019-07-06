@@ -48,6 +48,9 @@ input BusinessCircleSearchInput {
   offset: Int
   "分页条数"
   limit: Int
+
+  "举报状态"
+  reportStatus: ReportStatus
 }
 
 "生意圈列表"

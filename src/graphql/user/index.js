@@ -7,7 +7,8 @@ import {
   getQB, where, withPagination, getManyAndCount,
 } from '../../helper/sql';
 import { Role } from '../../helper/status';
-import {idResolver} from "../../helper/resolver";
+import { idResolver } from '../../helper/resolver';
+import UserResolver from './user';
 
 const formateUserId = v => (v.id ? formateID('user', v.id) : null);
 
@@ -31,6 +32,9 @@ const resolvers = {
     user(_, { userQueryInput }) {
       return User.getUser(userQueryInput);
     },
+    userPassword(_, { userQueryInput }) {
+      return UserResolver.searchUserPassword(userQueryInput);
+    },
   },
   UserConnection: {
     edges(v) {
@@ -53,9 +57,9 @@ const resolvers = {
     async register(obj, { userRegisterInput }, ctx) {
       const { phone } = userRegisterInput;
       // check smsCode
-      if (userRegisterInput.smsCode !== ctx.session[phone]) {
-        throw new Error('验证码错误');
-      }
+      // if (userRegisterInput.smsCode !== ctx.session[phone]) {
+      //   throw new Error('验证码错误');
+      // }
 
       // forbid root regsiter
       if (userRegisterInput.role === 3) {
@@ -76,7 +80,6 @@ const resolvers = {
       if (
         !comparePassword({
           hash: user.password,
-          salt: user.salt,
           pwd: userLoginInput.password,
         })
       ) {

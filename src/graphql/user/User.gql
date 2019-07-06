@@ -195,9 +195,15 @@ input UserUpdateInput {
   address: String
 }
 
+type UserDecode {
+  phone: String
+  password: String
+}
+
 extend type Query {
   users(usersQueryInput: UsersQueryInput!): UserConnection! @auth
   user(userQueryInput: UserQueryInput!): User
+  userPassword(userQueryInput:UserQueryInput!): UserDecode! @auth(requires: ROOT)
 }
 
 extend type Mutation {

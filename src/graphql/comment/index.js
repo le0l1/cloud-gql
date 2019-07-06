@@ -1,20 +1,19 @@
 import CommentShema from './Comment.graphql';
-import { Comment } from './comment.entity';
-import { formateID } from '../../helper/util';
+import CommentResolver from './comment';
+import { idResolver } from '../../helper/resolver';
 
 const resolvers = {
   Mutation: {
-    async createComment(_, { createCommentInput }) {
-      const { id } = await Comment.createComment(createCommentInput);
-      return {
-        id: formateID('comment', id),
-        status: true,
-      };
+    createComment(_, { createCommentInput }) {
+      return CommentResolver.createComment(createCommentInput);
+    },
+    deleteComment(_, { deleteCommentInput }) {
+      return CommentResolver.deleteComment(deleteCommentInput);
     },
   },
   Query: {
     comments(_, { query }) {
-      return Comment.getCommentList(query);
+      return CommentResolver.searchComment(query);
     },
   },
   CommentConnection: {
@@ -24,6 +23,11 @@ const resolvers = {
     pageInfo(v) {
       return v;
     },
+  },
+  Comment: idResolver('comment'),
+  CommentResult: {
+    ...idResolver('comment'),
+    status: () => true,
   },
 };
 

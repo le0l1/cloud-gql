@@ -11,7 +11,6 @@ import {
 import { Comment } from '../comment/comment.entity';
 import { hashPassword } from '../../helper/encode';
 import { formateID, decodeNumberId } from '../../helper/util';
-import { UserCoupon } from '../coupon/userCoupon.entity';
 import { Transfer } from '../transfer/transfer.entity';
 
 @Entity()
@@ -41,7 +40,7 @@ export class User extends BaseEntity {
   @Column({
     comment: 'user password',
     type: 'character',
-    length: 64,
+    length: 65,
     nullable: true,
   })
   password;
@@ -57,13 +56,6 @@ export class User extends BaseEntity {
     nullable: true,
   })
   phone;
-
-  @Column({
-    comment: 'salt for password',
-    type: 'character varying',
-    nullable: true,
-  })
-  salt;
 
   @Column({
     comment: 'user role 1. customer 2. merchant 3. root',
@@ -101,12 +93,12 @@ export class User extends BaseEntity {
   @VersionColumn({
     nullable: true,
   })
-  version
+  version;
 
   @UpdateDateColumn({
     name: 'updated_at',
   })
-  updatedAt
+  updatedAt;
 
   static retrievePassword({ phone, password }) {
     return User.findOne({
@@ -114,10 +106,8 @@ export class User extends BaseEntity {
     }).then((currentUser) => {
       if (!currentUser) throw new Error('用户不存在');
 
-      const { hashed, salt } = hashPassword(password);
-      currentUser.salt = salt;
-      currentUser.password = hashed;
-      return currentUser.save();
+      const pwd = hashPassword(password);
+      return User.merge(currentUser, { password: pwd }).save();
     });
   }
 
@@ -130,16 +120,11 @@ export class User extends BaseEntity {
   }
 
   static createUser({ password, ...rest }) {
-    const { hashed, salt } = hashPassword(password);
+    const pwd = hashPassword(password);
     return User.create({
-      password: hashed,
-      salt,
+      password: pwd,
       ...rest,
-    })
-      .save()
-      .then(res => ({
-        id: formateID('user', res.id),
-      }));
+    }).save();
   }
 
   static getUser({ id }) {

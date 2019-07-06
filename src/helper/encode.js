@@ -1,22 +1,39 @@
+import { env } from './util';
+
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
-const createSalt = () => crypto.randomBytes(256).toString('base64');
+const IV_LENGTH = 16; // For AES, this is always 16
 
-export const hashTo = ({ pwd, salt }) => {
-  const hmac = crypto.createHmac('sha256', salt);
-  return hmac.update(pwd).digest('hex');
+function encrypt(text) {
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(env('ENCRYPTION_KEY')), iv);
+  let encrypted = cipher.update(text);
+
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+
+  return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
+}
+
+export function decrypt(text) {
+  const textParts = text.split(':');
+  const iv = Buffer.from(textParts.shift(), 'hex');
+  const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(env('ENCRYPTION_KEY')), iv);
+  let decrypted = decipher.update(encryptedText);
+
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+
+  return decrypted.toString();
+}
+
+
+export const hashPassword = encrypt;
+
+export const comparePassword = ({ pwd, hash, salt }) => {
+  const password = decrypt(hash, salt);
+  return pwd === password;
 };
-
-export const hashPassword = (pwd) => {
-  const salt = createSalt();
-  return {
-    hashed: hashTo({ pwd, salt }),
-    salt,
-  };
-};
-
-export const comparePassword = ({ pwd, hash, salt }) => hashTo({ pwd, salt }) === hash;
 
 export const generateToken = payload => jwt.sign({ ...payload }, process.env.PRIVATE_TOKEN_KEY, {
   expiresIn: '1d',

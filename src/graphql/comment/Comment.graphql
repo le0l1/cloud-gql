@@ -3,7 +3,7 @@ type Comment implements Node {
   id: ID!
 
   "评论用户"
-  userId: User
+  user: User
 
   "评论内容"
   comment: String
@@ -33,10 +33,19 @@ type CommentResult {
 input getCommentInput {
   "评论类型id 若是商户就传商户id 以此类推"
   typeId: ID!
+  
+  "页面size"
+  limit: Int
+  "页数"
+  offset: Int
+}
+
+input DeleteCommentInput {
+  id: ID!
 }
 
 "评论列表"
-type CommentConnection {
+type CommentConnection  implements Connection {
   pageInfo: PageInfo
   edges: [Comment!]
 }
@@ -48,4 +57,6 @@ extend type Query {
 extend type Mutation {
   "创建评论"
   createComment(createCommentInput: CreateCommentInput!): CommentResult
+  "删除评论"
+  deleteComment(deleteCommentInput: DeleteCommentInput!): CommentResult
 }
