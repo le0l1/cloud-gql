@@ -69,7 +69,15 @@ router.post(
         return next();
       });
     } catch (e) {
-      throw e;
+      ctx.body = js2xml(
+        {
+          xml: {
+            return_msg: 'Error',
+            return_code: 'FAIL',
+          },
+        },
+        { compact: true, ignoreComment: true, spaces: 4 },
+      );
     }
   },
   async (ctx) => {
