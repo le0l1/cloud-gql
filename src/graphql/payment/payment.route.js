@@ -72,8 +72,12 @@ router.post(
       ctx.body = js2xml(
         {
           xml: {
-            return_msg: e.message,
-            return_code: 'FAIL',
+            return_msg: {
+              _cdata: e.message,
+            },
+            return_code: {
+              _cdata: 'FAIL',
+            },
           },
         },
         { compact: true, ignoreComment: true, spaces: 4 },
@@ -84,8 +88,12 @@ router.post(
     ctx.body = js2xml(
       {
         xml: {
-          return_msg: 'OK',
-          return_code: 'SUCCESS',
+          return_msg: {
+            _cdata: 'OK',
+          },
+          return_code: {
+            _cdata: 'SUCCESS',
+          },
         },
       },
       { compact: true, ignoreComment: true, spaces: 4 },
