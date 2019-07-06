@@ -19,7 +19,7 @@ export class WXPay {
     out_trade_no: '20150806125346',
     total_fee: 0,
     spbill_create_ip: env('WXPAY_IP'),
-    notify_url: env('WXPAY_NOTIFY_URL'),
+    notify_url: env('HOST') + env('WXPAY_NOTIFY_URL'),
     trade_type: 'APP',
     nonce_str: WXPay.getNonceStr(),
   };
