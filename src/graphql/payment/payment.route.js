@@ -72,8 +72,7 @@ router.post(
         return next();
       });
     } catch (e) {
-      console.log('pay fail', e);
-      ctx.body = js2xml(
+      const res = js2xml(
         {
           xml: {
             return_msg: {
@@ -86,11 +85,12 @@ router.post(
         },
         { compact: true, ignoreComment: true, spaces: 4 },
       );
+      console.log('response:', res)
+      ctx.body = res;
     }
   },
   async (ctx) => {
-    console.log('pay success!!');
-    ctx.body = js2xml(
+    const res = js2xml(
       {
         xml: {
           return_msg: {
@@ -103,6 +103,8 @@ router.post(
       },
       { compact: true, ignoreComment: true, spaces: 4 },
     );
+      console.log('response:', res)
+      ctx.body = res;
   },
 );
 
