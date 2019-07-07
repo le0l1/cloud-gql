@@ -8,7 +8,7 @@ import { User } from '../user/user.entity';
 import { Image } from '../image/image.entity';
 
 export default class BusinessCircleResolver {
-  static createBusinessCircle({ userId, images, content }) {
+  static createBusinessCircle({ userId, images = [], content }) {
     return getManager().transaction(async (trx) => {
       const user = await User.findOneOrFail(decodeNumberId(userId));
       let businessCircle = BusinessCircle.create({

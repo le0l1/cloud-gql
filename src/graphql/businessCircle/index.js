@@ -29,7 +29,6 @@ const resolvers = {
       return v.id ? formateID('businessCircle', v.id) : null;
     },
     images(v) {
-      console.log(v)
       return v.images ? v.images.map(a => a.path) : [];
     },
   },

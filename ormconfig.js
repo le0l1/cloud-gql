@@ -8,6 +8,7 @@ module.exports = process.env.NODE_ENV === 'development'
     database: 'cloud',
     entities: ['src/graphql/**/**.entity.js'],
     migrations: ['src/migration/*.js'],
+    subscribers: ['src/graphql/**/**.subscriber.js'],
     // logging: true,
     synchronize: true,
     entityPrefix: 'cloud_',
