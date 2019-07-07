@@ -38,21 +38,27 @@ export default class BusinessCircleResolver {
   }
 
   static deleteBusinessCircles({ id }) {
-    const realId = decodeNumberId(id);
-    return BusinessCircle.delete(realId).then(() => ({
-      id: realId,
-    }));
+    return getManager().transaction(async (trx) => {
+      const realId = decodeNumberId(id);
+      const businessCircle = await BusinessCircle.findOneOrFail(realId);
+      const images = await Image.find({
+        businessCircle,
+      });
+      await trx.remove(images);
+      await trx.remove(businessCircle);
+      return { id: realId };
+    });
   }
 
   static async starBusinessCircle({ id }) {
-    const businessCircle = await BusinessCircle.findOneOrFail(decodeNumberId(id))
+    const businessCircle = await BusinessCircle.findOneOrFail(decodeNumberId(id));
     return BusinessCircle.merge(businessCircle, {
       starCount: () => 'star_count + 1',
     }).save();
   }
 
   static async reportBusinessCircle({ id }) {
-    const businessCircle = await BusinessCircle.findOneOrFail(decodeNumberId(id))
+    const businessCircle = await BusinessCircle.findOneOrFail(decodeNumberId(id));
     return BusinessCircle.merge(businessCircle, {
       reportStatus: ReportStatus.IS_REPORTED,
     }).save();
