@@ -31,7 +31,7 @@ export default class CouponResolver {
       const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
       return Coupon.find({
         shop,
-      });
+      })
     }
 
     if (!shopId) {
@@ -44,9 +44,15 @@ export default class CouponResolver {
     const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
     const user = await User.findOneOrFail(decodeNumberId(userId));
     return Coupon.createQueryBuilder('coupon')
-      .leftJoinAndMapOne('coupon.userCoupon', 'coupon.userCoupon', 'userCoupon', 'userCoupon.user = :user', {
-        user: user.id,
-      })
+      .leftJoinAndMapOne(
+        'coupon.userCoupon',
+        'coupon.userCoupon',
+        'userCoupon',
+        'userCoupon.user = :user',
+        {
+          user: user.id,
+        },
+      )
       .andWhere('coupon.shop = :shop', { shop: shop.id })
       .getMany();
   }

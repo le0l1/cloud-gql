@@ -3,6 +3,7 @@ import {
 } from 'typeorm';
 import { UserCoupon } from './userCoupon.entity';
 import { Shop } from '../shop/shop.entity';
+import { CouponStatus } from '../../helper/status';
 
 @Entity()
 export class Coupon extends BaseEntity {
@@ -20,11 +21,11 @@ export class Coupon extends BaseEntity {
   }
 
   get isExpired() {
-    return this.coupunExpiredStatus === 1;
+    return this.coupunExpiredStatus === Coupon.HAS_EXPIRED;
   }
 
   get couponExpiredStatus() {
-    return this.expiredAt < Date.now() ? 1 : 3;
+    return this.expiredAt < Date.now() ? CouponStatus.HAS_EXPIRED : CouponStatus.AVAILABLE;
   }
 
   /**
@@ -33,7 +34,7 @@ export class Coupon extends BaseEntity {
    */
   get userCouponStatus() {
     if (this.userCoupon) {
-      return this.userCoupon.useStatus ? 3 : 4;
+      return this.userCoupon.useStatus ? CouponStatus.HAS_USED : CouponStatus.HAS_COLLECTED;
     }
     return null;
   }
