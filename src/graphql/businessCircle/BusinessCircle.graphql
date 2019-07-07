@@ -73,6 +73,13 @@ input BusinessCircleDeleteInput {
   id: ID!
 }
 
+input BusinessCircleStarInput {
+  id: ID!
+}
+input BusinessCircleReportInput {
+  id: ID!
+}
+
 type BusinessCircleOperationResult {
   "操作id"
   id: ID
@@ -93,4 +100,8 @@ extend type Mutation {
   createBusinessCircle(createBusinessCircleInput: BusinessCircleCreateInput!): BusinessCircleOperationResult
   "删除生意圈"
   deleteBusinessCircle(deleteBusinessCircleInput: BusinessCircleDeleteInput!):BusinessCircleOperationResult
+  "点赞生意圈"
+  starBusinessCircle(starBusinessCircleInput: BusinessCircleStarInput!): BusinessCircleOperationResult
+  "举报生意圈"
+  reportBusinessCircle(reportBusinessCircleInput: BusinessCircleReportInput!): BusinessCircleOperationResult
 }

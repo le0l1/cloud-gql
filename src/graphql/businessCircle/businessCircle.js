@@ -6,6 +6,7 @@ import {
 import { BusinessCircle } from './businessCircle.entity';
 import { User } from '../user/user.entity';
 import { Image } from '../image/image.entity';
+import { ReportStatus } from '../../helper/status';
 
 export default class BusinessCircleResolver {
   static createBusinessCircle({ userId, images = [], content }) {
@@ -41,5 +42,19 @@ export default class BusinessCircleResolver {
     return BusinessCircle.delete(realId).then(() => ({
       id: realId,
     }));
+  }
+
+  static async starBusinessCircle({ id }) {
+    const businessCircle = await BusinessCircle.findOneOrFail(decodeNumberId(id))
+    return BusinessCircle.merge(businessCircle, {
+      starCount: () => 'star_count + 1',
+    }).save();
+  }
+
+  static async reportBusinessCircle({ id }) {
+    const businessCircle = await BusinessCircle.findOneOrFail(decodeNumberId(id))
+    return BusinessCircle.merge(businessCircle, {
+      reportStatus: ReportStatus.IS_REPORTED,
+    }).save();
   }
 }

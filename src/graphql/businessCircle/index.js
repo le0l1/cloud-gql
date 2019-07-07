@@ -16,6 +16,12 @@ const resolvers = {
     deleteBusinessCircle(_, { deleteBusinessCircleInput }) {
       return BusinessCircleResolver.deleteBusinessCircles(deleteBusinessCircleInput);
     },
+    starBusinessCircle(_, { starBusinessCircleInput }) {
+      return BusinessCircleResolver.starBusinessCircle(starBusinessCircleInput);
+    },
+    reportBusinessCircle(_, { reportBusinessCircleInput }) {
+      return BusinessCircleResolver.reportBusinessCircle(reportBusinessCircleInput);
+    }
   },
   ReportStatus,
   BusinessCircleOperationResult: {
