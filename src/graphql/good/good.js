@@ -5,7 +5,7 @@ import { Category } from '../category/category.entity';
 import { Banner } from '../banner/banner.entity';
 import { Good } from './good.entity';
 import {
-  getQB, where, withPagination, getManyAndCount, leftJoinAndSelect
+  getQB, where, withPagination, getManyAndCount, leftJoinAndSelect,
 } from '../../helper/sql';
 
 export default class GoodResolver {
@@ -14,10 +14,13 @@ export default class GoodResolver {
   }) {
     return getManager().transaction(async (trx) => {
       const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
-      const good = await trx.save(Good.create({
-        shop,
-        ...rest,
-      }));
+      const good = await trx.save(
+        Good.create({
+          shop,
+          cover: banners[0] || null,
+          ...rest,
+        }),
+      );
       await trx.save(good);
       await GoodResolver.storeReltions(good, trx, { banners, categories });
       return good;
@@ -40,13 +43,15 @@ export default class GoodResolver {
       banners,
       categories,
     };
-    await Promise.all(Object.keys(params).map(async (k) => {
-      if (params[k]) {
-        const res = await relations[k](params[k]);
-        return trx.save(res);
-      }
-      return null;
-    }));
+    await Promise.all(
+      Object.keys(params).map(async (k) => {
+        if (params[k]) {
+          const res = await relations[k](params[k]);
+          return trx.save(res);
+        }
+        return null;
+      }),
+    );
   }
 
   static async rmOldRetions(good, trx) {
@@ -71,7 +76,12 @@ export default class GoodResolver {
   }) {
     return getManager().transaction(async (trx) => {
       const good = await Good.findOneOrFail(decodeNumberId(id));
-      await trx.save(Good.merge(good, rest));
+      await trx.save(
+        Good.merge(good, {
+          cover: banners[0] || null,
+          ...rest,
+        }),
+      );
       await GoodResolver.rmOldRetions(good, trx);
       await GoodResolver.storeReltions(good, trx, { categories, banners });
       return good;
@@ -89,15 +99,15 @@ export default class GoodResolver {
       }),
       where('good.deletedAt is null'),
       where('good.shop = :shop', { shop: shopId ? decodeNumberId(shopId) : null }),
-      where('category.id = :category', { category: categoryId ? decodeNumberId(categoryId) : null }),
+      where('category.id = :category', {
+        category: categoryId ? decodeNumberId(categoryId) : null,
+      }),
       withPagination(limit, offset),
       getManyAndCount,
     )(Good);
   }
 
-  static async deleteGood({
-    id,
-  }) {
+  static async deleteGood({ id }) {
     const good = await Good.findOneOrFail(decodeNumberId(id));
     return Good.merge(good, { deletedAt: new Date() }).save();
   }
