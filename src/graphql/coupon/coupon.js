@@ -31,7 +31,7 @@ export default class CouponResolver {
       const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
       return Coupon.find({
         shop,
-      })
+      });
     }
 
     if (!shopId) {

@@ -7,8 +7,14 @@ type Coupon {
     "优惠券减免金额"
     discount: Int
 
+    "优惠券开始时间 unix timestamp"
+    startAt: Number
+
     "优惠劵过期时间 unix timestamp"
     expiredAt: Number
+
+    "优惠劵描述"
+    desc: String
 
     "优惠劵状态"
     status: CouponStatus
@@ -37,8 +43,14 @@ input CreateCouponInput {
     "优惠券减免金额"
     discount: Int!
 
+    "优惠券开始时间 unix timestamp"
+    startAt: Number!
+
     "优惠劵过期时间 unix timestamp"
-    expiredAt: Number
+    expiredAt: Number!
+    
+    "优惠劵描述"
+    desc: String
 }
 
 input UpdateCouponInput {
@@ -51,8 +63,14 @@ input UpdateCouponInput {
     "优惠券减免金额"
     discount: Int
 
+    "优惠券开始时间 unix timestamp"
+    startAt: Number
+
     "优惠劵过期时间 前端传入unix timestamp"
     expiredAt: Number
+
+    "优惠劵描述"
+    desc: String
 }
 
 input DeleteCouponInput {
