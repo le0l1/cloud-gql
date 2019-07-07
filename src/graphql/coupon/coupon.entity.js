@@ -63,7 +63,7 @@ export class Coupon extends BaseEntity {
   expiredAt;
 
   @Column({
-    type: 'character varying',
+    type: 'bigint',
     name: 'start_at',
   })
   startAt;
