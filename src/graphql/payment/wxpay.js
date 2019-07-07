@@ -33,8 +33,12 @@ export class WXPay {
     return this;
   }
 
+  /**
+   * 元转化为分
+   * @param {*} totalFee
+   */
   setTotalFee(totalFee) {
-    this.basicPayInfo.total_fee = totalFee;
+    this.basicPayInfo.total_fee = totalFee * 100;
     return this;
   }
 
@@ -94,7 +98,11 @@ export class WXPay {
           mch_id: partnerid,
           prepay_id: prepayid,
           nonce_str: noncestr,
-          timestamp = Number(Date.now().toString().slice(0, 10)),
+          timestamp = Number(
+            Date.now()
+              .toString()
+              .slice(0, 10),
+          ),
         } = Object.keys(xml).reduce(
           (a, b) => ({
             ...a,

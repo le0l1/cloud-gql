@@ -80,7 +80,6 @@ export class Good extends BaseEntity {
   @Column({
     type: 'numeric',
     name: 'good_sale_price',
-    nullable: true,
   })
   goodSalePrice;
 

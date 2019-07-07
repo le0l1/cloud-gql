@@ -48,7 +48,7 @@ export default class TransferResolver {
    * @returns {string}
    */
   static makeTransitionRecordNumber() {
-    return `T${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(Math.random() * 1000000)}`;
+    return `S${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(Math.random() * 1000000)}`;
   }
 
   /**

@@ -1,30 +1,40 @@
-type Order {
-    id: ID
+type Order implements Node {
+  id: ID!
+  "订单总金额"
+  total: String
+  "订单商品"
+  goods: [Good]
+  "订单减免金额"
+  discount: Number
+  "订单状态"
+  orderStatus: OrderStatus
 }
 
-"支付信息"
-type PayInfoResult {
-    "appid"
-    appid: String
-
-    "商户id"
-    mch_id: String
-
-    "随机字符串"
-    nonce_str: String
-
-    "微信支付签名"
-    sign: String
-
-    "业务结果"
-    result_code: String
+enum OrderStatus {
+  S
 }
 
-input PayOrderInput {
-    "订单id"
-    id: ID
+input OrderGood {
+  "商品id"
+  goodId: ID!
+  "商品数量"
+  quantity: Int!
 }
 
-extend  type Mutation {
-    payOrder(payOrderInput: PayOrderInput!): PayInfoResult
+input CreateOrderInput {
+  "用户id"
+  userId: ID!
+  "收货地址id"
+  addressId: ID!
+  "商品数组"
+  goodArr: [OrderGood!]!
+  "优惠劵id数组"
+  couponIds: [ID!]
+  "支付方式"
+  paymentMethod: PAYMENTMETHOD
+}
+
+extend type Mutation {
+  "创建订单"
+  createOrder(createOrderInput: CreateOrderInput): WXPayPrepare
 }

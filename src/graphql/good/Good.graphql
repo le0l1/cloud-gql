@@ -107,7 +107,7 @@ input GoodCreateInput {
   goodsStocks: Int
 
   "商品销售价格"
-  goodSalePrice: Float
+  goodSalePrice: Float!
 }
 
 input GoodUpdateInput {

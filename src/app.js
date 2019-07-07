@@ -25,13 +25,13 @@ import { rfq } from './graphql/rfq';
 import { image } from './graphql/image';
 import { phone } from './graphql/phone';
 import { coupon } from './graphql/coupon';
-import { order } from './graphql/order/order';
+import order from './graphql/order';
 import payment from './graphql/payment';
 import transfer from './graphql/transfer';
 import router from './graphql/payment/payment.route';
 import cart from './graphql/cart';
 import address from './graphql/address';
-import collection from './graphql/collection'
+import collection from './graphql/collection';
 import news from './graphql/news';
 
 const app = new Koa();
