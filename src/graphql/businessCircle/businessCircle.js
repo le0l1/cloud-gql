@@ -27,14 +27,15 @@ export default class BusinessCircleResolver {
   }
 
   static searchBusinessCircles({ offset, limit, reportStatus }) {
-    return pipe(
+    const qb = pipe(
       getQB('businessCircle'),
       leftJoinAndSelect('businessCircle.user', 'user'),
       leftJoinAndSelect('businessCircle.images', 'images'),
       where('businessCircle.reportStatus = :reportStatus', { reportStatus }),
       withPagination(limit, offset),
-      getManyAndCount,
     )(BusinessCircle);
+    return qb.orderBy('businessCircle.createdAt', 'DESC')
+      .getManyAndCount();
   }
 
   static deleteBusinessCircles({ id }) {
