@@ -49,6 +49,7 @@ const resolvers = {
   },
   UserActionResult: {
     id: formateUserId,
+    status: () => true,
   },
   UserRegisterResult: idResolver('user'),
   UserLoginResult: idResolver('user'),
@@ -57,22 +58,8 @@ const resolvers = {
     async register(obj, { userRegisterInput }) {
       return UserResolver.register(userRegisterInput);
     },
-    // TODO: 重构user相关schema
-    async loginIn(_, { userLoginInput }) {
-      const user = await User.findByPhone(userLoginInput.phone);
-      if (!user) throw new UserNotExistsError();
-      if (
-        !comparePassword({
-          hash: user.password,
-          pwd: userLoginInput.password,
-        })
-      ) {
-        throw new InValidPasswordError();
-      }
-      return {
-        ...user,
-        token: generateToken(user),
-      };
+    loginIn(_, { userLoginInput }) {
+      return UserResolver.loginIn(userLoginInput);
     },
     async deleteUser(_, { userDeleteInput }) {
       try {
@@ -83,6 +70,7 @@ const resolvers = {
         throw new UserNotExistsError();
       }
     },
+    // TODO: 重构找回密码
     async retrievePassword(_, { retrievePasswordInput }, ctx) {
       const { phone } = retrievePasswordInput;
       if (retrievePasswordInput.smsCode !== ctx.session[phone]) {
@@ -95,7 +83,7 @@ const resolvers = {
       };
     },
     updateUser(_, { userUpdateInput }) {
-      return User.updateUserInfo(userUpdateInput);
+      return UserResolver.updateUser(userUpdateInput);
     },
   },
 };

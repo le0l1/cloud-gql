@@ -1,8 +1,14 @@
 import { User } from './user.entity';
 import { decodeNumberId } from '../../helper/util';
-import { decrypt } from '../../helper/encode';
+import { decrypt, comparePassword, generateToken } from '../../helper/encode';
 import { SMSCode } from '../thridAPI/smsCode.entity';
-import { ValidSmsCodeError, RootRegistryError, UserHasRegisterdError } from '../../helper/error';
+import {
+  ValidSmsCodeError,
+  RootRegistryError,
+  UserHasRegisterdError,
+  UserNotExistsError,
+  InValidPasswordError,
+} from '../../helper/error';
 
 export default class UserResolver {
   static async searchUserPassword({ id }) {
@@ -27,5 +33,27 @@ export default class UserResolver {
       role,
       ...rest,
     });
+  }
+
+  static async loginIn({ phone, password }) {
+    const user = await User.findByPhone(phone);
+    if (!user) throw new UserNotExistsError();
+    if (
+      !comparePassword({
+        hash: user.password,
+        pwd: password,
+      })
+    ) {
+      throw new InValidPasswordError();
+    }
+    return {
+      ...user,
+      token: generateToken(user),
+    };
+  }
+
+  static async updateUser({ id, ...rest }) {
+    const user = await User.findOneOrFail(decodeNumberId(id));
+    return User.merge(user, rest).save();
   }
 }

@@ -135,18 +135,6 @@ export class User extends BaseEntity {
     });
   }
 
-  static updateUserInfo({ id, ...rest }) {
-    const realId = decodeNumberId(id);
-    return User.update(
-      {
-        id: realId,
-      },
-      rest,
-    ).then(() => ({
-      id: realId,
-      status: true,
-    }));
-  }
 
   static findByPhone(phone) {
     return User.findOneOrFail({
