@@ -3,13 +3,19 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  BaseEntity, ManyToOne,
+  BaseEntity,
+  ManyToOne,
 } from 'typeorm';
 import {
-  isValid, mergeIfValid, decodeNumberId, formateID, decodeTypeAndId,
+  isValid,
+  mergeIfValid,
+  decodeNumberId,
+  formateID,
+  decodeTypeAndId,
 } from '../../helper/util';
-import {Shop} from "../shop/shop.entity";
-import {Good} from "../good/good.entity";
+import { Shop } from '../shop/shop.entity';
+import { Good } from '../good/good.entity';
+import { Accessories } from '../accessories/accessories.entity';
 
 @Entity()
 export class Banner extends BaseEntity {
@@ -82,6 +88,9 @@ export class Banner extends BaseEntity {
 
   @ManyToOne(type => Good)
   good;
+
+  @ManyToOne(type => Accessories)
+  accessories;
 
   static createBanner({ bannerTypeId: typeId, ...rest }) {
     const currentBanner = Banner.create({ ...rest });

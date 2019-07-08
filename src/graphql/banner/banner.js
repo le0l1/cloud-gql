@@ -2,6 +2,7 @@ import { Banner } from './banner.entity';
 import { decodeTypeAndId } from '../../helper/util';
 import { Shop } from '../shop/shop.entity';
 import { Good } from '../good/good.entity';
+import { Accessories } from '../accessories/accessories.entity';
 
 export default class BannerResolver {
   static searchBanners({ tag, bannerTypeId }) {
@@ -16,6 +17,7 @@ export default class BannerResolver {
       const findMap = {
         shop: BannerResolver.findShopBanners,
         good: BannerResolver.findGoodsBanners,
+        accessories: BannerResolver.findAccessoriesBanners,
       };
       return findMap[type] ? findMap[type](typeId) : [];
     }
@@ -33,6 +35,13 @@ export default class BannerResolver {
     const good = await Good.findOneOrFail(goodId);
     return Banner.find({
       good,
+    });
+  }
+
+  static async findAccessoriesBanners(accessoriesId) {
+    const accessories = await Accessories.findOneOrFail(accessoriesId)
+    return Banner.find({
+      accessories,
     });
   }
 }

@@ -1,22 +1,22 @@
 import AccessoriesSchema from './Accessories.gql';
-import { Accessories } from './accessories.entity';
-import { formateID } from '../../helper/util';
+import AccessoriesResolver from './accessories';
+import { idResolver } from '../../helper/resolver';
 
 const resolvers = {
   Mutation: {
     createAccessories(_, { createAccessoriesInput }) {
-      return Accessories.createAccessories(createAccessoriesInput);
+      return AccessoriesResolver.createAccessories(createAccessoriesInput);
     },
   },
   Query: {
     accessories(_, { query }) {
-      return Accessories.searchAccessories(query);
+      return AccessoriesResolver.searchAccessories(query);
     },
   },
-  Accessories: {
-    id(v) {
-      return v.id ? formateID('accessories', v.id) : null;
-    },
+  Accessories: idResolver('accessories'),
+  AccessoriesActionResult: {
+    ...idResolver('accessories'),
+    status: () => true,
   },
 };
 
