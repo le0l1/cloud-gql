@@ -1,7 +1,7 @@
 import { getManager } from 'typeorm';
 import { format } from 'date-fns';
 import { User } from '../user/user.entity';
-import { decodeNumberId } from '../../helper/util';
+import { decodeNumberId, pipe } from '../../helper/util';
 import { Good } from '../good/good.entity';
 import { Coupon } from '../coupon/coupon.entity';
 import Address from '../address/address.entity';
@@ -9,6 +9,8 @@ import { Order } from './order.entity';
 import { OrderDetail } from './orderDetail.entity';
 import { Payment } from '../payment/payment.entity';
 import { WXPay } from '../payment/wxpay';
+import { Shop } from '../shop/shop.entity';
+import { withPagination, getManyAndCount, where } from '../../helper/sql';
 
 export default class OrderResolver {
   static async createOrder({
@@ -34,7 +36,6 @@ export default class OrderResolver {
       const discount = coupons.reduce((a, b) => a + Number(b.discount), 0);
       // 实际支付金额
       const totalFee = totalCount - discount;
-      
       // 创建支付信息
       const payment = Payment.create({
         totalFee,
@@ -56,7 +57,11 @@ export default class OrderResolver {
 
       // 创建订单详情
       const orderDetail = goods.map(({ good, quantity }) => OrderDetail.create({
+        shopId: good.shopId,
         goodId: good.id,
+        goodCover: good.cover,
+        goodSalePrice: good.goodSalePrice,
+        goodName: good.name,
         orderId: order.id,
         quantity,
       }));
@@ -73,5 +78,40 @@ export default class OrderResolver {
 
   static makeRecordNumber() {
     return `T${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(Math.random() * 1000000)}`;
+  }
+
+  static async searchOrders({
+    userId, shopId, limit, offset,
+  }) {
+    let qb = Order.createQueryBuilder('order').leftJoinAndMapMany(
+      'order.goods',
+      OrderDetail,
+      'orderDetail',
+      'orderDetail.orderId = order.id',
+    );
+    if (userId) {
+      const user = await User.findOneOrFail(decodeNumberId(userId));
+      qb = qb.andWhere('order.userId = :userId', { userId: user.id });
+    }
+    if (shopId) {
+      const shop = await Shop.findOneOrFail(decodeNumberId(userId));
+      qb = qb.andWhere('orderDetail.shopId = :shopId', { shopId: shop.id });
+    }
+    return pipe(
+      where('order.deletedAt is null'),
+      withPagination(limit, offset),
+      getManyAndCount,
+    )(qb);
+  }
+
+  static async updateOrder({ id, orderStatus }) {
+    const order = await Order.findOneOrFail(decodeNumberId(id));
+    order.status = orderStatus;
+    return order.save();
+  }
+
+  static async deleteOrder({ id }) {
+    const order = await Order.findOneOrFail(decodeNumberId(id));
+    return Order.remove(order);
   }
 }
