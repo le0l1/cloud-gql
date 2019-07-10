@@ -1,6 +1,7 @@
 import {
   BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn,
 } from 'typeorm';
+import { OrderStatus } from '../../helper/status';
 
 @Entity()
 export class Order extends BaseEntity {
@@ -30,6 +31,13 @@ export class Order extends BaseEntity {
     name: 'total_count',
   })
   totalCount;
+
+  @Column({
+    type: 'enum',
+    enum: Object.values(OrderStatus),
+    default: OrderStatus.PENDING,
+  })
+  status;
 
   @Column({
     type: 'int',

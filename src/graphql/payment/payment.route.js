@@ -7,6 +7,8 @@ import { mapObjectArr, env } from '../../helper/util';
 import { User } from '../user/user.entity';
 import { PaymentStatus } from '../../helper/status';
 import { UnmatchedAmountError } from '../../helper/error';
+import logger from '../../helper/logger';
+import { WXPay } from './wxpay';
 
 const router = new Router();
 
@@ -19,13 +21,35 @@ const failPaid = async (transferRecord) => {
 const checkReqStatus = body => !body.return_msg === 'SUCCESS' || !body.return_code === 'OK';
 const checkTransferStatus = paymentStatus => paymentStatus === PaymentStatus.PAID;
 
+const failResult = js2xml(
+  {
+    xml: {
+      return_msg: {
+        _cdata: 'INVALID_REQUEST',
+      },
+      return_code: {
+        _cdata: 'FAIL',
+      },
+    },
+  },
+  { compact: true, ignoreComment: true, spaces: 4 },
+);
+
 router.post(
   env('WXPAY_NOTIFY_URL'),
   async (ctx, next) => {
+    ctx.type = 'application/xml';
     const xml = mapObjectArr(ctx.request.body.xml);
-    // TODO: 校验微信签名
     if (checkReqStatus(xml)) {
-      return false;
+      ctx.body = failResult;
+      return;
+    }
+    const { sign, ...rest } = xml;
+    const wxpay = new WXPay(rest);
+    if (wxpay.sign !== sign) {
+      logger.error('微信签名校验失败!');
+      ctx.body = failResult;
+      return;
     }
     await getManager().transaction(async (transactionManager) => {
       const transferRecord = await transactionManager

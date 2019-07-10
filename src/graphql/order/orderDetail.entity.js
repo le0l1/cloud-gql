@@ -1,10 +1,13 @@
 import {
-  BaseEntity, Entity, PrimaryColumn, Column,
+  BaseEntity, Entity, Column, PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
 export class OrderDetail extends BaseEntity {
-  @PrimaryColumn({ name: 'order_id', type: 'int' })
+  @PrimaryGeneratedColumn()
+  id;
+
+  @Column({ name: 'order_id', type: 'int' })
   orderId;
 
   @Column({

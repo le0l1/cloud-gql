@@ -69,10 +69,13 @@ export default class OrderResolver {
       await trx.save(orderDetail);
 
       // 返回支付预信息
-      return new WXPay()
-        .setOrderNumber(orderNumber)
-        .setTotalFee(totalFee)
-        .preparePayment();
+      return {
+        ...order,
+        payPrepare: new WXPay()
+          .setOrderNumber(orderNumber)
+          .setTotalFee(totalFee)
+          .preparePayment(),
+      };
     });
   }
 
@@ -104,13 +107,25 @@ export default class OrderResolver {
     )(qb);
   }
 
+  static async searchOrder(id) {
+    return Order.createQueryBuilder('order')
+      .leftJoinAndMapMany(
+        'order.goods',
+        OrderDetail,
+        'orderDetail',
+        'orderDetail.orderId = order.id',
+      )
+      .where('order.id = :id', { id: decodeNumberId(id) })
+      .getOne();
+  }
+
   static async updateOrder({ id, orderStatus }) {
     const order = await Order.findOneOrFail(decodeNumberId(id));
     order.status = orderStatus;
     return order.save();
   }
 
-  static async deleteOrder({ id }) {
+  static async deleteOrder(id) {
     const order = await Order.findOneOrFail(decodeNumberId(id));
     return Order.remove(order);
   }

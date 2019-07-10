@@ -1,7 +1,7 @@
 type Order implements Node {
   id: ID!
   "订单总金额"
-  total: String
+  totalCountCount: String
   "订单商品"
   goods: [Good]
   "订单减免金额"
@@ -11,7 +11,19 @@ type Order implements Node {
 }
 
 enum OrderStatus {
-  S
+  "待付款"
+  PENDING
+  "待发货"
+  WAIT_SHIP
+  "待收货"
+  WAIT_RECEIPT
+  "待评价"
+  WAIT_EVALUATION
+}
+
+type OrderActionResult {
+  id: ID
+  status: Boolean
 }
 
 input OrderGood {
@@ -34,7 +46,47 @@ input CreateOrderInput {
   paymentMethod: PAYMENTMETHOD
 }
 
+input UpdateOrderInput {
+  id: ID!
+  orderStatus: OrderStatus!
+}
+
+input DeleteOrder {
+  id: ID!
+}
+
+input OrderQuery {
+  "页面size"
+  limit: Int
+  "页数"
+  offset: Int
+  userId: ID
+  shopId: ID
+}
+
+type OrderConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [Order!]
+}
+
+type OrderPayprepare {
+  orderNumber: String
+  totalCount: String
+  payPrepare: WXPayPrepare
+}
+
 extend type Mutation {
   "创建订单"
-  createOrder(createOrderInput: CreateOrderInput): WXPayPrepare
+  createOrder(createOrderInput: CreateOrderInput!): OrderPayprepare
+  "更新订单"
+  updateOrder(updateOrderInput: UpdateOrderInput!): OrderActionResult
+  "删除订单"
+  deleteOrder(id: ID!): OrderActionResult
+}
+
+extend type Query {
+  "查询订单列表"
+  orders(query: OrderQuery!): OrderConnection
+  "查询单一订单"
+  order(id: ID!): Order
 }

@@ -77,3 +77,16 @@ export const Role = {
   MERCHANT: 2,
   ROOT: 3,
 };
+/**
+ * 订单状态
+ * PENDING: 待付款
+ * WAIT_SHIP: 待发货
+ * WAIT_RECEIPT: 待收货
+ * WAIT_EVALUATION: 待评价
+ */
+export const OrderStatus = {
+  PENDING: 'PENDING',
+  WAIT_SHIP: 'WAIT_SHIP',
+  WAIT_RECEIPT: 'WAIT_RECEIPT',
+  WAIT_EVALUATION: 'WAIT_EVALUATION',
+};

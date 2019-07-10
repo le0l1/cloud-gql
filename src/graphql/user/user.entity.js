@@ -7,11 +7,13 @@ import {
   OneToMany,
   VersionColumn,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
 import { Comment } from '../comment/comment.entity';
 import { hashPassword } from '../../helper/encode';
 import { decodeNumberId } from '../../helper/util';
 import { Transfer } from '../transfer/transfer.entity';
+import { Shop } from '../shop/shop.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -89,6 +91,9 @@ export class User extends BaseEntity {
 
   @OneToMany(type => Transfer, transfer => transfer.payee)
   transfer;
+
+  @OneToOne(type => Shop, shop => shop.belongto)
+  shop;
 
   @VersionColumn({
     nullable: true,
