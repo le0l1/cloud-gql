@@ -201,7 +201,7 @@ type UserDecode {
 }
 
 extend type Query {
-  users(usersQueryInput: UsersQueryInput!): UserConnection! @auth
+  users(usersQueryInput: UsersQueryInput!): UserConnection!
   user(userQueryInput: UserQueryInput!): User
   userPassword(userQueryInput:UserQueryInput!): UserDecode! @auth(requires: ROOT)
 }
