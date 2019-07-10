@@ -65,7 +65,8 @@ input RFQSearchInput {
 }
 
 extend type Query {
-  RFQ(query: RFQSearchInput): RFQConnection
+  RFQs(query: RFQSearchInput): RFQConnection
+  RFQ(id: ID!): RFQ
 }
 
 extend type Mutation {

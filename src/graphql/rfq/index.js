@@ -4,8 +4,11 @@ import RFQResolver from './RFQ';
 
 const resolvers = {
   Query: {
-    RFQ(_, { query = {} }) {
+    RFQs(_, { query = {} }) {
       return RFQResolver.searchRFQs(query);
+    },
+    RFQ(_, { id }) {
+      return RFQResolver.searchRFQ(id);
     },
   },
   Mutation: {

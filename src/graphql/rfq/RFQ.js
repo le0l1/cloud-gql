@@ -51,6 +51,19 @@ export default class RFQResolver {
     )(qb);
   }
 
+  static async searchRFQ(id) {
+    return RFQ.createQueryBuilder('RFQ')
+      .leftJoinAndMapOne('RFQ.announcer', User, 'user', 'user.id = RFQ.announcerId')
+      .leftJoinAndMapMany(
+        'RFQ.vechicleAccessories',
+        Accessories,
+        'accessories',
+        'accessories.rfqId = RFQ.id',
+      )
+      .where('RFQ.id = :rfqId', { rfqId: decodeNumberId(id) })
+      .getOne();
+  }
+
   static deleteRFQ({ id }) {
     return getManager().transaction(async (trx) => {
       const rfq = await RFQ.findOneOrFail(decodeNumberId(id));
@@ -62,7 +75,7 @@ export default class RFQResolver {
         .createQueryBuilder()
         .delete()
         .from(Banner)
-        .orWhere('rfq = :rfq', { rfq: rfq.id })
+        .orWhere('rfq = :rfq', { rfq: rfq.id });
       const execute = orm => orm.execute();
       await pipe(
         where('accessories in (:...accessories)', {
