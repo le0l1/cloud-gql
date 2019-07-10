@@ -16,6 +16,7 @@ import {
 import { Shop } from '../shop/shop.entity';
 import { Good } from '../good/good.entity';
 import { Accessories } from '../accessories/accessories.entity';
+import { RFQ } from '../rfq/RFQ.entity';
 
 @Entity()
 export class Banner extends BaseEntity {
@@ -91,6 +92,9 @@ export class Banner extends BaseEntity {
 
   @ManyToOne(type => Accessories)
   accessories;
+
+  @ManyToOne(type => RFQ)
+  rfq;
 
   static createBanner({ bannerTypeId: typeId, ...rest }) {
     const currentBanner = Banner.create({ ...rest });

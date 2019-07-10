@@ -10,14 +10,14 @@ type RFQ implements Node {
   "询价单描述"
   description: String
 
-  "询价单图片"
-  RFQImages: [String]
-
   "询价单封面"
   RFQCover: String
 
   "发布人"
   announcer: User
+
+  "询价单配件"
+  vechicleAccessories: [Accessories!]
 
   "发布日期"
   announceAt: String
@@ -31,13 +31,13 @@ input RFQCreateInput {
   vehicleModel: String
 
   "询价单配件id"
-  vechicleAccessories: ID
+  vechicleAccessories: [ID!]
 
   "询价单描述"
   description: String
 
   "询价单图片"
-  RFQImages: [String]
+  RFQImages: [String!]
 
   "发布人 id"
   announcerId: ID!
@@ -46,6 +46,10 @@ input RFQCreateInput {
 type RFQActionResult {
   id: ID
   status: Boolean
+}
+
+input RFQDeleteInput {
+  id: ID!
 }
 
 type RFQConnection implements Connection {
@@ -66,4 +70,5 @@ extend type Query {
 
 extend type Mutation {
   createRFQ(createRFQInput: RFQCreateInput!): RFQActionResult
+  deleteRFQ(deleteRFQInput: RFQDeleteInput!): RFQActionResult
 }

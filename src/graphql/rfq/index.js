@@ -1,22 +1,25 @@
 import RFQSchema from './RFQ.gql';
-import { RFQ } from './RFQ.entity';
-import { formateID } from '../../helper/util';
+import { idResolver } from '../../helper/resolver';
+import RFQResolver from './RFQ';
 
 const resolvers = {
   Query: {
     RFQ(_, { query = {} }) {
-      return RFQ.searchRFQ(query);
+      return RFQResolver.searchRFQs(query);
     },
   },
   Mutation: {
     createRFQ(_, { createRFQInput }) {
-      return RFQ.createRFQ(createRFQInput);
+      return RFQResolver.createRFQ(createRFQInput);
+    },
+    deleteRFQ(_, { deleteRFQInput }) {
+      return RFQResolver.deleteRFQ(deleteRFQInput);
     },
   },
-  RFQ: {
-    id(v) {
-      return v.id ? formateID('RFQ', v.id) : null;
-    },
+  RFQ: idResolver('rfq'),
+  RFQActionResult: {
+    ...idResolver('rfq'),
+    status: () => true,
   },
   RFQConnection: {
     edges(v) {
