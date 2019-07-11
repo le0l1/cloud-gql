@@ -1,4 +1,5 @@
 #!/bin/bash
 
 npm run start
-node ./schedule/index.js
+ls ./schedule
+# node ./schedule/index.js
