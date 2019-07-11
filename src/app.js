@@ -28,7 +28,7 @@ import { coupon } from './graphql/coupon';
 import order from './graphql/order';
 import payment from './graphql/payment';
 import transfer from './graphql/transfer';
-import router from './graphql/payment/payment.route';
+import router from './graphql/transfer/transfer.route';
 import orderRouter from './graphql/order/order.route';
 import cart from './graphql/cart';
 import address from './graphql/address';

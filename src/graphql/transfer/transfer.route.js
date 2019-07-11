@@ -1,14 +1,13 @@
 import Router from 'koa-router';
 import { js2xml } from 'xml-js';
 import { getManager } from 'typeorm';
-import { Transfer } from '../transfer/transfer.entity';
-import { Payment } from './payment.entity';
+import { Transfer } from './transfer.entity';
 import { mapObjectArr, env } from '../../helper/util';
-import { User } from '../user/user.entity';
 import { PaymentStatus } from '../../helper/status';
 import { UnmatchedAmountError } from '../../helper/error';
 import logger from '../../helper/logger';
-import { WXPay } from './wxpay';
+import { Payment } from '../payment/payment.entity';
+import { WXPay } from '../payment/wxpay';
 
 const router = new Router();
 
@@ -55,8 +54,7 @@ router.post(
       const transferRecord = await transactionManager
         .getRepository(Transfer)
         .createQueryBuilder('transfer')
-        .innerJoinAndSelect('transfer.payment', 'payment')
-        .innerJoinAndSelect('transfer.payee', 'payee')
+        .leftJoinAndSelect('transfer.payment', 'payment')
         .where({
           recordNumber: xml.out_trade_no,
         })
@@ -69,20 +67,9 @@ router.post(
         failPaid(transferRecord);
         throw new UnmatchedAmountError();
       }
-
-      const { payment, payee } = transferRecord;
-      const merchant = await transactionManager
-        .getRepository(User)
-        .createQueryBuilder('user')
-        .where('user.id = :id', {
-          id: payee.belongto,
-        })
-        .setLock('optimistic')
-        .getOne();
+      const { payment } = transferRecord;
       payment.paymentStatus = PaymentStatus.PAID;
-      merchant.totalFee = Number(payment.totalFee) + Number(merchant.totalFee);
       await transactionManager.getRepository(Payment).save(payment);
-      await transactionManager.getRepository(User).save(merchant);
       return next();
     });
   },

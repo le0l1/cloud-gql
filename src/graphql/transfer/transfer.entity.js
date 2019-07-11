@@ -11,6 +11,7 @@ import {
 import { User } from '../user/user.entity';
 import { Payment } from '../payment/payment.entity';
 import { Shop } from '../shop/shop.entity';
+import { TransferStatus } from '../../helper/status';
 
 @Entity()
 export class Transfer extends BaseEntity {
@@ -35,6 +36,13 @@ export class Transfer extends BaseEntity {
     nullable: true,
   })
   remark;
+
+  @Column({
+    type: 'enum',
+    enum: Object.values(TransferStatus),
+    default: TransferStatus.TRANSFERING,
+  })
+  status;
 
   @CreateDateColumn({
     type: 'timestamp',

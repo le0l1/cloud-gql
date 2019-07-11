@@ -90,3 +90,12 @@ export const OrderStatus = {
   WAIT_RECEIPT: 'WAIT_RECEIPT',
   WAIT_EVALUATION: 'WAIT_EVALUATION',
 };
+/**
+ * 交易状态
+ * TRANSFERING: 转账中
+ * COMPLETED: 转账完成
+ */
+export const TransferStatus = {
+  TRANSFERING: 'TRANSFERING',
+  COMPLETED: 'COMPLETED',
+};
