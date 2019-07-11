@@ -20,6 +20,12 @@ export class BusinessCircle extends BaseEntity {
   })
   userId
 
+  userStar;
+
+  get hasStared() {
+    return !!this.userStar;
+  }
+
   @Column({
     type: 'character varying',
     nullable: true,

@@ -23,6 +23,9 @@ type BusinessCircle implements Node {
 
   "举报状态"
   reportStatus: ReportStatus
+
+  "是否已点赞"
+  hasStared: Boolean
 }
 
 
@@ -46,8 +49,12 @@ enum SORTCONDITION {
 input BusinessCircleSearchInput {
   "偏离值"
   offset: Int
+
   "分页条数"
   limit: Int
+
+  "用户id"
+  userId: ID
 
   "举报状态"
   reportStatus: ReportStatus
@@ -74,6 +81,8 @@ input BusinessCircleDeleteInput {
 }
 
 input BusinessCircleStarInput {
+  userId: ID!
+
   id: ID!
 }
 input BusinessCircleReportInput {
@@ -100,7 +109,7 @@ extend type Mutation {
   createBusinessCircle(createBusinessCircleInput: BusinessCircleCreateInput!): BusinessCircleOperationResult
   "删除生意圈"
   deleteBusinessCircle(deleteBusinessCircleInput: BusinessCircleDeleteInput!):BusinessCircleOperationResult
-  "点赞生意圈"
+  "点赞生意圈 如果已点赞 再次请求即为取消点赞"
   starBusinessCircle(starBusinessCircleInput: BusinessCircleStarInput!): BusinessCircleOperationResult
   "举报生意圈"
   reportBusinessCircle(reportBusinessCircleInput: BusinessCircleReportInput!): BusinessCircleOperationResult

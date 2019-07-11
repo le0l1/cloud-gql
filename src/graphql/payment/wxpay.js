@@ -92,7 +92,6 @@ export class WXPay {
       })
       .then((res) => {
         const { xml } = xml2js(res.data, { compact: true });
-        // TODO: 需要对签名进行二次加密 否则会签名错误
         const {
           appid,
           mch_id: partnerid,

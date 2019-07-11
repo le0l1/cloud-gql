@@ -17,3 +17,4 @@ export const withPagination = (limit = 8, offset = 1) => (query) => {
   return query.take(limit).skip(skip);
 };
 export const leftJoinAndSelect = (property, alias) => orm => orm.leftJoinAndSelect(property, alias);
+export const leftJoinAndMapOne = (property, entity, alias, condition) => orm => orm.leftJoinAndMapOne(property, entity, alias, condition);

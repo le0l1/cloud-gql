@@ -1,12 +1,18 @@
 import { getManager } from 'typeorm';
 import { decodeNumberId, pipe } from '../../helper/util';
 import {
-  getQB, withPagination, leftJoinAndSelect, getManyAndCount, where,
+  getQB,
+  withPagination,
+  leftJoinAndSelect,
+  where,
+  leftJoinAndMapOne,
 } from '../../helper/sql';
 import { BusinessCircle } from './businessCircle.entity';
 import { User } from '../user/user.entity';
 import { Image } from '../image/image.entity';
 import { ReportStatus } from '../../helper/status';
+import { BusinessCircleUser } from './businessCircleUser.entity';
+import Logger from '../../helper/logger';
 
 export default class BusinessCircleResolver {
   static createBusinessCircle({ userId, images = [], content }) {
@@ -26,16 +32,33 @@ export default class BusinessCircleResolver {
     });
   }
 
-  static searchBusinessCircles({ offset, limit, reportStatus }) {
-    const qb = pipe(
+  static searchBusinessCircles({
+    offset, limit, reportStatus, userId,
+  }) {
+    let qb = pipe(
       getQB('businessCircle'),
       leftJoinAndSelect('businessCircle.user', 'user'),
       leftJoinAndSelect('businessCircle.images', 'images'),
       where('businessCircle.reportStatus = :reportStatus', { reportStatus }),
       withPagination(limit, offset),
     )(BusinessCircle);
-    return qb.orderBy('businessCircle.createdAt', 'DESC')
-      .getManyAndCount();
+
+    if (userId) {
+      qb = pipe(
+        leftJoinAndMapOne(
+          'businessCircle.userStar',
+          BusinessCircleUser,
+          'businessCircleUser',
+          'businessCircleUser.businessCircleId =  businessCircle.id and businessCircleUser.userId = :userId',
+        ),
+      )(qb);
+    }
+    Logger.info(qb.getSql());
+    return qb
+      .setParameters({
+        userId: decodeNumberId(userId),
+      })
+      .orderBy('businessCircle.createdAt', 'DESC').getManyAndCount();
   }
 
   static deleteBusinessCircles({ id }) {
@@ -47,15 +70,38 @@ export default class BusinessCircleResolver {
       });
       await trx.remove(images);
       await trx.remove(businessCircle);
+      await trx.delete(BusinessCircle, { businessCircleId: businessCircle.id });
       return { id: realId };
     });
   }
 
-  static async starBusinessCircle({ id }) {
-    const businessCircle = await BusinessCircle.findOneOrFail(decodeNumberId(id));
-    return BusinessCircle.merge(businessCircle, {
-      starCount: () => 'star_count + 1',
-    }).save();
+  static starBusinessCircle({ id, userId }) {
+    return getManager().transaction(async (trx) => {
+      const businessCircle = await BusinessCircle.findOneOrFail(decodeNumberId(id));
+      const user = await User.findOneOrFail(decodeNumberId(userId));
+      const payload = {
+        userId: user.id,
+        businessCircleId: businessCircle.id,
+      };
+      const businessCircleUser = await BusinessCircleUser.findOne(payload);
+      // 如果已点赞则取消点赞
+      if (businessCircleUser) {
+        await trx.remove(businessCircleUser);
+        await trx.save(
+          BusinessCircle.merge(businessCircle, {
+            starCount: () => 'star_count - 1',
+          }),
+        );
+      } else {
+        await trx.insert(BusinessCircleUser, payload);
+        await trx.save(
+          BusinessCircle.merge(businessCircle, {
+            starCount: () => 'star_count + 1',
+          }),
+        );
+      }
+      return businessCircle;
+    });
   }
 
   static async reportBusinessCircle({ id }) {
