@@ -53,7 +53,6 @@ export default class BusinessCircleResolver {
         ),
       )(qb);
     }
-    Logger.info(qb.getSql());
     return qb
       .setParameters({
         userId: decodeNumberId(userId),
