@@ -29,7 +29,7 @@ jobs:
           paths:
             - dist
             - package.json
-
+            - start.sh
             - Dockerfile
 
   publish pre-release docker:
@@ -52,7 +52,6 @@ jobs:
           at: .
       - run:
           command: |
-            head -n 1  start.sh
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker build -t leezzxuan/gql:$CIRCLE_TAG .
             docker push leezzxuan/gql:$CIRCLE_TAG
