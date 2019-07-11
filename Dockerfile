@@ -6,6 +6,7 @@ ENV PORT=80
 # add file
 ADD dist /home/graphql
 ADD package.json /home/graphql
+ADD start.sh /home/graphql 
 
 
 WORKDIR /home/graphql
@@ -15,4 +16,4 @@ RUN npm config set registry https://registry.npm.taobao.org
 RUN npm install 
 
 
-ENTRYPOINT ["npm", "run", "start"]
+ENTRYPOINT ["./start.sh"]
