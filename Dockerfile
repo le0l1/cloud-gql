@@ -1,5 +1,6 @@
 FROM node:alpine
 
+ENV LANG C.UTF-8
 ENV NODE_ENV=development
 ENV PORT=80
 
