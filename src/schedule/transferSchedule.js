@@ -17,8 +17,8 @@ createConnection().then(() => {
         .createQueryBuilder('transfer')
         .leftJoinAndSelect('transfer.payment', 'payment')
         .leftJoinAndSelect('transfer.payee', 'payee')
-        .where('payment.paymentStatus = :status', { status: PaymentStatus.PAID })
-        .andWhere('transfer.status = :status', { status: TransferStatus.TRANSFERING })
+        .where('payment.paymentStatus = :paymentStatus', { paymentStatus: PaymentStatus.PAID })
+        .andWhere('transfer.status = :transferStatus', { transferStatus: TransferStatus.TRANSFERING })
         .getMany();
       Logger.info('获得当前处理的交易记录集合:', transfers);
       await Promise.all(
