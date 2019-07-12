@@ -1,5 +1,5 @@
 #!/bin/bash
 
-npm run start
-# ls ./schedule
-node ./schedule/index.js
+npm run dev &
+node ./schedule/index.js &
+wait
