@@ -60,7 +60,11 @@ input OrderQuery {
   limit: Int
   "页数"
   offset: Int
+
+  "用户id"
   userId: ID
+
+  "商户id"
   shopId: ID
 }
 

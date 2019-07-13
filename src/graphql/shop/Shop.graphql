@@ -59,6 +59,9 @@ input ShopsQueryInput {
 
   "分类id 可以通过分类查询所有的店铺"
   categoryId: ID
+
+  "通过城市进行查询"
+  city: String
 }
 
 input ShopQueryInput {
