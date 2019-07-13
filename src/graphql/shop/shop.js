@@ -175,4 +175,11 @@ export default class ShopResolver {
     shop.deletedAt = new Date();
     return shop.save();
   }
+
+  static searchShopCity() {
+    return Shop.createQueryBuilder()
+      .select(' DISTINCT city', 'city')
+      .getRawMany()
+      .then(res => res.reduce((a, b) => (b.city ? [...a, b.city] : a), []));
+  }
 }

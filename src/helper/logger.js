@@ -1,3 +1,12 @@
-import consola from 'consola';
+import { createLogger, format, transports } from 'winston';
 
-export default consola;
+const {
+  combine, timestamp, printf,
+} = format;
+
+const myFormat = printf(({ level, message, timestamp: time }) => `[${level}] ${time}: ${message}`);
+
+export default createLogger({
+  format: combine(timestamp(), myFormat),
+  transports: [new transports.Console()],
+});

@@ -50,6 +50,7 @@ export default () => getManager().transaction(async (trx) => {
     .where('order.isSettled = false')
     .where('payment.paymentStatus = :paymentStatus', { paymentStatus: PaymentStatus.PAID })
     .getMany();
+  if (!orders) return;
   await orders.reduce(async (a, b) => {
     const order = a.then ? await a : a;
     logger.info('当前订单号:', order.orderNumber);

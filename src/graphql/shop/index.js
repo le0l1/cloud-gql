@@ -12,6 +12,9 @@ const resolvers = {
     shop(_, { query }) {
       return ShopResolver.searchShop(query);
     },
+    shopCity() {
+      return ShopResolver.searchShopCity();
+    }
   },
   ShopConnection: {
     edges(result) {

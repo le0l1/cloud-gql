@@ -155,6 +155,8 @@ extend type Query {
     shops(query: ShopsQueryInput): ShopConnection! 
     "单一商户查询"
     shop(query: ShopQueryInput): Shop!
+    "获取所有城市"
+    shopCity: [String!]
 }
 
 extend type Mutation {
