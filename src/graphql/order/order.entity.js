@@ -55,4 +55,11 @@ export class Order extends BaseEntity {
     name: 'created_at',
   })
   createdAt;
+
+  @Column({
+    name: 'deleted_at',
+    type: 'timestamp',
+    default: null,
+  })
+  deletedAt;
 }

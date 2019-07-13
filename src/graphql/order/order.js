@@ -11,6 +11,7 @@ import { Payment } from '../payment/payment.entity';
 import { WXPay } from '../payment/wxpay';
 import { Shop } from '../shop/shop.entity';
 import { withPagination, getManyAndCount, where } from '../../helper/sql';
+import { StockLackError } from '../../helper/error';
 
 export default class OrderResolver {
   static async createOrder({
@@ -18,12 +19,7 @@ export default class OrderResolver {
   }) {
     return getManager().transaction(async (trx) => {
       const user = await User.findOneOrFail(decodeNumberId(userId));
-      const goods = await Promise.all(
-        goodArr.map(async ({ goodId, quantity }) => ({
-          good: await Good.findOneOrFail(decodeNumberId(goodId)),
-          quantity,
-        })),
-      );
+      const goods = await OrderResolver.inspectGoodStock(goodArr, trx);
       const coupons = await Promise.all(
         couponIds.map(couponId => Coupon.findOneOrFail(decodeNumberId(couponId))),
       );
@@ -77,6 +73,21 @@ export default class OrderResolver {
           .preparePayment(),
       };
     });
+  }
+
+  // 检查并减少商品库存
+  static inspectGoodStock(goodArr, trx) {
+    return Promise.all(
+      goodArr.map(async ({ goodId, quantity }) => {
+        const good = await Good.findOneOrFail(decodeNumberId(goodId));
+        if (good.goodsStocks < quantity) throw new StockLackError();
+        await trx.update(good, { goodsStocks: 'good_stocks - 1' });
+        return {
+          good,
+          quantity,
+        };
+      }),
+    );
   }
 
   static makeRecordNumber() {

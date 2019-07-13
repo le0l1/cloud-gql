@@ -1,7 +1,7 @@
 type Order implements Node {
   id: ID!
   "订单总金额"
-  totalCountCount: String
+  totalCount: String
   "订单商品"
   goods: [Good]
   "订单减免金额"
