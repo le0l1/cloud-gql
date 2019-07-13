@@ -1,4 +1,5 @@
 import { env } from './util';
+import { TokenExpiredError } from './error';
 
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
@@ -27,7 +28,6 @@ export function decrypt(text) {
   return decrypted.toString();
 }
 
-
 export const hashPassword = encrypt;
 
 export const comparePassword = ({ pwd, hash, salt }) => {
@@ -39,4 +39,6 @@ export const generateToken = payload => jwt.sign({ ...payload }, process.env.PRI
   expiresIn: '1d',
 });
 
-export const tradeTokenForUser = token => jwt.verify(token, process.env.PRIVATE_TOKEN_KEY);
+export const tradeTokenForUser = token => jwt.verify(token, process.env.PRIVATE_TOKEN_KEY, (err) => {
+  if (err.name === 'TokenExpiredError') throw new TokenExpiredError();
+});
