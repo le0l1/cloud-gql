@@ -39,6 +39,6 @@ export const generateToken = payload => jwt.sign({ ...payload }, process.env.PRI
   expiresIn: '1d',
 });
 
-export const tradeTokenForUser = token => jwt.verify(token, process.env.PRIVATE_TOKEN_KEY, (err) => {
+export const tradeTokenForUser = token => jwt.verify(token, process.env.PRIVATE_TOKEN_KEY, (err = {}) => {
   if (err.name === 'TokenExpiredError') throw new TokenExpiredError();
 });
