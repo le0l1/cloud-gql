@@ -24,6 +24,15 @@ const resolvers = {
     },
   },
   Order: idResolver('order'),
+  OrderConnection: {
+    edges(result) {
+      console.log(result);
+      return result[0];
+    },
+    pageInfo(v) {
+      return v;
+    },
+  },
   OrderStatus,
   OrderActionResult: {
     ...idResolver('order'),

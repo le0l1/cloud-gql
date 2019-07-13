@@ -10,7 +10,9 @@ import { OrderDetail } from './orderDetail.entity';
 import { Payment } from '../payment/payment.entity';
 import { WXPay } from '../payment/wxpay';
 import { Shop } from '../shop/shop.entity';
-import { withPagination, getManyAndCount, where } from '../../helper/sql';
+import {
+  withPagination, getManyAndCount, where, getQB,
+} from '../../helper/sql';
 import { StockLackError } from '../../helper/error';
 
 export default class OrderResolver {
@@ -95,23 +97,18 @@ export default class OrderResolver {
   }
 
   static async searchOrders({
-    userId, shopId, limit, offset,
+    userId, shopId, limit, offset, orderStatus,
   }) {
-    let qb = Order.createQueryBuilder('order').leftJoinAndMapMany(
-      'order.goods',
+    const qb = Order.createQueryBuilder('order').leftJoinAndMapMany(
+      'order.orderDetail',
       OrderDetail,
       'orderDetail',
       'orderDetail.orderId = order.id',
     );
-    if (userId) {
-      const user = await User.findOneOrFail(decodeNumberId(userId));
-      qb = qb.andWhere('order.userId = :userId', { userId: user.id });
-    }
-    if (shopId) {
-      const shop = await Shop.findOneOrFail(decodeNumberId(userId));
-      qb = qb.andWhere('orderDetail.shopId = :shopId', { shopId: shop.id });
-    }
     return pipe(
+      where('order.status = :orderStatus', { orderStatus }),
+      where('order.userId = :userId', { userId: userId ? decodeNumberId(userId) : null }),
+      where('orderDetail.shopId = :shopId', { shopId: shopId ? decodeNumberId(shopId) : null }),
       where('order.deletedAt is null'),
       withPagination(limit, offset),
       getManyAndCount,
@@ -127,6 +124,7 @@ export default class OrderResolver {
         'orderDetail.orderId = order.id',
       )
       .where('order.id = :id', { id: decodeNumberId(id) })
+      .where('order.deletedAt is null')
       .getOne();
   }
 
@@ -138,6 +136,6 @@ export default class OrderResolver {
 
   static async deleteOrder(id) {
     const order = await Order.findOneOrFail(decodeNumberId(id));
-    return Order.remove(order);
+    return Order.merge(order, { deletedAt: new Date() }).save();
   }
 }
