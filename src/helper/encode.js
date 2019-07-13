@@ -1,5 +1,4 @@
 import { env } from './util';
-import { TokenExpiredError } from './error';
 
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');

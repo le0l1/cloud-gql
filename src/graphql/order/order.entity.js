@@ -51,6 +51,13 @@ export class Order extends BaseEntity {
   })
   paymentId;
 
+  @Column({
+    name: 'is_settled',
+    type: 'boolean',
+    default: false,
+  })
+  isSettled
+
   @CreateDateColumn({
     name: 'created_at',
   })
