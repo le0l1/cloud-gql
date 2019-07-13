@@ -1,4 +1,5 @@
 import { tradeTokenForUser } from '../encode';
+import { TokenExpiredError } from '../error';
 
 export const setGraphqlContext = ({ ctx: { request, session } }) => {
   let authToken = null;
@@ -10,6 +11,7 @@ export const setGraphqlContext = ({ ctx: { request, session } }) => {
       currentUser = tradeTokenForUser(authToken);
     }
   } catch (e) {
+    if (e.name === 'TokenExpiredError') throw new TokenExpiredError();
     throw e;
   }
 
