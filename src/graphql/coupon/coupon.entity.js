@@ -21,7 +21,7 @@ export class Coupon extends BaseEntity {
   }
 
   get isExpired() {
-    return this.coupunExpiredStatus === Coupon.HAS_EXPIRED;
+    return this.coupunExpiredStatus === CouponStatus.HAS_EXPIRED;
   }
 
   get couponExpiredStatus() {

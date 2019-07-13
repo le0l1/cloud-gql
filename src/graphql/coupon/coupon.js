@@ -66,6 +66,8 @@ export default class CouponResolver {
   static async collectCoupon({ userId, id: couponId }) {
     const user = await User.findOneOrFail(decodeNumberId(userId));
     const coupon = await Coupon.findOneOrFail(decodeNumberId(couponId));
+    console.log(coupon.expiredAt, Date.now())
+    console.log(coupon.isExpired, coupon.couponExpiredStatus)
     if (coupon.isExpired) throw new CouponExpiredError();
     if (
       await UserCoupon.findOne({
