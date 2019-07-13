@@ -34,6 +34,7 @@ import cart from './graphql/cart';
 import address from './graphql/address';
 import collection from './graphql/collection';
 import news from './graphql/news';
+import history from './graphql/history';
 
 const app = new Koa();
 
@@ -91,6 +92,7 @@ export const makeServer = context => new ApolloServer({
     address.typeDef,
     collection.typeDef,
     news.typeDef,
+    history.typeDef,
   ],
   resolvers: [
     dateResolver,
@@ -119,6 +121,7 @@ export const makeServer = context => new ApolloServer({
     address.resolvers,
     collection.resolvers,
     news.resolvers,
+    history.resolvers,
   ],
   context,
   schemaDirectives: {

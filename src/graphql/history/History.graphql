@@ -1,0 +1,41 @@
+type History  implements Node {
+  id: ID!
+
+  shop: Shop!
+
+  createdAt: String
+}
+
+input CreateHistoryInput {
+  userId: ID!
+  "商户id"
+  typeId: ID!
+}
+
+
+input HistorysQuery {
+  "页面size"
+  limit: Int
+  "页数"
+  offset: Int
+
+  userId:ID!
+}
+type HistoryConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [History!]
+}
+
+type HistoryActionResult {
+  id: ID
+  status: Boolean
+}
+
+extend type Query {
+  historys(query: HistorysQuery!): HistoryConnection
+}
+
+extend type Mutation {
+  createHistory(createHistoryInput: CreateHistoryInput!): HistoryActionResult
+  deleteHistory(id: ID!): HistoryActionResult
+}
