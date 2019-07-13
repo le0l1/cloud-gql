@@ -38,13 +38,13 @@ router.post(
       return;
     }
     logger.info('校验微信签名');
-    const { sign, ...rest } = xml;
-    const wxpay = new WXPay(rest);
-    if (wxpay.sign !== sign) {
-      logger.error('微信签名校验失败!');
-      ctx.body = failResult;
-      return;
-    }
+    // const { sign, ...rest } = xml;
+    // const wxpay = new WXPay(rest);
+    // if (wxpay.sign !== sign) {
+    //   logger.error('微信签名校验失败!');
+    //   ctx.body = failResult;
+    //   return;
+    // }
     await getManager().transaction(async (trx) => {
       const order = await Order.createQueryBuilder('order')
         .leftJoinAndMapMany(
@@ -53,8 +53,10 @@ router.post(
           'orderDetail',
           'orderDetail.orderId = order.id',
         )
+        .where('order.orderNumber = :orderNumber', {
+          orderNumber: xml.out_trade_no,
+        })
         .getOne();
-
       logger.info('检查订单状态:', order.status);
       if (order.status !== OrderStatus.PENDING) {
         return next();
@@ -63,48 +65,15 @@ router.post(
       logger.info('订单总金额:', order.totalCount);
       logger.info('优惠金额:', order.discount);
       logger.info('微信支付金额(分)', xml.total_fee);
-
-      if (Number(order.totalCount) - Number(order.discount) !== Number(xml.total_fee) / 1000) {
-        logger.error('支付金额与订单金额不匹配!');
-        ctx.body = failResult;
-        return;
-      }
-      const cake = order.orderDetail.reduce(
-        (a, b) => (a[b.shopId]
-          ? {
-            ...a,
-            [b.shopId]: a[b.shopId] + Number(b.goodSalePrice) * Number(b.quantity),
-          }
-          : {
-            ...a,
-            [b.shopId]: Number(b.goodSalePrice) * Number(b.quantity),
-          }),
-        {},
-      );
-      // TODO: 乐观锁 锁定用户版本
-      await Promise.all(
-        Object.keys(cake).map(async (c) => {
-          const { belongto: user } = await Shop.findOne(c);
-          logger.info(`向用户${user}打入余额  ${cake[c]} 元`);
-          await trx
-            .createQueryBuilder()
-            .update(User)
-            .set({
-              totalFee: () => `total_fee + ${cake[c]}`,
-            })
-            .where('id = :id', { id: user.id })
-            .execute();
-        }),
-      );
       logger.info(`修改支付记录 ${order.paymentId} 状态为已支付`);
-      await trx
-        .createQueryBuilder()
-        .update(Payment)
-        .set({
-          paymentStatus: PaymentStatus.PAID,
-        })
-        .execute();
+      await trx.update(Payment, order.paymentId, { paymentStatus: PaymentStatus.PAID });
       logger.info(`修改订单 ${order.id} 状态为待发货`);
+      // TODO: 如果金额不匹配 则按照实际支付金额处理
+      if (Number(order.totalCount) - Number(order.discount) !== Number(xml.total_fee) / 1000) {
+        const totalCount = Number(xml.total_fee) / 1000 + Number(order.discount);
+        logger.info('订单金额不匹配,修改为实际支付金额 + 优惠金额:', totalCount);
+        order.totalCount = totalCount;
+      }
       order.status = OrderStatus.WAIT_SHIP;
       await trx.save(order);
       logger.info('订单完成');

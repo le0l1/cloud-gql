@@ -83,12 +83,14 @@ export const Role = {
  * WAIT_SHIP: 待发货
  * WAIT_RECEIPT: 待收货
  * WAIT_EVALUATION: 待评价
+ * FINISH: 已完成
  */
 export const OrderStatus = {
   PENDING: 'PENDING',
   WAIT_SHIP: 'WAIT_SHIP',
   WAIT_RECEIPT: 'WAIT_RECEIPT',
   WAIT_EVALUATION: 'WAIT_EVALUATION',
+  FINISH: 'FINISH',
 };
 /**
  * 交易状态

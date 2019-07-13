@@ -83,7 +83,7 @@ export default class OrderResolver {
       goodArr.map(async ({ goodId, quantity }) => {
         const good = await Good.findOneOrFail(decodeNumberId(goodId));
         if (good.goodsStocks < quantity) throw new StockLackError();
-        await trx.update(good, { goodsStocks: 'good_stocks - 1' });
+        await trx.update(Good, good.id, { goodsStocks: () => `goods_stocks - ${quantity}` });
         return {
           good,
           quantity,

@@ -19,6 +19,8 @@ enum OrderStatus {
   WAIT_RECEIPT
   "待评价"
   WAIT_EVALUATION
+  "已完成"
+  FINISH
 }
 
 type OrderActionResult {

@@ -26,6 +26,9 @@ type User implements Node {
 
   "用户角色"
   role: Role
+
+  "账户余额"
+  totalFee: Float
 }
 
 "用户注册输入"
