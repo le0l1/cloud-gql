@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
 
@@ -54,6 +55,11 @@ export default class Address extends BaseEntity {
     type: 'timestamp',
   })
   createdAt;
+
+  @UpdateDateColumn({
+    name: 'updated_at',
+  })
+  updatedAt;
 
   @ManyToOne(type => User)
   user;
