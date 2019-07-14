@@ -8,11 +8,17 @@ const resolvers = {
     createOrder(_, { createOrderInput }) {
       return OrderResolver.createOrder(createOrderInput);
     },
+    payOrder(_, { payOrderInput }) {
+      return OrderResolver.payOrder(payOrderInput);
+    },
     updateOrder(_, { updateOrderInput }) {
       return OrderResolver.updateOrder(updateOrderInput);
     },
     deleteOrder(_, { id }) {
       return OrderResolver.deleteOrder(id);
+    },
+    refundOrder(_, { id }) {
+      return OrderResolver.refundOrder(id);
     },
   },
   Query: {
@@ -21,6 +27,9 @@ const resolvers = {
     },
     order(_, { id }) {
       return OrderResolver.searchOrder(id);
+    },
+    orderLog(_, { query }) {
+      return OrderResolver.searchOrderLog(query);
     },
   },
   Order: idResolver('order'),

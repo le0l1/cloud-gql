@@ -1,5 +1,7 @@
 type Order implements Node {
   id: ID!
+  "订单号"
+  orderNumber: String
   "订单总金额"
   totalCount: String
   "订单商品"
@@ -7,7 +9,9 @@ type Order implements Node {
   "订单减免金额"
   discount: Number
   "订单状态"
-  orderStatus: OrderStatus
+  status: OrderStatus
+  "支付过期时间"
+  payExpiredAt: String
 }
 
 enum OrderStatus {
@@ -19,8 +23,12 @@ enum OrderStatus {
   WAIT_RECEIPT
   "待评价"
   WAIT_EVALUATION
-  "已完成"
-  FINISH
+  "已取消"
+  CANCELED
+  "待退款"
+  WAIT_REFUND
+  "异常"
+  UNUSUAL 
 }
 
 type OrderActionResult {
@@ -64,13 +72,13 @@ input CreateOrderInput {
   goodArr: [OrderGood!]!
   "优惠劵id数组"
   couponIds: [ID!]
-  "支付方式"
-  paymentMethod: PAYMENTMETHOD
 }
 
 input UpdateOrderInput {
   id: ID!
-  orderStatus: OrderStatus!
+  status: OrderStatus!
+  "描述 如退款原因等等"
+  description: String
 }
 
 input DeleteOrder {
@@ -90,7 +98,20 @@ input OrderQuery {
   shopId: ID
 
   "订单状态"
-  orderStatus: OrderStatus
+  status: OrderStatus
+}
+
+input PayOrderInput {
+  "订单id"
+  id: ID!
+  "支付方式"
+  paymentMethod: PAYMENTMETHOD!
+}
+
+input OrderLogQuery{
+  id: ID!
+  "根据状态筛选对应的log 若需要退货原因 传入WAIT_REFUND"
+  newStatus: OrderStatus 
 }
 
 type OrderConnection implements Connection {
@@ -104,13 +125,23 @@ type OrderPayprepare {
   payPrepare: WXPayPrepare
 }
 
+type OrderLog {
+  oldStatus: String
+  newStatus: String
+  description: String
+}
+
 extend type Mutation {
   "创建订单"
-  createOrder(createOrderInput: CreateOrderInput!): OrderPayprepare
+  createOrder(createOrderInput: CreateOrderInput!): Order
+  "支付订单"
+  payOrder(payOrderInput: PayOrderInput!): WXPayPrepare
   "更新订单"
   updateOrder(updateOrderInput: UpdateOrderInput!): OrderActionResult
   "删除订单"
   deleteOrder(id: ID!): OrderActionResult
+  "订单退款"
+  refundOrder(id: ID!): OrderActionResult
 }
 
 extend type Query {
@@ -118,4 +149,6 @@ extend type Query {
   orders(query: OrderQuery!): OrderConnection
   "查询单一订单"
   order(id: ID!): Order
+  "查询订单状态日志"
+  orderLog(query: OrderLogQuery!): [OrderLog!]
 }

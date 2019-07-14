@@ -1,7 +1,7 @@
 import { getManager } from 'typeorm';
-import { format } from 'date-fns';
+import { format, addMinutes } from 'date-fns';
 import { User } from '../user/user.entity';
-import { decodeNumberId, pipe } from '../../helper/util';
+import { decodeNumberId, pipe, env } from '../../helper/util';
 import { Good } from '../good/good.entity';
 import { Coupon } from '../coupon/coupon.entity';
 import Address from '../address/address.entity';
@@ -9,15 +9,23 @@ import { Order } from './order.entity';
 import { OrderDetail } from './orderDetail.entity';
 import { Payment } from '../payment/payment.entity';
 import { WXPay } from '../payment/wxpay';
-import { Shop } from '../shop/shop.entity';
 import {
-  withPagination, getManyAndCount, where, getQB,
+  withPagination, getManyAndCount, where, getQB, getMany,
 } from '../../helper/sql';
-import { StockLackError } from '../../helper/error';
+import {
+  StockLackError,
+  OrderStatusError,
+  OrderPaidExpiredError,
+  OrderNotExistsError,
+  RefundFailError,
+} from '../../helper/error';
+import { OrderStatus } from '../../helper/status';
+import { OrderLog } from './orderLog.entity';
+import logger from '../../helper/logger';
 
 export default class OrderResolver {
   static async createOrder({
-    userId, goodArr = [], couponIds = [], addressId, paymentMethod,
+    userId, goodArr = [], couponIds = [], addressId,
   }) {
     return getManager().transaction(async (trx) => {
       const user = await User.findOneOrFail(decodeNumberId(userId));
@@ -32,14 +40,6 @@ export default class OrderResolver {
         0,
       );
       const discount = coupons.reduce((a, b) => a + Number(b.discount), 0);
-      // 实际支付金额
-      const totalFee = totalCount - discount;
-      // 创建支付信息
-      const payment = Payment.create({
-        totalFee,
-        paymentMethod,
-      });
-      await trx.save(payment);
 
       // 创建订单
       const orderNumber = OrderResolver.makeRecordNumber();
@@ -49,7 +49,7 @@ export default class OrderResolver {
         orderNumber,
         userId: user.id,
         addressId: address.id,
-        paymentId: payment.id,
+        payExpiredAt: addMinutes(new Date(), env('ORDER_COUNTDOWN')),
       });
       await trx.save(order);
 
@@ -63,17 +63,35 @@ export default class OrderResolver {
         orderId: order.id,
         quantity,
       }));
-
       await trx.save(orderDetail);
+      // 返回订单信息
+      return order;
+    });
+  }
 
-      // 返回支付预信息
-      return {
-        ...order,
-        payPrepare: new WXPay()
-          .setOrderNumber(orderNumber)
-          .setTotalFee(totalFee)
-          .preparePayment(),
-      };
+  /**
+   * 支付订单
+   */
+  static payOrder({ id: orderId, paymentMethod }) {
+    return getManager().transaction(async (trx) => {
+      const order = await Order.findOneOrFail(decodeNumberId(orderId));
+      if (order.status !== OrderStatus.PENDING) {
+        throw new OrderStatusError();
+      }
+      if (order.payExpiredAt < Date.now()) {
+        throw new OrderPaidExpiredError();
+      }
+      const totalFee = Number(order.totalCount) - Number(order.discount);
+      const payment = Payment.create({
+        totalFee,
+        paymentMethod,
+      });
+      await trx.save(payment);
+      await trx.update(Order, order.id, { paymentId: payment.id });
+      return new WXPay()
+        .setOrderNumber(order.orderNumber)
+        .setTotalFee(totalFee)
+        .preparePayment();
     });
   }
 
@@ -97,7 +115,7 @@ export default class OrderResolver {
   }
 
   static async searchOrders({
-    userId, shopId, limit, offset, orderStatus,
+    userId, shopId, limit, offset, status,
   }) {
     const qb = Order.createQueryBuilder('order').leftJoinAndMapMany(
       'order.orderDetail',
@@ -106,7 +124,7 @@ export default class OrderResolver {
       'orderDetail.orderId = order.id',
     );
     return pipe(
-      where('order.status = :orderStatus', { orderStatus }),
+      where('order.status = :orderStatus', { status }),
       where('order.userId = :userId', { userId: userId ? decodeNumberId(userId) : null }),
       where('orderDetail.shopId = :shopId', { shopId: shopId ? decodeNumberId(shopId) : null }),
       where('order.deletedAt is null'),
@@ -115,10 +133,14 @@ export default class OrderResolver {
     )(qb);
   }
 
+  /**
+   * 查询订单详情
+   * @param {*} id 订单id
+   */
   static async searchOrder(id) {
-    return Order.createQueryBuilder('order')
+    const order = await Order.createQueryBuilder('order')
       .leftJoinAndMapMany(
-        'order.goods',
+        'order.orderDetail',
         OrderDetail,
         'orderDetail',
         'orderDetail.orderId = order.id',
@@ -126,16 +148,81 @@ export default class OrderResolver {
       .where('order.id = :id', { id: decodeNumberId(id) })
       .where('order.deletedAt is null')
       .getOne();
+    /**
+     * 当订单状态为待支付且支付已过期
+     * 则更新订单状态为已取消
+     */
+    if (order.status === OrderStatus.PENDING && order.payExpiredAt < Date.now()) {
+      return Order.merge(order, { status: OrderStatus.CANCELED }).save();
+    }
+    return order;
   }
 
-  static async updateOrder({ id, orderStatus }) {
-    const order = await Order.findOneOrFail(decodeNumberId(id));
-    order.status = orderStatus;
-    return order.save();
+  /**
+   * 更新订单状态
+   * @param {} param0
+   */
+  static updateOrder({ id, status, description }) {
+    return getManager().transaction(async (trx) => {
+      const order = await Order.findOneOrFail(decodeNumberId(id));
+      // 记录状态历史记录
+      await trx.save(
+        OrderLog.create({
+          orderId: order.id,
+          oldStatus: order.status,
+          newStatus: status,
+          description,
+        }),
+      );
+      await trx.update(Order, order.id, { status });
+      return order;
+    });
   }
 
   static async deleteOrder(id) {
     const order = await Order.findOneOrFail(decodeNumberId(id));
     return Order.merge(order, { deletedAt: new Date() }).save();
+  }
+
+  /**
+   * 查询订单日志
+   */
+  static searchOrderLog({ id, newStatus }) {
+    return pipe(
+      getQB('orderLog'),
+      where('orderLog.orderId = :order', { order: decodeNumberId(id) }),
+      where('orderLog.newStatus = :newStatus', { newStatus }),
+      getMany,
+    )(OrderLog);
+  }
+
+  /**
+   * 订单退款
+   * @param id 订单id
+   */
+  static refundOrder(id) {
+    return getManager().transaction(async (trx) => {
+      const order = await Order.createQueryBuilder('order')
+        .leftJoinAndMapMany(
+          'order.orderDetail',
+          OrderDetail,
+          'orderDetail',
+          'orderDetail.orderId = order.id',
+        )
+        .leftJoinAndMapOne('order.payment', Payment, 'payment', 'payment.id = order.paymentId')
+        .where('order.id = :id', { id: decodeNumberId(id) })
+        .getOne();
+      if (!order) throw new OrderNotExistsError();
+      // 还原库存
+      await Promise.all(
+        order.orderDetail.map(({ goodId, quantity }) => trx.update(Good, goodId, { goodsStocks: () => `goods_stocks + ${quantity}` })),
+      );
+      // 退款
+      const { xml } = await WXPay.refund(order.orderNumber, Number(order.payment.totalFee));
+      if (xml.return_code !== 'SUCCESS') throw new RefundFailError(xml.return_msg);
+      // 更改订单为 已取消
+      order.status = OrderStatus.CANCELED;
+      return trx.save(order);
+    });
   }
 }

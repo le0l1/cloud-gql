@@ -120,4 +120,25 @@ export class WXPay {
         }).toJSON();
       });
   }
+
+  /**
+   * 微信退款
+   */
+  static async refund(orderNumber, totalFee) {
+    const instance = new WXPay({
+      appid: env('WXPAY_APP_ID'),
+      mch_id: env('WXPAY_MCH_ID'),
+      nonce_str: WXPay.getNonceStr(),
+      out_refund_no: orderNumber,
+      total_fee: totalFee * 100,
+      refund_fee: totalFee * 100,
+    });
+    const res = await axios.post(
+      'https://api.mch.weixin.qq.com/secapi/pay/refund',
+      instance.xmlParamter,
+      {
+        headers: { 'Content-Type': 'text/xml' },
+      });
+    return xml2js(res.data, { compact: true });
+  }
 }

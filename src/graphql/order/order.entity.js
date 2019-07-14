@@ -1,5 +1,5 @@
 import {
-  BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn,
+  BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,
 } from 'typeorm';
 import { OrderStatus } from '../../helper/status';
 
@@ -39,6 +39,14 @@ export class Order extends BaseEntity {
   })
   status;
 
+
+  @Column({
+    type: 'timestamp',
+    name: 'pay_expired_at',
+    nullable: true,
+  })
+  payExpiredAt;
+
   @Column({
     type: 'int',
     name: 'address_id',
@@ -48,6 +56,7 @@ export class Order extends BaseEntity {
   @Column({
     type: 'int',
     name: 'payment_id',
+    nullable: true,
   })
   paymentId;
 
@@ -62,6 +71,11 @@ export class Order extends BaseEntity {
     name: 'created_at',
   })
   createdAt;
+
+  @UpdateDateColumn({
+    name: 'updated_at',
+  })
+  updatedAt;
 
   @Column({
     name: 'deleted_at',

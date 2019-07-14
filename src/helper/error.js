@@ -1,4 +1,4 @@
-import { ApolloError } from "apollo-server-koa";
+import { ApolloError } from 'apollo-server-koa';
 
 export class UserNotExistsError extends Error {
   message = '用户不存在';
@@ -47,5 +47,28 @@ export class UnmatchedAmountError extends Error {
 export class TokenExpiredError extends ApolloError {
   constructor() {
     super('token已过期', 'TokenExpiredError');
+  }
+}
+
+export class OrderStatusError extends ApolloError {
+  constructor() {
+    super('订单已支付或已取消', 'OrderStatusError');
+  }
+}
+export class OrderPaidExpiredError extends ApolloError {
+  constructor() {
+    super('订单已过期', 'OrderPaidExpiredError');
+  }
+}
+
+export class OrderNotExistsError extends ApolloError {
+  constructor() {
+    super('订单不存在', 'OrderNotExistsError');
+  }
+}
+
+export class RefundFailError extends ApolloError {
+  constructor(msg) {
+    super(`退款失败原因:${msg}`, 'RefundFailError');
   }
 }
