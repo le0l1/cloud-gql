@@ -1,9 +1,10 @@
-import { decodeNumberId } from '../../helper/util';
+import { decodeNumberId, pipe } from '../../helper/util';
 import { Coupon } from './coupon.entity';
 import { UserCoupon } from './userCoupon.entity';
 import { Shop } from '../shop/shop.entity';
 import { User } from '../user/user.entity';
 import { CouponExpiredError, CouponHasCollectedError } from '../../helper/error';
+import { getQB, where, getMany } from '../../helper/sql';
 
 export default class CouponResolver {
   static async createCoupon({ shopId, ...rest }) {
@@ -26,24 +27,18 @@ export default class CouponResolver {
     }));
   }
 
-  static async searchCoupon({ shopId, userId }) {
+  static async searchCoupon({ shopId, userId, isExpired = false }) {
     if (!userId) {
-      const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
-      return Coupon.find({
-        shop,
-      });
+      return CouponResolver.searchShopCoupons({ shopId, isExpired });
     }
 
     if (!shopId) {
-      const user = await User.findOneOrFail(decodeNumberId(userId));
-      return Coupon.find({
-        user,
-      });
+      return CouponResolver.searchUserCoupons({ shopId, isExpired });
     }
 
     const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
     const user = await User.findOneOrFail(decodeNumberId(userId));
-    return Coupon.createQueryBuilder('coupon')
+    const qb = Coupon.createQueryBuilder('coupon')
       .leftJoinAndMapOne(
         'coupon.userCoupon',
         'coupon.userCoupon',
@@ -53,8 +48,31 @@ export default class CouponResolver {
           user: user.id,
         },
       )
-      .andWhere('coupon.shop = :shop', { shop: shop.id })
-      .getMany();
+      .andWhere('coupon.shop = :shop', { shop: shop.id });
+    return pipe(
+      where('coupon.expiredAt < :expiredAt', { expiredAt: isExpired ? Date.now() : null }),
+      getMany,
+    )(qb);
+  }
+
+  static async searchShopCoupons({ shopId, isExpired }) {
+    const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
+    return pipe(
+      getQB('coupon'),
+      where('coupon.shop = :shop', { shop: shop.id }),
+      where('coupon.expiredAt < :expiredAt', { expiredAt: isExpired ? Date.now() : null }),
+      getMany,
+    )(Coupon);
+  }
+
+  static async searchUserCoupons({ userId, isExpired }) {
+    const user = await Shop.findOneOrFail(decodeNumberId(userId));
+    return pipe(
+      getQB('coupon'),
+      where('coupon.user = :user', { user: user.id }),
+      where('coupon.expiredAt < :expiredAt', { expiredAt: isExpired ? Date.now() : null }),
+      getMany,
+    )(Coupon);
   }
 
   /**

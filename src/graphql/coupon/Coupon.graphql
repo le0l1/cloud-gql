@@ -84,6 +84,9 @@ input QueryCouponInput {
 
     "用户id"
     userId: ID
+
+    "是否过期"
+    isExpired: Boolean
 }
 
 input CollectCouponInput {
