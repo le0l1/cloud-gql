@@ -33,7 +33,7 @@ export default class CouponResolver {
     }
 
     if (!shopId) {
-      return CouponResolver.searchUserCoupons({ shopId, isExpired });
+      return CouponResolver.searchUserCoupons({ userId, isExpired });
     }
 
     const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
@@ -67,12 +67,19 @@ export default class CouponResolver {
 
   static async searchUserCoupons({ userId, isExpired }) {
     const user = await User.findOneOrFail(decodeNumberId(userId));
+    const qb = Coupon.createQueryBuilder('coupon').leftJoinAndMapOne(
+      'coupon.userCoupon',
+      'coupon.userCoupon',
+      'userCoupon',
+      'userCoupon.user = :user',
+      {
+        user: user.id,
+      },
+    );
     return pipe(
-      getQB('coupon'),
-      where('coupon.user = :user', { user: user.id }),
       where('coupon.expiredAt < :expiredAt', { expiredAt: isExpired ? Date.now() : null }),
       getMany,
-    )(Coupon);
+    )(qb);
   }
 
   /**
