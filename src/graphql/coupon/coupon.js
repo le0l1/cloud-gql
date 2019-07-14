@@ -66,7 +66,7 @@ export default class CouponResolver {
   }
 
   static async searchUserCoupons({ userId, isExpired }) {
-    const user = await Shop.findOneOrFail(decodeNumberId(userId));
+    const user = await User.findOneOrFail(decodeNumberId(userId));
     return pipe(
       getQB('coupon'),
       where('coupon.user = :user', { user: user.id }),
