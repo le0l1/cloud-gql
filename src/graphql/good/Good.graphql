@@ -158,6 +158,13 @@ input GoodSearchInput {
   id: ID!
 }
 
+enum SortType {
+  "降序"
+  DESC
+  "升序"
+  ASC
+}
+
 input GoodsSearchInput {
   "商户id"
   shopId: ID
@@ -167,6 +174,10 @@ input GoodsSearchInput {
   offset: Int
   "分页条数"
   limit: Int
+  "价格排序"
+  priceSort: SortType
+  "销量排序"
+  salesSort: SortType
 }
 
 type GoodConnection implements Connection {

@@ -5,7 +5,12 @@ import { Category } from '../category/category.entity';
 import { Banner } from '../banner/banner.entity';
 import { Good } from './good.entity';
 import {
-  getQB, where, withPagination, getManyAndCount, leftJoinAndSelect,
+  getQB,
+  where,
+  withPagination,
+  getManyAndCount,
+  leftJoinAndSelect,
+  orderBy,
 } from '../../helper/sql';
 
 export default class GoodResolver {
@@ -89,7 +94,7 @@ export default class GoodResolver {
   }
 
   static async searchGoods({
-    shopId, offset, limit, tsQuery, categoryId,
+    shopId, offset, limit, tsQuery, categoryId, salesSort, priceSort,
   }) {
     return pipe(
       getQB('good'),
@@ -103,6 +108,10 @@ export default class GoodResolver {
         category: categoryId ? decodeNumberId(categoryId) : null,
       }),
       withPagination(limit, offset),
+      orderBy({
+        'good.goodsSales': salesSort,
+        'good.goodSalePrice': priceSort,
+      }),
       getManyAndCount,
     )(Good);
   }

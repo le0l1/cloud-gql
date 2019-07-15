@@ -1,5 +1,16 @@
 version: "3.7"
 services:
+  node:
+    image: node:alpine
+    restart: always
+    tty: true
+    container_name: graphql
+    volumes:
+      - ${PWD}:/project
+    links:
+      - pgsql
+    ports:
+      - "4500:4500"
   pgsql:
     image: postgres:alpine
     restart: always

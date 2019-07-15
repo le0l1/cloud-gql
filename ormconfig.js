@@ -1,7 +1,7 @@
 module.exports = process.env.NODE_ENV === 'development'
   ? {
     type: 'postgres',
-    host: 'localhost',
+    host: 'pgsql',
     port: 5432,
     username: 'postgres',
     password: '',
@@ -18,7 +18,7 @@ module.exports = process.env.NODE_ENV === 'development'
   }
   : {
     type: 'postgres',
-    host: 'localhost',
+    host: 'pgsql',
     port: 5432,
     username: 'postgres',
     password: '',

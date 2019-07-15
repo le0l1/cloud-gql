@@ -1,4 +1,6 @@
-import { isValid, prop } from './util';
+import {
+  isValid, prop, mergeIfValid, isEmpty,
+} from './util';
 
 export const addIfValid = cb => (val, orm) => (isValid(val) ? cb(val, orm) : val);
 export const withLimit = addIfValid((val, orm) => orm.limit(val));
@@ -18,3 +20,8 @@ export const withPagination = (limit = 8, offset = 1) => (query) => {
 };
 export const leftJoinAndSelect = (property, alias) => orm => orm.leftJoinAndSelect(property, alias);
 export const leftJoinAndMapOne = (property, entity, alias, condition) => orm => orm.leftJoinAndMapOne(property, entity, alias, condition);
+
+export const orderBy = obj => (orm) => {
+  const valid = mergeIfValid(obj, {});
+  return isEmpty(obj) ? orm : orm.orderBy(valid);
+};
