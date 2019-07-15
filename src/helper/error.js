@@ -72,3 +72,9 @@ export class RefundFailError extends ApolloError {
     super(`退款失败原因:${msg}`, 'RefundFailError');
   }
 }
+
+export class InsufficientBalanceError extends ApolloError {
+  constructor() {
+    super('用户余额不足', 'InsufficientBalanceError');
+  }
+}

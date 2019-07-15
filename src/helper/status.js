@@ -105,3 +105,23 @@ export const TransferStatus = {
   TRANSFERING: 'TRANSFERING',
   COMPLETED: 'COMPLETED',
 };
+/**
+ * 提现方式
+ * ALIPAY: 支付宝
+ * WXPAY: 微信
+ */
+export const WithdrawMethod = {
+  ALIPAY: 'ALIPAY',
+  WXPAY: 'WXPAY',
+};
+/**
+ * 提现状态
+ * WAIT_REVIEW: 待审核
+ * NOT_PASSED; 已拒绝
+ * PASSED: 已通过
+ */
+export const WithdrawStatus = {
+  WAIT_REVIEW: 'WAIT_REVIEW',
+  NOT_PASSED: 'NOT_PASSED',
+  PASSED: 'PASSED',
+};

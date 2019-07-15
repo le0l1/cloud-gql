@@ -1,0 +1,76 @@
+type Withdraw  implements Node {
+  id: ID!
+  "提现人id"
+  userId: ID
+  "提现金额"
+  totalCount: Int
+  "提现时间"
+  createdAt: String
+  "提现状态"
+  status: WithdrawStatus
+  "提现方式"
+  method: WithdrawMethod
+  "提现拒绝描述"
+  rejectDesc: String
+}
+
+enum WithdrawStatus {
+  "待审核"
+  WAIT_REVIEW
+  "已拒绝"
+  NOT_PASSED
+  "已通过"
+  PASSED
+}
+
+enum WithdrawMethod {
+  "支付宝"
+  ALIPAY
+  "微信"
+  WXPAY
+}
+
+input CreateWithdrawInput {
+  "用户id"
+  userId: ID!
+  "提现金额(元)"
+  totalCount: Int!
+  "提现方式"
+  method: WithdrawMethod!
+}
+
+input UpdateWithdrawInput {
+  "提现记录id"
+  id: ID!
+  "提现状态"
+  status: WithdrawStatus!
+  "提现拒绝原因"
+  rejectDesc: String
+}
+
+type WithdrawConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [Withdraw!]
+}
+
+input WithdrawsQuery {
+  offset: Int
+  limit: Int
+  status: WithdrawStatus
+  "用户id 可用于查询用户提现记录"
+  userId: ID
+}
+
+extend type Query {
+  "提现列表"
+  withdraws(query: WithdrawsQuery!): WithdrawConnection
+  "提现详情"
+  withdraw(id: ID!): Withdraw
+}
+
+extend type Mutation {
+  "提现"
+  createWithdraw(input: CreateWithdrawInput!): Withdraw
+  "改变提现状态"
+  updateWithdraw(input: UpdateWithdrawInput!): Withdraw @auth(requires: ROOT)
+}
