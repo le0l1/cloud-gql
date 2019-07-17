@@ -63,15 +63,18 @@ input OrderGood {
   quantity: Int!
 }
 
+input OrderItem {
+  goodArr: [OrderGood!]!
+  couponId: ID
+}
+
 input CreateOrderInput {
   "用户id"
   userId: ID!
   "收货地址id"
   addressId: ID!
   "商品数组"
-  goodArr: [OrderGood!]!
-  "优惠劵id数组"
-  couponIds: [ID!]
+  orderItems: [OrderItem!]!
 }
 
 input UpdateOrderInput {

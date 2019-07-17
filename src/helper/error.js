@@ -78,3 +78,15 @@ export class InsufficientBalanceError extends ApolloError {
     super('用户余额不足', 'InsufficientBalanceError');
   }
 }
+
+export class InValidCouponError extends ApolloError {
+  constructor() {
+    super('优惠券与商品不匹配', 'InValidCouponError');
+  }
+}
+
+export class CouponNotSatisfiedError extends ApolloError {
+  constructor() {
+    super('未满足优惠劵使用条件', 'CouponNotSatisfiedError');
+  }
+}

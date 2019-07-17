@@ -1,5 +1,5 @@
 import {
-  BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn,
+  BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, RelationId,
 } from 'typeorm';
 import { UserCoupon } from './userCoupon.entity';
 import { Shop } from '../shop/shop.entity';
@@ -80,4 +80,7 @@ export class Coupon extends BaseEntity {
 
   @OneToMany(type => UserCoupon, userCoupon => userCoupon.coupon)
   userCoupon
+
+  @RelationId(coupon => coupon.shop)
+  shopId
 }

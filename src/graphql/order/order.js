@@ -18,96 +18,128 @@ import {
   OrderPaidExpiredError,
   OrderNotExistsError,
   RefundFailError,
+  InValidCouponError,
+  CouponNotSatisfiedError,
 } from '../../helper/error';
 import { OrderStatus } from '../../helper/status';
 import { OrderLog } from './orderLog.entity';
 import logger from '../../helper/logger';
 
 export default class OrderResolver {
-  static async createOrder({
-    userId, goodArr = [], couponIds = [], addressId,
-  }) {
-    return getManager().transaction(async (trx) => {
-      const user = await User.findOneOrFail(decodeNumberId(userId));
-      const goods = await OrderResolver.inspectGoodStock(goodArr, trx);
-      const coupons = await Promise.all(
-        couponIds.map(couponId => Coupon.findOneOrFail(decodeNumberId(couponId))),
-      );
-      const address = await Address.findOneOrFail(decodeNumberId(addressId));
-      // 计算金额
-      const totalCount = goods.reduce(
-        (a, b) => a + Number(b.quantity) * Number(b.good.goodSalePrice),
-        0,
-      );
-      const discount = coupons.reduce((a, b) => a + Number(b.discount), 0);
-
-      // 创建订单
-      const orderNumber = OrderResolver.makeRecordNumber();
-      const order = Order.create({
-        discount,
-        totalCount,
-        orderNumber,
-        userId: user.id,
-        addressId: address.id,
-        payExpiredAt: addMinutes(new Date(), env('ORDER_COUNTDOWN')),
+  static async createOrder({ userId, orderItems = [], addressId }) {
+    return getManager()
+      .transaction(async (trx) => {
+        const user = await User.findOneOrFail(decodeNumberId(userId));
+        const orderNumber = OrderResolver.makeRecordNumber();
+        logger.info(`生成订单 ${orderNumber}`);
+        const { totalCount, discount, goodSets } = await orderItems.reduce(
+          OrderResolver.checkOrderItem(trx),
+          {
+            totalCount: 0,
+            discount: 0,
+            goodSets: [],
+          },
+        );
+        logger.info(`订单总金额: ${totalCount}`);
+        logger.info(`订单优惠金额: ${discount}`);
+        const address = await Address.findOneOrFail(decodeNumberId(addressId));
+        const order = Order.create({
+          orderNumber,
+          discount,
+          totalCount,
+          userId: user.id,
+          addressId: address.id,
+          payExpiredAt: addMinutes(new Date(), env('ORDER_COUNTDOWN')),
+        });
+        await trx.save(order);
+        const orderDetails = goodSets.map(g => OrderDetail.create({
+          ...g,
+          goodId: g.id,
+          goodName: g.name,
+          goodCover: g.cover,
+          orderId: order.id,
+        }));
+        await trx.save(orderDetails);
+        return order;
+      })
+      .catch((e) => {
+        logger.error(`开始回滚： ${e.message}`);
+        throw e;
       });
-      await trx.save(order);
-
-      // 创建订单详情
-      const orderDetail = goods.map(({ good, quantity }) => OrderDetail.create({
-        shopId: good.shopId,
-        goodId: good.id,
-        goodCover: good.cover,
-        goodSalePrice: good.goodSalePrice,
-        goodName: good.name,
-        orderId: order.id,
-        quantity,
-      }));
-      await trx.save(orderDetail);
-      // 返回订单信息
-      return order;
-    });
   }
 
   /**
    * 支付订单
    */
   static payOrder({ id: orderId, paymentMethod }) {
-    return getManager().transaction(async (trx) => {
-      const order = await Order.findOneOrFail(decodeNumberId(orderId));
-      if (order.status !== OrderStatus.PENDING) {
-        throw new OrderStatusError();
-      }
-      if (order.payExpiredAt < Date.now()) {
-        throw new OrderPaidExpiredError();
-      }
-      const totalFee = Number(order.totalCount) - Number(order.discount);
-      const payment = Payment.create({
-        totalFee,
-        paymentMethod,
+    return getManager()
+      .transaction(async (trx) => {
+        const order = await Order.findOneOrFail(decodeNumberId(orderId));
+        if (order.status !== OrderStatus.PENDING) {
+          throw new OrderStatusError();
+        }
+        if (order.payExpiredAt < Date.now()) {
+          throw new OrderPaidExpiredError();
+        }
+        const totalFee = Number(order.totalCount) - Number(order.discount);
+        const payment = Payment.create({
+          totalFee,
+          paymentMethod,
+        });
+        await trx.save(payment);
+        await trx.update(Order, order.id, { paymentId: payment.id });
+        return new WXPay()
+          .setOrderNumber(order.orderNumber)
+          .setTotalFee(totalFee)
+          .preparePayment();
+      })
+      .catch((e) => {
+        logger.error(`开始回滚： ${e.message}`);
+        throw e;
       });
-      await trx.save(payment);
-      await trx.update(Order, order.id, { paymentId: payment.id });
-      return new WXPay()
-        .setOrderNumber(order.orderNumber)
-        .setTotalFee(totalFee)
-        .preparePayment();
-    });
   }
 
-  // 检查并减少商品库存
-  static inspectGoodStock(goodArr, trx) {
-    return Promise.all(
-      goodArr.map(async ({ goodId, quantity }) => {
-        const good = await Good.findOneOrFail(decodeNumberId(goodId));
-        if (good.goodsStocks < quantity) throw new StockLackError();
-        await trx.update(Good, good.id, { goodsStocks: () => `goods_stocks - ${quantity}` });
-        return {
-          good,
-          quantity,
-        };
-      }),
-    );
+  /**
+   * 检查商品库存及优惠劵使用条件
+   * @param {*} goodArr
+   * @param {*} trx
+   */
+  static checkOrderItem(trx) {
+    return async (a, { goodArr, couponId }) => {
+      const coupon = couponId
+        ? await Coupon.findOneOrFail(decodeNumberId(couponId))
+        : { discount: 0 };
+      let total = 0;
+      const goodWithQuantity = await Promise.all(
+        goodArr.map(async ({ goodId, quantity }) => {
+          const goodInstance = await Good.findOneOrFail(decodeNumberId(goodId));
+          logger.info(`计算订单商品id: ${goodInstance.id} `);
+          logger.info(`订单商品数量: ${quantity}`);
+          logger.info(`商品库存: ${goodInstance.goodsStocks}`);
+          logger.info(`商品价格: ${goodInstance.goodSalePrice}`);
+          if (goodInstance.goodsStocks < quantity) throw new StockLackError();
+          if (coupon.id && goodInstance.shopId !== coupon.shopId) throw new InValidCouponError();
+          total += Number(goodInstance.goodSalePrice) * quantity;
+          goodInstance.goodsStocks -= quantity;
+          goodInstance.goodsSales += quantity;
+          logger.info(
+            `修改商品库存为${goodInstance.goodsStocks}, 销量为${goodInstance.goodsSales}`,
+          );
+          await trx.save(goodInstance);
+          return { ...goodInstance, quantity };
+        }),
+      );
+
+      if (coupon.id && total < coupon.biggerThan) {
+        throw new CouponNotSatisfiedError();
+      }
+      const val = a.then ? await a : a;
+      return {
+        totalCount: val.totalCount + total,
+        discount: val.discount + coupon.discount,
+        goodSets: val.goodSets.concat(goodWithQuantity),
+      };
+    };
   }
 
   static makeRecordNumber() {
