@@ -1,4 +1,7 @@
+import fs from 'fs';
+import path from 'path';
 import axios from 'axios';
+import https from 'https';
 import crypto from 'crypto';
 import { js2xml, xml2js } from 'xml-js';
 import { env } from '../../helper/util';
@@ -133,12 +136,17 @@ export class WXPay {
       total_fee: totalFee * 100,
       refund_fee: totalFee * 100,
     });
+    const ca = new https.Agent({
+      ca: fs.readFileSync(path.resolve(__dirname, 'apiclient_cert.p12')),
+    });
     const res = await axios.post(
       'https://api.mch.weixin.qq.com/secapi/pay/refund',
       instance.xmlParamter,
       {
         headers: { 'Content-Type': 'text/xml' },
-      });
+        httpsAgent: ca,
+      },
+    );
     return xml2js(res.data, { compact: true });
   }
 }
