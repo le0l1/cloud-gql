@@ -48,6 +48,9 @@ export default class CartResolver {
       .leftJoinAndSelect('cart.good', 'good')
       .leftJoinAndMapOne('cart.shop', Shop, 'shop', 'shop.id = good.shop')
       .andWhere('cart.user = :user', { user: user.id })
+      .orderBy({
+        'cart.createdAt': 'DESC',
+      })
       .getMany();
   }
 

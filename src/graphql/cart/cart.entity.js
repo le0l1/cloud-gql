@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  CreateDateColumn,
 } from 'typeorm';
 import { Good } from '../good/good.entity';
 import { User } from '../user/user.entity';
@@ -20,6 +21,11 @@ export default class Cart extends BaseEntity {
     type: 'int',
   })
   quantity;
+
+  @CreateDateColumn({
+    name: 'created_at',
+  })
+  createdAt;
 
   @ManyToOne(type => User)
   user;
