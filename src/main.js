@@ -11,7 +11,6 @@ makeServer(setGraphqlContext).applyMiddleware({ app });
 // orm connection
 export default createConnection().then(() => {
   app.listen({ port: env('PORT') }, () => {
-    console.log('开始')
     console.log(`🚀 Server ready at http://localhost:${env('PORT')}/graphql`);
   });
 });

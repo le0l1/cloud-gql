@@ -156,7 +156,7 @@ export default class OrderResolver {
       'orderDetail.orderId = order.id',
     );
     return pipe(
-      where('order.status = :orderStatus', { status }),
+      where('order.status = :status', { status }),
       where('order.userId = :userId', { userId: userId ? decodeNumberId(userId) : null }),
       where('orderDetail.shopId = :shopId', { shopId: shopId ? decodeNumberId(shopId) : null }),
       where('order.deletedAt is null'),
