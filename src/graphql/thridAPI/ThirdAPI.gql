@@ -1,6 +1,55 @@
+type VehicleInfo {
+  id: ID
+  vin: String
+  brandName: String
+  importFlag: String
+	familyName: String
+	groupName: String
+	groupCode: String
+	vehicleId: String
+	vehicleName: String
+	standardName: String
+	displacement: String
+	gearboxType: String
+	fuelJetType: String
+	engineModel: String
+	drivenType: String
+	remark: String
+	hasConfig: String
+	listPrice: String
+	purchasePrice: String
+	seat: String
+	vehicleSize: String
+	wheelbase: String
+	fullWeight: String
+	power: String
+	effluentStandard: String
+	vehicleColor: String
+	uploadDate: String
+	standardname2: String
+	vehIsSeri: String
+  "汽车相册"
+  images: [Image!]
+}
+
+
 extend type Query {
   "上传凭证"
   ossToken: String! @auth(requires: MERCHANT)
   "短信验证码"
   smsCode(phone: Number!): Boolean!
+  "车架号查询"
+  vin(vin: String!): VehicleInfo
+}
+
+input UpdateVinInput {
+  "汽车图片"
+  images: [String!]
+  "汽车车架号"
+  vinId: ID!
+}
+
+extend type Mutation {
+  "更新车架号信息"
+  updateVin(input: UpdateVinInput!): VehicleInfo
 }

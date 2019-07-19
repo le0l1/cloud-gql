@@ -5,6 +5,8 @@ import { generateUploadToken } from '../../helper/thirdAPI/oss';
 import { generateSMSCode } from '../../helper/util';
 import { SMSCode } from './smsCode.entity';
 import logger from '../../helper/logger';
+import ThirdAPIResolver from './thirdAPI';
+import { idResolver } from '../../helper/resolver';
 
 const resolvers = {
   Query: {
@@ -25,7 +27,16 @@ const resolvers = {
         throw e;
       }
     },
+    vin(_, { vin }) {
+      return ThirdAPIResolver.searchVin(vin);
+    },
   },
+  Mutation: {
+    updateVin(_, { input }) {
+      return ThirdAPIResolver.updateVin(input);
+    },
+  },
+  VehicleInfo: idResolver('vehicleInfo'),
 };
 
 export const thirdAPI = {
