@@ -2,6 +2,7 @@ import OrderSchema from 'order.graphql';
 import OrderResolver from './order';
 import { idResolver } from '../../helper/resolver';
 import { OrderStatus } from '../../helper/status';
+import { formateID } from '../../helper/util';
 
 const resolvers = {
   Mutation: {
@@ -42,6 +43,14 @@ const resolvers = {
     },
   },
   OrderStatus,
+  OrderDetail: {
+    shopId(v) {
+      return v ? formateID('shop', v.id) : null;
+    },
+    goodId(v) {
+      return v ? formateID('good', v.id) : null;
+    },
+  },
   OrderActionResult: {
     ...idResolver('order'),
     status: () => true,
