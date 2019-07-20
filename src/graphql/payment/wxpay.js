@@ -150,6 +150,7 @@ export class WXPay {
         httpsAgent: ca,
       },
     );
+    logger.info(`退款订单号: ${orderNumber}`);
     logger.info(`退款结果: ${res.data}`);
     return xml2js(res.data, { compact: true });
   }
