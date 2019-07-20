@@ -5,6 +5,7 @@ import https from 'https';
 import crypto from 'crypto';
 import { js2xml, xml2js } from 'xml-js';
 import { env } from '../../helper/util';
+import logger from '../../helper/logger';
 
 export class WXPay {
   constructor(basicPayInfo) {
@@ -148,6 +149,7 @@ export class WXPay {
         httpsAgent: ca,
       },
     );
+    logger.info(`退款结果: ${res.data}`);
     return xml2js(res.data, { compact: true });
   }
 }
