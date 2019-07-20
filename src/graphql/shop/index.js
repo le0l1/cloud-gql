@@ -6,8 +6,11 @@ import { idResolver } from '../../helper/resolver';
 
 const resolvers = {
   Query: {
-    shops(_, { query = {} }) {
-      return ShopResolver.searchShops(query);
+    shops(_, { query = {} }, context) {
+      return ShopResolver.searchShops({
+        ...query,
+        city: context.city,
+      });
     },
     shop(_, { query }) {
       return ShopResolver.searchShop(query);

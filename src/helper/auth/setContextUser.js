@@ -4,6 +4,7 @@ import { TokenExpiredError } from '../error';
 export const setGraphqlContext = ({ ctx: { request, session } }) => {
   let authToken = null;
   let currentUser = null;
+  const city = request.headers['x-city'] ? decodeURI(request.headers['x-city']) : null;
 
   try {
     authToken = request.headers.authorization;
@@ -19,5 +20,6 @@ export const setGraphqlContext = ({ ctx: { request, session } }) => {
     authToken,
     currentUser,
     session,
+    city,
   };
 };

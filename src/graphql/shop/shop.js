@@ -160,6 +160,7 @@ export default class ShopResolver {
       }),
       where('shop.status = :status', { status: filter.status }),
       where('shop.isPassed = :isPassed', { isPassed }),
+      where('shop.city = :city', { city }),
       where('category.id = :categoryId', {
         categoryId: categoryId ? decodeNumberId(categoryId) : null,
       }),
