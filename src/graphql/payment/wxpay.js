@@ -133,6 +133,7 @@ export class WXPay {
       appid: env('WXPAY_APP_ID'),
       mch_id: env('WXPAY_MCH_ID'),
       nonce_str: WXPay.getNonceStr(),
+      out_trade_no: orderNumber,
       out_refund_no: orderNumber,
       total_fee: totalFee * 100,
       refund_fee: totalFee * 100,
