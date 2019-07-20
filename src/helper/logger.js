@@ -9,6 +9,11 @@ export default createLogger({
   format: combine(timestamp(), myFormat),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: `${env('LOGGER_PATH')}` }),
+    new transports.File({
+      filename: `${env('LOGGER_PATH')}`,
+      format: format.combine(
+        format.json(),
+      ),
+    }),
   ],
 });
