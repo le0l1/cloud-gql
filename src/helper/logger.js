@@ -9,6 +9,6 @@ export default createLogger({
   format: combine(timestamp(), myFormat),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: `${env('WXPAY_CERT_FILE')}/event.log` }),
+    new transports.File({ filename: `${env('LOGGER_PATH')}` }),
   ],
 });

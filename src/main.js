@@ -5,7 +5,6 @@ import { makeServer, app } from './app';
 import { setGraphqlContext } from './helper/auth/setContextUser';
 import { env } from './helper/util';
 
-
 makeServer(setGraphqlContext).applyMiddleware({ app });
 
 // orm connection
