@@ -178,6 +178,8 @@ input GoodsSearchInput {
   priceSort: SortType
   "销量排序"
   salesSort: SortType
+  "模糊搜索"
+  tsQuery: String
 }
 
 type GoodConnection implements Connection {
