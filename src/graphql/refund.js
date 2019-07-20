@@ -1,3 +1,3 @@
-import { WXPay } from './graphql/payment/wxpay';
+import { WXPay } from './payment/wxpay';
 
-WXPay.refund('T20190706081647467', '0.1');
+WXPay.refund('T20190706081647467', '0.01');

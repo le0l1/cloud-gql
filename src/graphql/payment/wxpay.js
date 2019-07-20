@@ -137,7 +137,8 @@ export class WXPay {
       refund_fee: totalFee * 100,
     });
     const ca = new https.Agent({
-      ca: fs.readFileSync(env('WXPAY_CERT_FILE')),
+      pfx: fs.readFileSync(env('WXPAY_CERT_FILE')),
+      passphrase: instance.basicPayInfo.mch_id,
     });
     const res = await axios.post(
       'https://api.mch.weixin.qq.com/secapi/pay/refund',
