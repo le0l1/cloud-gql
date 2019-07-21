@@ -8,6 +8,7 @@ import { WXPay } from '../payment/wxpay';
 import { OrderStatus, PaymentStatus } from '../../helper/status';
 import { Payment } from '../payment/payment.entity';
 import { OrderLog } from './orderLog.entity';
+import logger from '../../helper/logger';
 
 const router = new Router();
 
@@ -92,6 +93,7 @@ router.post(
         next();
         return;
       }
+      logger.info(`订单${order.orderNumber}支付成功, 修改订单状态为待发货`);
       order.status = OrderStatus.WAIT_SHIP;
       await trx.update(Payment, order.paymentId, { paymentStatus: PaymentStatus.PAID });
       await trx.save(order);
