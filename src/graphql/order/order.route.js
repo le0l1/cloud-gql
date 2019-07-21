@@ -60,7 +60,8 @@ router.post(
   async (ctx, next) => {
     const xml = mapObjectArr(ctx.request.body.xml);
     if (checkReqStatus(xml)) {
-      ctx.body = failResult;
+      ctx.failReson = '微信支付结果失败';
+      next();
       return;
     }
     const { sign, ...rest } = xml;
@@ -76,12 +77,14 @@ router.post(
       const { xml } = ctx;
       const order = await getOrder(xml.out_trade_no);
       if (xml.failReson) {
+        logger.info(`支付失败原因: ${xml.failReson}`);
         await recordUnusalOrder(order, xml.failReson, trx);
         await trx.merge(Order, order, { status: OrderStatus.UNUSUAL }).save();
         ctx.body = failResult;
         return;
       }
       if (order.status !== OrderStatus.PENDING) {
+        logger.warn(`订单${order.orderNumber}已处理, 请勿重复处理!`);
         next();
         return;
       }
@@ -101,6 +104,7 @@ router.post(
     });
   },
   async (ctx) => {
+    logger.info('微信支付结果通知完成!');
     const res = js2xml(
       {
         xml: {
