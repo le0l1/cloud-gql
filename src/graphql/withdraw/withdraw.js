@@ -4,9 +4,10 @@ import { decodeNumberId, pipe } from '../../helper/util';
 import { InsufficientBalanceError } from '../../helper/error';
 import { Withdraw } from './withdraw.entity';
 import {
-  withPagination, getManyAndCount, getQB, orderBy, where,
+  withPagination, getManyAndCount, getQB, orderBy, where, leftJoinAndMapOne,
 } from '../../helper/sql';
 import { WithdrawStatus } from '../../helper/status';
+import logger from '../../helper/logger';
 
 export default class WithdrawResolver {
   static async createWithdraw({ userId, totalCount, method }) {
@@ -24,10 +25,10 @@ export default class WithdrawResolver {
   static updateWithdraw({ id, status }) {
     return getManager().transaction(async (trx) => {
       const withdraw = await Withdraw.findOneOrFail(decodeNumberId(id));
-      // 当提现通过时扣除用户余额
       if (status === WithdrawStatus.PASSED) {
         const user = await User.findOneOrFail(withdraw.userId);
         await trx.update(User, user.id, { totalFee: () => `total_fee - ${withdraw.totalCount}` });
+        logger.info(`用户${user.id}提现${withdraw.totalCount}元`);
       }
       return trx.merge(Withdraw, withdraw, { status }).save();
     });
@@ -38,6 +39,7 @@ export default class WithdrawResolver {
   }) {
     return pipe(
       getQB('withdraw'),
+      leftJoinAndMapOne('withdraw.user', User, 'user', 'user.id = withdraw.userId'),
       where('withdraw.status = :status', { status }),
       where('withdraw.userId = :user', { user: userId ? decodeNumberId(userId) : null }),
       withPagination(limit, offset),

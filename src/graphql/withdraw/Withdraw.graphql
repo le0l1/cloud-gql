@@ -1,7 +1,7 @@
 type Withdraw  implements Node {
   id: ID!
-  "提现人id"
-  userId: ID
+  "提现人"
+  user: User
   "提现金额"
   totalCount: Int
   "提现时间"
