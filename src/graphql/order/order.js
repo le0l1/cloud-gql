@@ -91,6 +91,7 @@ export default class OrderResolver {
         return new WXPay()
           .setOrderNumber(order.orderNumber)
           .setTotalFee(totalFee)
+          .setNotifyUrl(env('WXPAY_ORDER_NOTIFY_URL'))
           .preparePayment();
       })
       .catch((e) => {

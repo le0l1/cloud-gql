@@ -46,6 +46,14 @@ export class WXPay {
     return this;
   }
 
+  /**
+   * 设置回调
+   */
+  setNotifyUrl(url) {
+    this.basicPayInfo.notify_url = url;
+    return this;
+  }
+
   get sign() {
     const sign = `${WXPay.sorByASCII(Object.keys(this.basicPayInfo))
       .reduce((arr, key) => [...arr, `${key}=${this.basicPayInfo[key]}`], [])
@@ -89,7 +97,7 @@ export class WXPay {
     };
   }
 
-  preparePayment() {
+  preparePayment(url) {
     return axios
       .post('https://api.mch.weixin.qq.com/pay/unifiedorder', this.xmlParamter, {
         headers: { 'Content-Type': 'text/xml' },
