@@ -1,0 +1,30 @@
+type Hot {
+  id: ID
+  route: HotRoute
+  content: String
+}
+
+enum HotRoute {
+  HOME
+  SHOP
+}
+
+input CreateHotInput {
+  route: HotRoute!
+  content: String!
+}
+
+input UpdateHotInput {
+  id: ID!
+  route: HotRoute
+  content: String
+}
+
+extend type Query {
+  hot(route: HotRoute!): Hot
+}
+
+extend type Mutation {
+  createHot(input: CreateHotInput!): Hot
+  updateHot(input: UpdateHotInput!): Hot
+}

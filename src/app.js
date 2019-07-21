@@ -36,6 +36,7 @@ import collection from './graphql/collection';
 import news from './graphql/news';
 import history from './graphql/history';
 import withdraw from './graphql/withdraw';
+import hot from './graphql/hot';
 
 const app = new Koa();
 
@@ -95,6 +96,7 @@ export const makeServer = context => new ApolloServer({
     news.typeDef,
     history.typeDef,
     withdraw.typeDef,
+    hot.typeDef,
   ],
   resolvers: [
     dateResolver,
@@ -125,6 +127,7 @@ export const makeServer = context => new ApolloServer({
     news.resolvers,
     history.resolvers,
     withdraw.resolvers,
+    hot.resolvers,
   ],
   context,
   schemaDirectives: {
