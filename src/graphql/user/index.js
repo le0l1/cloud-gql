@@ -1,11 +1,6 @@
 import UserSchema from './User.gql';
 import { User } from './user.entity';
-import { formateID, decodeNumberId, pipe } from '../../helper/util';
-import { UserNotExistsError, InValidPasswordError } from '../../helper/error';
-import { comparePassword, generateToken } from '../../helper/encode';
-import {
-  getQB, where, withPagination, getManyAndCount,
-} from '../../helper/sql';
+import { formateID } from '../../helper/util';
 import { Role } from '../../helper/status';
 import { idResolver } from '../../helper/resolver';
 import UserResolver from './user';
@@ -14,23 +9,11 @@ const formateUserId = v => (v.id ? formateID('user', v.id) : null);
 
 const resolvers = {
   Query: {
-    users: (_, { usersQueryInput }) => {
-      const {
-        tsQuery, limit = 8, filters = {}, offset = 1,
-      } = usersQueryInput;
-      return pipe(
-        getQB('user'),
-        where('(user.name like :tsQuery or user.phone like :tsQuery)', {
-          tsQuery: tsQuery ? `%${tsQuery}%` : null,
-        }),
-        where('user.area = :area', { area: filters.area }),
-        where('user.role = :role', { role: filters.role }),
-        withPagination(limit, offset),
-        getManyAndCount,
-      )(User);
+    users(_, { usersQueryInput }) {
+      return UserResolver.searchUsers(usersQueryInput);
     },
     user(_, { userQueryInput }) {
-      return User.getUser(userQueryInput);
+      return UserResolver.searchUser(userQueryInput);
     },
     userPassword(_, { userQueryInput }) {
       return UserResolver.searchUserPassword(userQueryInput);
@@ -62,13 +45,7 @@ const resolvers = {
       return UserResolver.loginIn(userLoginInput);
     },
     async deleteUser(_, { userDeleteInput }) {
-      try {
-        const user = User.findOneOrFail({ id: decodeNumberId(userDeleteInput.id) });
-        user.deletedAt = new Date();
-        return user.save();
-      } catch (e) {
-        throw new UserNotExistsError();
-      }
+      return UserResolver.deleteUser(userDeleteInput);
     },
     // TODO: 重构找回密码
     async retrievePassword(_, { retrievePasswordInput }, ctx) {

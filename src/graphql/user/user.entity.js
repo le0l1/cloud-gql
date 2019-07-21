@@ -10,8 +10,6 @@ import {
   OneToOne,
 } from 'typeorm';
 import { Comment } from '../comment/comment.entity';
-import { hashPassword } from '../../helper/encode';
-import { decodeNumberId } from '../../helper/util';
 import { Transfer } from '../transfer/transfer.entity';
 import { Shop } from '../shop/shop.entity';
 
@@ -105,47 +103,10 @@ export class User extends BaseEntity {
   })
   updatedAt;
 
-  static retrievePassword({ phone, password }) {
-    return User.findOne({
-      where: { phone },
-    }).then((currentUser) => {
-      if (!currentUser) throw new Error('用户不存在');
-
-      const pwd = hashPassword(password);
-      return User.merge(currentUser, { password: pwd }).save();
-    });
-  }
-
-  static checkIfExists(phone) {
-    return User.findOne({
-      where: {
-        phone,
-      },
-    }).then(res => !!res);
-  }
-
-  static createUser({ password, ...rest }) {
-    const pwd = hashPassword(password);
-    return User.create({
-      password: pwd,
-      ...rest,
-    }).save();
-  }
-
-  static getUser({ id }) {
-    return User.findOne({
-      where: {
-        id: decodeNumberId(id),
-      },
-    });
-  }
-
-
-  static findByPhone(phone) {
-    return User.findOneOrFail({
-      where: {
-        phone,
-      },
-    });
-  }
+  @Column({
+    name: 'deleted_at',
+    type: 'timestamp',
+    default: null,
+  })
+  deletedAt;
 }

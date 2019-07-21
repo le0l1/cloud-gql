@@ -219,7 +219,7 @@ extend type Mutation {
   "用户登录"
   loginIn(userLoginInput: UserLoginInput!): UserLoginResult!
   "用户删除"
-  deleteUser(userDeleteInput: UserDeleteInput!): UserDeleteResult!
+  deleteUser(userDeleteInput: UserDeleteInput!): UserActionResult!
     @auth(requires: ROOT)
 
   "找回密码"
