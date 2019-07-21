@@ -1,5 +1,4 @@
 import fs from 'fs';
-import path from 'path';
 import axios from 'axios';
 import https from 'https';
 import crypto from 'crypto';
@@ -97,7 +96,7 @@ export class WXPay {
     };
   }
 
-  preparePayment(url) {
+  preparePayment() {
     return axios
       .post('https://api.mch.weixin.qq.com/pay/unifiedorder', this.xmlParamter, {
         headers: { 'Content-Type': 'text/xml' },

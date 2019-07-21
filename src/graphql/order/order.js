@@ -88,10 +88,11 @@ export default class OrderResolver {
         });
         await trx.save(payment);
         await trx.update(Order, order.id, { paymentId: payment.id });
+        const notifyUrl = env('HOST') + env('WXPAY_ORDER_NOTIFY_URL');
         return new WXPay()
           .setOrderNumber(order.orderNumber)
           .setTotalFee(totalFee)
-          .setNotifyUrl(env('WXPAY_ORDER_NOTIFY_URL'))
+          .setNotifyUrl(notifyUrl)
           .preparePayment();
       })
       .catch((e) => {
