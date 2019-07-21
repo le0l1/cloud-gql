@@ -37,7 +37,9 @@ export default class UserResolver {
   }
 
   static async loginIn({ phone, password }) {
-    const user = await User.findByPhone(phone);
+    const user = await User.findOneOrFail({
+      phone,
+    });
     if (!user) throw new UserNotExistsError();
     if (
       !comparePassword({
