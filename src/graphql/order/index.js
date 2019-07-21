@@ -45,10 +45,10 @@ const resolvers = {
   OrderStatus,
   OrderDetail: {
     shopId(v) {
-      return v ? formateID('shop', v.id) : null;
+      return v ? formateID('shop', v.shopId) : null;
     },
     goodId(v) {
-      return v ? formateID('good', v.id) : null;
+      return v ? formateID('good', v.goodId) : null;
     },
   },
   OrderActionResult: {
