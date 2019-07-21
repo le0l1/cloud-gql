@@ -88,8 +88,8 @@ router.post(
         next();
         return;
       }
-      if (Number(order.totalCount) - Number(order.discount) !== Number(xml.total_fee) / 1000) {
-        const totalCount = Number(xml.total_fee) / 1000 + Number(order.discount);
+      if (Number(order.totalCount) - Number(order.discount) !== Number(xml.total_fee) / 100) {
+        const totalCount = Number(xml.total_fee) / 100 + Number(order.discount);
         const msg = `订单金额不匹配,修改为实际支付金额 + 优惠金额: ${totalCount}`;
         await recordUnusalOrder(order, msg, trx);
         await trx.merge(Order, order, { status: OrderStatus.UNUSUAL }).save();

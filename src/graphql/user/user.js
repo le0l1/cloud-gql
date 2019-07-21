@@ -28,8 +28,6 @@ export default class UserResolver {
     if (correctCode !== smsCode) throw new ValidSmsCodeError();
     if (role === 3) throw new RootRegistryError();
     if (await User.checkIfExists(phone)) throw new UserHasRegisterdError();
-    // delete used code async
-    SMSCode.delete(phone);
     return User.createUser({
       phone,
       smsCode,
