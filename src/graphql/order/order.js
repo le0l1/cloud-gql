@@ -172,6 +172,7 @@ export default class OrderResolver {
    * @param {*} id 订单id
    */
   static async searchOrder(id) {
+    logger.debug(`当前订单ID为${decodeNumberId(id)}`)
     const order = await Order.createQueryBuilder('order')
       .leftJoinAndMapMany(
         'order.orderDetail',
