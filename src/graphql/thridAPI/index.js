@@ -16,12 +16,12 @@ const resolvers = {
     async smsCode(_, { phone }) {
       const smsCode = generateSMSCode();
       try {
-        await sendSMS({ phone, smsCode });
-        logger.info(`手机号码: ${phone}, 验证码: ${smsCode}`);
         await SMSCode.save({
           phone,
           smsCode,
         });
+        await sendSMS({ phone, smsCode });
+        logger.info(`手机号码: ${phone}, 验证码: ${smsCode}`);
         return true;
       } catch (e) {
         throw e;
