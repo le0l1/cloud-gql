@@ -172,7 +172,6 @@ export default class OrderResolver {
    * @param {*} id 订单id
    */
   static async searchOrder(id) {
-    logger.debug(`当前订单ID为${decodeNumberId(id)}`)
     const order = await Order.createQueryBuilder('order')
       .leftJoinAndMapMany(
         'order.orderDetail',
@@ -181,7 +180,7 @@ export default class OrderResolver {
         'orderDetail.orderId = order.id',
       )
       .where('order.id = :id', { id: decodeNumberId(id) })
-      .where('order.deletedAt is null')
+      .andWhere('order.deletedAt is null')
       .getOne();
     /**
      * 当订单状态为待支付且支付已过期
@@ -190,7 +189,7 @@ export default class OrderResolver {
     if (order.status === OrderStatus.PENDING && order.payExpiredAt < Date.now()) {
       return Order.merge(order, { status: OrderStatus.CANCELED }).save();
     }
-    return order;
+    return order.getOne();
   }
 
   /**
