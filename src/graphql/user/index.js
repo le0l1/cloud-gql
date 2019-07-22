@@ -36,6 +36,10 @@ const resolvers = {
   },
   UserRegisterResult: idResolver('user'),
   UserLoginResult: idResolver('user'),
+  RetrievePasswordResult: {
+    id: formateUserId,
+    status: () => true,
+  },
   Role,
   Mutation: {
     async register(obj, { userRegisterInput }) {
@@ -47,17 +51,8 @@ const resolvers = {
     async deleteUser(_, { userDeleteInput }) {
       return UserResolver.deleteUser(userDeleteInput);
     },
-    // TODO: 重构找回密码
-    async retrievePassword(_, { retrievePasswordInput }, ctx) {
-      const { phone } = retrievePasswordInput;
-      if (retrievePasswordInput.smsCode !== ctx.session[phone]) {
-        throw new Error('验证码错误');
-      }
-      const { id } = await User.retrievePassword(retrievePasswordInput);
-      return {
-        id: formateID('user', id),
-        status: true,
-      };
+    async retrievePassword(_, { retrievePasswordInput }) {
+      return UserResolver.retrievePassword(retrievePasswordInput);
     },
     updateUser(_, { userUpdateInput }) {
       return UserResolver.updateUser(userUpdateInput);

@@ -1,13 +1,15 @@
 import { User } from './user.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
-import { decrypt, comparePassword, generateToken } from '../../helper/encode';
+import {
+  decrypt, comparePassword, generateToken, hashPassword,
+} from '../../helper/encode';
 import { SMSCode } from '../thridAPI/smsCode.entity';
 import {
-  ValidSmsCodeError,
   RootRegistryError,
   UserHasRegisterdError,
   UserNotExistsError,
   InValidPasswordError,
+  ValidSmsCodeError,
 } from '../../helper/error';
 import {
   getManyAndCount, getQB, where, withPagination,
@@ -22,16 +24,16 @@ export default class UserResolver {
   }
 
   static async register({
-    phone, smsCode, role, ...rest
+    phone, smsCode, role, password, ...rest
   }) {
-    const { smsCode: correctCode } = await SMSCode.findOneOrFail(phone);
-    if (correctCode !== smsCode) throw new ValidSmsCodeError();
+    const instane = await SMSCode.findOneOrFail(phone);
+    if (instane.smsCode !== smsCode) throw new ValidSmsCodeError();
     if (role === 3) throw new RootRegistryError();
-    if (await User.checkIfExists(phone)) throw new UserHasRegisterdError();
-    return User.createUser({
+    if (await User.findOne({ phone })) throw new UserHasRegisterdError();
+    return User.save({
       phone,
-      smsCode,
       role,
+      password: hashPassword(password),
       ...rest,
     });
   }
@@ -83,5 +85,16 @@ export default class UserResolver {
 
   static searchUser({ id }) {
     return User.findOneOrFail(decodeNumberId(id));
+  }
+
+  static async retrievePassword({ phone, smsCode, password }) {
+    const instane = await SMSCode.findOneOrFail(phone);
+    if (instane.smsCode !== smsCode) throw new ValidSmsCodeError();
+    const user = await User.findOneOrFail({
+      phone,
+    });
+    return User.merge(user, {
+      password: hashPassword(password),
+    }).save();
   }
 }
