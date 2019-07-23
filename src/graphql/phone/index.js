@@ -1,5 +1,4 @@
 import PhoneSchema from './Phone.graphql';
-import { Phone } from './phone.entity';
 import { prop, formateID, pipe } from '../../helper/util';
 import PhoneResolver from './phone';
 
@@ -16,7 +15,7 @@ const resolvers = {
   },
   Mutation: {
     updatePhone(_, { updatePhoneInput }) {
-      return Phone.updatePhone(updatePhoneInput);
+      return PhoneResolver.updatePhone(updatePhoneInput);
     },
   },
   Phone: {
