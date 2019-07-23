@@ -13,6 +13,14 @@ const resolvers = {
     ossToken() {
       return generateUploadToken();
     },
+    vin(_, { vin }) {
+      return ThirdAPIResolver.searchVin(vin);
+    },
+  },
+  Mutation: {
+    updateVin(_, { input }) {
+      return ThirdAPIResolver.updateVin(input);
+    },
     async smsCode(_, { phone }) {
       const smsCode = generateSMSCode();
       try {
@@ -26,14 +34,6 @@ const resolvers = {
       } catch (e) {
         throw e;
       }
-    },
-    vin(_, { vin }) {
-      return ThirdAPIResolver.searchVin(vin);
-    },
-  },
-  Mutation: {
-    updateVin(_, { input }) {
-      return ThirdAPIResolver.updateVin(input);
     },
   },
   VehicleInfo: idResolver('vehicleInfo'),
