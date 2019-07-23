@@ -48,7 +48,7 @@ export default class StatisticsResolver {
         shop: shopId,
       },
       relations: ['user'],
-    }).then(res => res.user.totalFee);
+    }).then(res => (res.user ? res.user.totalFee : 0));
   }
 
   static async storeShopStatistics(shopId) {
