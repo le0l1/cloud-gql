@@ -150,7 +150,7 @@ extend type Mutation {
   "删除订单"
   deleteOrder(id: ID!): OrderActionResult
   "订单退款"
-  refundOrder(id: ID!): OrderActionResult
+  refundOrder(id: ID!): OrderActionResult @auth(requires: MERCHANT)
 }
 
 extend type Query {

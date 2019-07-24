@@ -128,7 +128,6 @@ export default class OrderResolver {
             shopId = goodInstance.shopId;
           }
           if (shopId !== goodInstance.shopId) {
-            logger.warn('一次只允许结算一家店铺的订单!');
             throw new UniqueShopOrderError();
           }
           total += Number(goodInstance.goodSalePrice) * quantity;

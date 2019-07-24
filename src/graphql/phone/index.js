@@ -26,6 +26,7 @@ const resolvers = {
   },
   PhoneActionResult: {
     id: formatePhoneId,
+    status: () => true,
   },
 };
 
