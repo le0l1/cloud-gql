@@ -20,6 +20,7 @@ import {
   RefundFailError,
   InValidCouponError,
   CouponNotSatisfiedError,
+  UniqueShopOrderError,
 } from '../../helper/error';
 import { OrderStatus } from '../../helper/status';
 import { OrderLog } from './orderLog.entity';
@@ -107,6 +108,7 @@ export default class OrderResolver {
    * @param {*} trx
    */
   static checkOrderItem(trx) {
+    let shopId = null;
     return async (a, { goodArr, couponId }) => {
       const coupon = couponId
         ? await Coupon.findOneOrFail(decodeNumberId(couponId))
@@ -121,6 +123,14 @@ export default class OrderResolver {
           logger.info(`商品价格: ${goodInstance.goodSalePrice}`);
           if (goodInstance.goodsStocks < quantity) throw new StockLackError();
           if (coupon.id && goodInstance.shopId !== coupon.shopId) throw new InValidCouponError();
+          if (shopId === null) {
+            // eslint-disable-next-line prefer-destructuring
+            shopId = goodInstance.shopId;
+          }
+          if (shopId !== goodInstance.shopId) {
+            logger.warn('一次只允许结算一家店铺的订单!');
+            throw new UniqueShopOrderError();
+          }
           total += Number(goodInstance.goodSalePrice) * quantity;
           goodInstance.goodsStocks -= quantity;
           goodInstance.goodsSales += quantity;
@@ -253,7 +263,8 @@ export default class OrderResolver {
       );
       // 退款
       const { xml } = await WXPay.refund(order.orderNumber, Number(order.payment.totalFee));
-      if (xml.return_code !== 'SUCCESS') throw new RefundFailError(xml.return_msg);
+      // eslint-disable-next-line no-underscore-dangle
+      if (xml.return_code._cdata !== 'SUCCESS') throw new RefundFailError(xml.return_msg);
       // 更改订单为 已取消
       order.status = OrderStatus.CANCELED;
       return trx.save(order);

@@ -90,3 +90,10 @@ export class CouponNotSatisfiedError extends ApolloError {
     super('未满足优惠劵使用条件', 'CouponNotSatisfiedError');
   }
 }
+
+
+export class UniqueShopOrderError extends ApolloError {
+  constructor() {
+    super('一次下单只允许结算一家商铺的商品', 'UniqueShopOrderError');
+  }
+}
