@@ -21,6 +21,7 @@ import {
   InValidCouponError,
   CouponNotSatisfiedError,
   UniqueShopOrderError,
+  OrderUpdateStatusError,
 } from '../../helper/error';
 import { OrderStatus } from '../../helper/status';
 import { OrderLog } from './orderLog.entity';
@@ -196,7 +197,13 @@ export default class OrderResolver {
      * 则更新订单状态为已取消
      */
     if (order.status === OrderStatus.PENDING && order.payExpiredAt < Date.now()) {
-      return Order.merge(order, { status: OrderStatus.CANCELED }).save();
+      return getManager().transaction(async (trx) => {
+        OrderResolver.updateOrder(trx, {
+          order,
+          status: OrderStatus.CANCELED,
+          description: '订单支付过期!',
+        });
+      });
     }
     return order.getOne();
   }
@@ -208,18 +215,45 @@ export default class OrderResolver {
   static updateOrder({ id, status, description }) {
     return getManager().transaction(async (trx) => {
       const order = await Order.findOneOrFail(decodeNumberId(id));
-      // 记录状态历史记录
-      await trx.save(
-        OrderLog.create({
-          orderId: order.id,
-          oldStatus: order.status,
-          newStatus: status,
-          description,
-        }),
-      );
-      await trx.update(Order, order.id, { status });
-      return order;
+      return OrderResolver.doUpdateOrder(trx, {
+        order,
+        status,
+        description,
+      });
     });
+  }
+
+  /**
+   *
+   * @param {} param0
+   */
+  static checkStatusFlow(oldStatus, newStatus) {
+    const statusMap = {
+      [OrderStatus.PENDING]: [OrderStatus.WAIT_SHIP],
+      [OrderStatus.WAIT_SHIP]: [OrderStatus.WAIT_REFUND, OrderStatus.WAIT_RECEIPT],
+      [OrderStatus.WAIT_RECEIPT]: [OrderStatus.WAIT_REFUND, OrderStatus.WAIT_EVALUATION],
+      [OrderStatus.WAIT_EVALUATION]: [OrderStatus.COMPLETE],
+    };
+    return (statusMap[oldStatus] || [])
+      .concat([OrderStatus.UNUSUAL, OrderStatus.CANCELED])
+      .find(a => a === newStatus);
+  }
+
+  static async doUpdateOrder(trx, { order, status, description }) {
+    if (!OrderResolver.checkStatusFlow(order.status, status)) {
+      throw new OrderUpdateStatusError();
+    }
+    // 记录状态历史记录
+    await trx.save(
+      OrderLog.create({
+        orderId: order.id,
+        oldStatus: order.status,
+        newStatus: status,
+        description,
+      }),
+    );
+    await trx.update(Order, order.id, { status });
+    return order;
   }
 
   static async deleteOrder(id) {
@@ -265,8 +299,11 @@ export default class OrderResolver {
       // eslint-disable-next-line no-underscore-dangle
       if (xml.return_code._cdata !== 'SUCCESS') throw new RefundFailError(xml.return_msg);
       // 更改订单为 已取消
-      order.status = OrderStatus.CANCELED;
-      return trx.save(order);
+      return OrderResolver.doUpdateOrder(trx, {
+        order,
+        status: OrderStatus.CANCELED,
+        description: '退款成功!',
+      });
     });
   }
 }

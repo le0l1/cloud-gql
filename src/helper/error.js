@@ -91,9 +91,14 @@ export class CouponNotSatisfiedError extends ApolloError {
   }
 }
 
-
 export class UniqueShopOrderError extends ApolloError {
   constructor() {
     super('一次下单只允许结算一家商铺的商品', 'UniqueShopOrderError');
+  }
+}
+
+export class OrderUpdateStatusError extends ApolloError {
+  constructor() {
+    super('订单状态更新失败', 'OrderUpdateStatusError');
   }
 }
