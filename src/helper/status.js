@@ -86,6 +86,7 @@ export const Role = {
  * WAIT_REFUND: 待退款
  * CANCELED: 已取消
  * UNUSUAL: 异常
+ * COMPLETE: 订单完成
  */
 export const OrderStatus = {
   PENDING: 'PENDING',
@@ -95,6 +96,7 @@ export const OrderStatus = {
   WAIT_REFUND: 'WAIT_REFUND',
   CANCELED: 'CANCELED',
   UNUSUAL: 'UNUSUAL',
+  COMPLETE: 'COMPLETE',
 };
 /**
  * 交易状态
