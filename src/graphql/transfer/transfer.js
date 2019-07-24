@@ -58,7 +58,7 @@ export default class TransferResolver {
    */
   static getTransfers({ offset = 1, limit = 8 }) {
     return Transfer.findAndCount({
-      skip: Math.min(0, offset - 1),
+      skip: Math.max(0, offset - 1),
       take: limit,
       relations: ['payee', 'payer', 'payment'],
     });
