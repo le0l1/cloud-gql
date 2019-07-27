@@ -1,3 +1,4 @@
+import { getManager } from 'typeorm';
 import { User } from './user.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
 import {
@@ -14,6 +15,7 @@ import {
 import {
   getManyAndCount, getQB, where, withPagination,
 } from '../../helper/sql';
+import { Shop } from '../shop/shop.entity';
 
 export default class UserResolver {
   static async searchUserPassword({ id }) {
@@ -23,18 +25,31 @@ export default class UserResolver {
     });
   }
 
-  static async register({
+  static register({
     phone, smsCode, role, password, ...rest
   }) {
-    const instane = await SMSCode.findOneOrFail(phone);
-    if (instane.smsCode !== smsCode) throw new ValidSmsCodeError();
-    if (role === 3) throw new RootRegistryError();
-    if (await User.findOne({ phone })) throw new UserHasRegisterdError();
-    return User.save({
-      phone,
-      role,
-      password: hashPassword(password),
-      ...rest,
+    return getManager().transaction(async (trx) => {
+      const instane = await SMSCode.findOneOrFail(phone);
+      if (instane.smsCode !== smsCode) throw new ValidSmsCodeError();
+      if (role === 3) throw new RootRegistryError();
+      if (await User.findOne({ phone })) throw new UserHasRegisterdError();
+      const user = await trx.save(User, {
+        phone,
+        role,
+        password: hashPassword(password),
+        ...rest,
+      });
+      //  如果角色为 店家 则创建一家未审核的空店铺
+      if (role === 2) {
+        await trx.save(Shop, {
+          user,
+          phone: user.phone,
+          name: user.garage,
+          area: user.area,
+          city: user.city,
+        });
+      }
+      return user;
     });
   }
 

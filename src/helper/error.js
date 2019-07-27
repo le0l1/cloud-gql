@@ -102,3 +102,39 @@ export class OrderUpdateStatusError extends ApolloError {
     super('订单状态更新失败', 'OrderUpdateStatusError');
   }
 }
+
+export class ActivityDateError extends ApolloError {
+  constructor() {
+    super('活动开始时间不能大于结束时间', 'ActivityDateError');
+  }
+}
+
+export class ActivityNotStartError extends ApolloError {
+  constructor() {
+    super('活动尚未开始!', 'ActivityDateError');
+  }
+}
+
+export class ActivityHadEndedError extends ApolloError {
+  constructor() {
+    super('活动已结束!', 'ActivityHadEndedError');
+  }
+}
+
+export class ActivityCheckedError extends ApolloError {
+  constructor() {
+    super('今日尚未签到, 请签到后再参加活动!', 'ActivityCheckedError');
+  }
+}
+
+export class ActivityHasDrawedError extends ApolloError {
+  constructor() {
+    super('今日抽奖次数已用完!', 'ActivityHasDrawedError');
+  }
+}
+
+export class UserHasCheckedError extends ApolloError {
+  constructor() {
+    super('今日已签到, 请勿重复签到!', 'UserHasCheckedError');
+  }
+}

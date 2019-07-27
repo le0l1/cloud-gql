@@ -43,13 +43,13 @@ input UserRegisterInput {
   password: String!
 
   "汽修厂名称"
-  garage: String
+  garage: String!
 
   "订货城市"
-  city: String
+  city: String!
 
   "地区"
-  area: String
+  area: String!
 
   "详细地址"
   address: String

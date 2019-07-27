@@ -1,0 +1,10 @@
+type CheckIn {
+  id: ID
+  userId: ID
+  createdAt: String
+}
+
+extend type Mutation {
+  "签到"
+  checkIn(userId: ID!): CheckIn
+}

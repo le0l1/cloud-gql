@@ -46,16 +46,16 @@ export default () => getManager().transaction(async (trx) => {
       'orderDetail.orderId = order.id',
     )
     .leftJoinAndMapOne('order.payment', Payment, 'payment', 'order.paymentId = payment.id')
-    .where('order.status = :orderStatus', { orderStatus: OrderStatus.FINISH })
+    .where('order.status = :orderStatus', { orderStatus: OrderStatus.COMPLETE })
     .where('order.isSettled = false')
     .where('payment.paymentStatus = :paymentStatus', { paymentStatus: PaymentStatus.PAID })
     .getMany();
   if (!orders.length) return;
   await orders.reduce(async (a, b) => {
     const order = a.then ? await a : a;
-    logger.info('当前订单号:', order.orderNumber);
-    logger.info('订单总金额:', order.totalCount);
-    logger.info('优惠金额:', order.discount);
+    logger.info(`当前订单号: ${order.orderNumber}`);
+    logger.info(`订单总金额: ${order.totalCount}`);
+    logger.info(`优惠金额: ${order.discount}`);
     const cake = cacluateCake(order.orderDetail);
     await settleOrder(cake, trx);
     logger.info('订单清算完成!');

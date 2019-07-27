@@ -1,0 +1,64 @@
+type Activity {
+  id: ID
+  name: String
+  startAt: String
+  endAt: String
+}
+
+type ActivityProduct {
+  id: ID
+  name: String
+  gold: String
+  probability: Int
+}
+
+type ActivityDetail {
+  id: ID
+  name: String
+  startAt: String
+  endAt: String
+  products: [ActivityProduct!]
+}
+
+input CreateActivityInput {
+  name: String!
+  startAt: String
+  endAt: String
+}
+
+input UpdateActivityInput {
+  id: ID!
+  name: String
+  startAt: String
+  endAt: String
+}
+
+input AddActivityProductInput {
+  activityId: ID!
+  name: String!
+  gold: Int!
+  probability: Int!
+}
+
+input LuckDrawInput {
+  userId: ID!
+  activityId: ID!
+}
+
+extend type Mutation {
+  "创建活动 开始时间默认为new Date() 不传结束时间默认为活动一直持续"
+  createActivity(input: CreateActivityInput!): Activity
+  "更新活动"
+  updateActivity(input: UpdateActivityInput!): Activity
+  "添加活动奖品"
+  addActivityProduct(input: AddActivityProductInput!): ActivityProduct
+  "删除活动奖品 id为 ActivityProduct.id"
+  deleteActivityProduct(id: ID!): ActivityProduct
+  "抽奖"
+  luckDraw(input: LuckDrawInput!): ActivityProduct
+}
+
+extend type Query {
+  "查询活动详情"
+  activity(id: ID!): ActivityDetail
+}
