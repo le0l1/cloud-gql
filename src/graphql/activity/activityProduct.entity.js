@@ -25,6 +25,11 @@ export class ActivityProduct extends BaseEntity {
   gold;
 
   @Column({
+    type: 'character varying',
+  })
+  cover;
+
+  @Column({
     type: 'int',
   })
   probability;

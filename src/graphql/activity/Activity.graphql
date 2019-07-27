@@ -8,7 +8,8 @@ type Activity {
 type ActivityProduct {
   id: ID
   name: String
-  gold: String
+  gold: Int
+  cover: String
   probability: Int
 }
 
@@ -38,6 +39,7 @@ input AddActivityProductInput {
   name: String!
   gold: Int!
   probability: Int!
+  cover: String!
 }
 
 input LuckDrawInput {

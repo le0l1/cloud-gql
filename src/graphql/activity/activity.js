@@ -19,7 +19,7 @@ export default class ActivityResolver {
    * 创建活动
    */
   static createActivity({ name, startAt = new Date(), endAt }) {
-    if (startAt && endAt && isAfter(endAt, startAt)) {
+    if (startAt && endAt && isAfter(startAt, endAt)) {
       throw new ActivityDateError();
     }
     return Activity.save({
@@ -35,7 +35,7 @@ export default class ActivityResolver {
   static async updateActivity({
     id, name, startAt, endAt,
   }) {
-    if (startAt && endAt && isAfter(endAt, startAt)) {
+    if (startAt && endAt && isAfter(startAt, endAt)) {
       throw new ActivityDateError();
     }
     const activity = await Activity.findOneOrFail(decodeNumberId(id));
@@ -93,13 +93,14 @@ export default class ActivityResolver {
     const activity = await ActivityResolver.searchActivity(activityId);
     ActivityResolver.checkDate(activity);
     const user = await User.findOneOrFail(decodeNumberId(userId));
-    await ActivityResolver.checkUserCondition(user);
+    await ActivityResolver.checkUserCondition(user, activity);
     return ActivityResolver.doLuckDraw(activity, user);
   }
 
-  static getTodayRecord(userId) {
+  static getTodayRecord(activityId, userId) {
     return ActivityRecord.createQueryBuilder('record')
       .where('record.userId = :userId', { userId })
+      .andWhere('record.activityId = :activityId', { activityId })
       .andWhere('DATE(record.createdAt) = :createdAt', {
         createdAt: format(new Date(), 'YYYY-MM-DD'),
       })
@@ -123,12 +124,12 @@ export default class ActivityResolver {
    * 检查活动条件
    * @param {*} activity 活动
    */
-  static async checkUserCondition(user) {
+  static async checkUserCondition(user, activity) {
     const hasChecked = await CheckInResolver.hasChecked(user.id);
     if (!hasChecked) {
       throw new ActivityCheckedError();
     }
-    const record = await ActivityResolver.getTodayRecord(user.id);
+    const record = await ActivityResolver.getTodayRecord(activity.id, user.id);
     if (record) {
       throw new ActivityHasDrawedError();
     }
@@ -145,6 +146,7 @@ export default class ActivityResolver {
     return ActivityRecord.save({
       userId: user.id,
       activityProductId: activity.products[awardIndex].id,
+      activityId: activity.id,
     }).then(() => activity.products[awardIndex]);
   }
 }

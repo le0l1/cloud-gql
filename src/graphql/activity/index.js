@@ -35,7 +35,7 @@ const resolvers = {
   ActivityDetail: {
     ...idResolver('activity'),
     endAt(v) {
-      return v.endAt.toString();
+      return v.endAt;
     },
   },
 };
