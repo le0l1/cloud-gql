@@ -23,7 +23,7 @@ const cacluateCake = orderDetail => orderDetail.reduce(
 const settleOrder = (cake, trx) => Promise.all(
   Object.keys(cake).map(async (c) => {
     const { belongto: user } = await Shop.findOne(c);
-    logger.info(`向用户${user}打入余额  ${cake[c]} 元`);
+    logger.info(`向店主${user}打入余额  ${cake[c]} 元`);
     await trx
       .createQueryBuilder()
       .update(User)
@@ -46,7 +46,7 @@ export default () => getManager().transaction(async (trx) => {
       'orderDetail.orderId = order.id',
     )
     .leftJoinAndMapOne('order.payment', Payment, 'payment', 'order.paymentId = payment.id')
-    .where('order.status = :orderStatus', { orderStatus: OrderStatus.COMPLETE })
+    .where('order.status = :orderStatus', { orderStatus: OrderStatus.WAIT_EVALUATION })
     .where('order.isSettled = false')
     .where('payment.paymentStatus = :paymentStatus', { paymentStatus: PaymentStatus.PAID })
     .getMany();
