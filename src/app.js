@@ -40,6 +40,7 @@ import hot from './graphql/hot';
 import statistics from './graphql/statistics';
 import activity from './graphql/activity';
 import checkIn from './graphql/checkIn';
+import redPacket from './graphql/redPacket';
 
 const app = new Koa();
 
@@ -103,6 +104,7 @@ export const makeServer = context => new ApolloServer({
     statistics.typeDef,
     activity.typeDef,
     checkIn.typeDef,
+    redPacket.typeDef,
   ],
   resolvers: [
     dateResolver,
@@ -137,6 +139,7 @@ export const makeServer = context => new ApolloServer({
     statistics.resolvers,
     activity.resolvers,
     checkIn.resolvers,
+    redPacket.resolvers,
   ],
   context,
   schemaDirectives: {

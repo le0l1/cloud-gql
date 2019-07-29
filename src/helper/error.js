@@ -138,3 +138,18 @@ export class UserHasCheckedError extends ApolloError {
     super('今日已签到, 请勿重复签到!', 'UserHasCheckedError');
   }
 }
+export class RedPacketEmptyError extends ApolloError {
+  constructor() {
+    super('红包已抢完!', 'RedPacketEmptyError');
+  }
+}
+export class RedPacketGrabedError extends ApolloError {
+  constructor() {
+    super('请勿重复领取红包!', 'RedPacketGrabedError');
+  }
+}
+export class RedPacketFailError extends ApolloError {
+  constructor() {
+    super('领取失败！请稍后再试', 'RedPacketFailError');
+  }
+}

@@ -1,0 +1,34 @@
+type RedPacket {
+  id: ID
+  sponsor: ID
+  quantity: Int
+  totalFee: Int
+  restQuantity: Int
+  createdAt: String
+}
+
+input SendRedPacketInput {
+  "发红包人ID"
+  sponsor: ID!
+  quantity: Int!
+  totalFee: Int!
+}
+
+input GrabRedPacketInput {
+  userId: Int!
+  redPacketId: ID!
+}
+
+extend type Mutation {
+  "发红包"
+  sendRedPacket(input: SendRedPacketInput!): RedPacket
+  "抢红包"
+  grabRedPacket(input: GrabRedPacketInput!): Int
+}
+
+extend type Query {
+  "获取红包详情"
+  redPacket(id: ID!): RedPacket
+  "获取红包列表"
+  redPackets: [RedPacket]
+}
