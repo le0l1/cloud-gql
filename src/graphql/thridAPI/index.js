@@ -25,7 +25,7 @@ const resolvers = {
       const smsCode = generateSMSCode();
       try {
         await SMSCode.save({
-          phone,
+          phone: phone.toString(),
           smsCode,
         });
         await sendSMS({ phone, smsCode });
