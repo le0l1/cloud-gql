@@ -12,7 +12,6 @@ import { User } from '../user/user.entity';
 import { Image } from '../image/image.entity';
 import { ReportStatus } from '../../helper/status';
 import { BusinessCircleUser } from './businessCircleUser.entity';
-import Logger from '../../helper/logger';
 
 export default class BusinessCircleResolver {
   static createBusinessCircle({ userId, images = [], content }) {
@@ -69,7 +68,6 @@ export default class BusinessCircleResolver {
       });
       await trx.remove(images);
       await trx.remove(businessCircle);
-      await trx.delete(BusinessCircle, { businessCircleId: businessCircle.id });
       return { id: realId };
     });
   }
