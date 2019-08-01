@@ -71,11 +71,10 @@ export default class RFQResolver {
         rfqId: rfq.id,
       });
       const accessoriesIds = accessories.map(a => a.id);
-      const banners = await Banner.find({
-        where: {
-          accessories: In(accessoriesIds),
-        },
-      });
+      const banners = await Banner.createQueryBuilder('banner')
+        .where('banner.accessories in (:...accessoriesIds)', { accessoriesIds })
+        .orWhere('banner.rfq = :rfq', { rfq: rfq.id })
+        .getMany();
       const qb = trx
         .createQueryBuilder()
         .delete()
