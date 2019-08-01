@@ -71,6 +71,11 @@ export default class RFQResolver {
         rfqId: rfq.id,
       });
       const accessoriesIds = accessories.map(a => a.id);
+      const banners = await Banner.find({
+        where: {
+          accessories: In(accessoriesIds),
+        },
+      });
       const qb = trx
         .createQueryBuilder()
         .delete()
@@ -83,6 +88,7 @@ export default class RFQResolver {
         }),
         execute,
       )(qb);
+      await trx.remove(banners);
       await trx.remove(accessories);
       await trx.remove(rfq);
       return { id: decodeNumberId(id) };
