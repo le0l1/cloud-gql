@@ -205,7 +205,7 @@ export default class OrderResolver {
         });
       });
     }
-    return order.getOne();
+    return order;
   }
 
   /**
