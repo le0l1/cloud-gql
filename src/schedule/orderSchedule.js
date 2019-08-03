@@ -46,9 +46,9 @@ export default () => getManager().transaction(async (trx) => {
       'orderDetail.orderId = order.id',
     )
     .leftJoinAndMapOne('order.payment', Payment, 'payment', 'order.paymentId = payment.id')
-    .where('order.status = :orderStatus', { orderStatus: OrderStatus.WAIT_EVALUATION })
-    .where('order.isSettled = false')
-    .where('payment.paymentStatus = :paymentStatus', { paymentStatus: PaymentStatus.PAID })
+    .where('order.status in (:...orderStatus)', { orderStatus: [OrderStatus.WAIT_EVALUATION, OrderStatus.COMPLETE] })
+    .andWhere('order.isSettled = false')
+    .andWhere('payment.paymentStatus = :paymentStatus', { paymentStatus: PaymentStatus.PAID })
     .getMany();
   if (!orders.length) return;
   await orders.reduce(async (a, b) => {
