@@ -32,7 +32,10 @@ export default class UserResolver {
       const instane = await SMSCode.findOneOrFail(phone);
       if (instane.smsCode !== smsCode) throw new ValidSmsCodeError();
       if (role === 3) throw new RootRegistryError();
-      if (await User.findOne({ phone })) throw new UserHasRegisterdError();
+      const hasRegisterd = await User.findOne({ phone });
+      if (hasRegisterd && !hasRegisterd.deletedAt) {
+        throw new UserHasRegisterdError();
+      }
       const user = await trx.save(User, {
         phone,
         role,
