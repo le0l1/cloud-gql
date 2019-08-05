@@ -29,6 +29,9 @@ enum  PaymentStatus {
 
     "支付失败"
     PAY_FAIL
+
+    "支付异常"
+    ODD
 }
 
 type WXPayPrepare {
