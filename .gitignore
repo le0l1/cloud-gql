@@ -89,3 +89,6 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+#pem 
+rsa_private_key.pem

@@ -1,10 +1,10 @@
 import { format } from 'date-fns';
-import { WXPay } from '../payment/wxpay';
 import { Shop } from '../shop/shop.entity';
 import { decodeNumberId } from '../../helper/util';
 import { Transfer } from './transfer.entity';
 import { User } from '../user/user.entity';
 import { Payment } from '../payment/payment.entity';
+import { createPay } from '../payment/pay';
 
 export default class TransferResolver {
   /**
@@ -34,7 +34,7 @@ export default class TransferResolver {
         payer: payerUser,
         payee: shop,
       }).save();
-      return new WXPay()
+      return createPay(paymentMethod)
         .setOrderNumber(recordNumber)
         .setTotalFee(totalFee)
         .preparePayment();

@@ -49,4 +49,7 @@ type WXPayPrepare {
 
     "微信支付签名"
     sign: String
+
+    "支付宝支付信息"
+    alipayInfo: String
 }

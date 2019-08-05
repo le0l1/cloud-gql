@@ -10,7 +10,7 @@ module.exports = process.env.NODE_ENV === 'development'
     migrations: ['src/migration/*.js'],
     subscribers: ['src/graphql/**/**.subscriber.js'],
     // logging: true,
-    // synchronize: true,
+    synchronize: true,
     entityPrefix: 'cloud_',
     cli: {
       migrationsDir: 'src/migration',

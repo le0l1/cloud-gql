@@ -57,6 +57,7 @@ type TransferConnection implements Connection {
   edges: [Transfer!]
 }
 
+
 extend type Query {
   transfers(transfersQuery: TransfersQuery!): TransferConnection
 }
