@@ -14,6 +14,7 @@ export default class AliPay {
     format: 'json',
     timestamp: '2019-08-04 11:23:50',
     version: '1.0',
+    notify_url: env('HOST') + env('ALIPAY_NOTIFY_URL'),
     bizContent: {
       subject: '线下交易',
     },
