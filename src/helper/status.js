@@ -48,12 +48,14 @@ export const GoodStatus = {
  * PENDING: 支付中
  * CANCELED: 已取消
  * PAY_FAIL: 支付失败
+ * ODD: 支付异常
  */
 export const PaymentStatus = {
   PAID: 2,
   PENDING: 3,
   CANCELED: 10,
   PAY_FAIL: 20,
+  ODD: 40,
 };
 
 /**
