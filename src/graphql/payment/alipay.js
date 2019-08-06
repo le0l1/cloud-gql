@@ -35,6 +35,14 @@ export default class AliPay {
     return this;
   }
 
+  /**
+   * 设置回调
+   */
+  setNotifyUrl(url) {
+    this.params.notify_url = url;
+    return this;
+  }
+
   getSign() {
     const alipaySdk = new AlipaySdk({
       appId: env('ALIPAY_APP_ID'),
