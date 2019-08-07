@@ -1,19 +1,19 @@
 module.exports = {
   presets: [
     [
-      "@babel/preset-env",
+      '@babel/preset-env',
       {
-        modules: "umd",
+        modules: 'umd',
         targets: {
-          node: true
-        }
-      }
-    ]
+          node: true,
+        },
+      },
+    ],
   ],
   plugins: [
-    "import-graphql",
-    "@babel/plugin-syntax-dynamic-import",
-    ["@babel/plugin-proposal-decorators", { legacy: true }],
-    ["@babel/plugin-proposal-class-properties", {loose: true}],
-  ]
+    'import-graphql',
+    '@babel/plugin-syntax-dynamic-import',
+    ['@babel/plugin-proposal-decorators', { legacy: true }],
+    ['@babel/plugin-proposal-class-properties', { loose: true }],
+  ],
 };

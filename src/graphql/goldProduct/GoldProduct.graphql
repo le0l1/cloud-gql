@@ -1,0 +1,61 @@
+type GoldProductNode implements Node {
+  id: ID
+  name: String
+  cover: String
+  salePrice: Int
+  stock: Int
+  description: String
+}
+
+type GoldProduct {
+  id: ID
+  name: String
+  cover: String
+  salePrice: Int
+  stock: Int
+  description: String
+  banners: [Banner]
+}
+
+type GoldProductConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [GoldProductNode!]
+}
+
+input CreateGoldProductInput {
+  name: String!
+  salePrice: Int!
+  stock: Int!
+  description: String!
+  banners: [String!]
+}
+
+input UpdateGoldProductInput {
+  id: ID!
+  name: String
+  salePrice: Int
+  stock: Int
+  description: String
+  banners: [String!]
+}
+
+input GoldProductsQuery {
+  limit: Int
+  offset: Int
+}
+
+extend type Mutation {
+  "创建金币商品"
+  createGoldProduct(input: CreateGoldProductInput): GoldProductNode
+  "更新金币商品"
+  updateGoldProduct(input: UpdateGoldProductInput): GoldProductNode
+  "删除金币商品"
+  deleteGoldProduct(id: ID!): GoldProductNode
+}
+
+extend type Query {
+  "金币商品列表"
+  goldProducts(query: GoldProductsQuery): GoldProductConnection
+  "金币商品详情"
+  goldProduct(id: ID!): GoldProduct
+}
