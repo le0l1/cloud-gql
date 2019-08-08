@@ -35,6 +35,7 @@ export class GoldOrder extends BaseEntity {
   @Column({
     type: 'timestamp',
     name: 'deleted_at',
+    default: null,
   })
   deletedAt;
 }
