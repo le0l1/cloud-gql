@@ -153,3 +153,9 @@ export class RedPacketFailError extends ApolloError {
     super('领取失败！请稍后再试', 'RedPacketFailError');
   }
 }
+
+export class GoldLackError extends ApolloError {
+  constructor() {
+    super('金币数量不足', 'GoldLackError');
+  }
+}

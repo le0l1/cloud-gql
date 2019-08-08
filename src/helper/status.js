@@ -129,3 +129,17 @@ export const WithdrawStatus = {
   NOT_PASSED: 'NOT_PASSED',
   PASSED: 'PASSED',
 };
+
+/**
+ * 金币商城 订单状态
+ * WAIT_SHIP: 待发货
+ * WAIT_RECEIPT: 待收货
+ * UNUSUAL: 异常
+ * COMPLETE: 订单完成
+ */
+export const GoldProductRecordStatus = {
+  WAIT_SHIP: 'WAIT_SHIP',
+  WAIT_RECEIPT: 'WAIT_RECEIPT',
+  UNUSUAL: 'UNUSUAL',
+  COMPLETE: 'COMPLETE',
+};
