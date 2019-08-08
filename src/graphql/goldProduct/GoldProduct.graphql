@@ -1,5 +1,5 @@
 type GoldProductNode implements Node {
-  id: ID
+  id: ID!
   name: String
   cover: String
   salePrice: Int
