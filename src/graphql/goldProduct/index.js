@@ -4,7 +4,7 @@ import { idResolver } from '../../helper/resolver';
 
 const resolvers = {
   Query: {
-    goldProducts(_, { query }) {
+    goldProducts(_, { query = {} }) {
       return GoldProductResolver.searchGoldProducts(query);
     },
     goldProduct(_, { id }) {

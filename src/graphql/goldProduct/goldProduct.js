@@ -6,9 +6,7 @@ import { getQB, withPagination, getManyAndCount } from '../../helper/sql';
 
 export default class GoldProductResolver {
   static createGoldProduct(params) {
-    return getManager().transaction(async (trx) => {
-      GoldProductResolver.storeGoldProduct(params, trx);
-    });
+    return getManager().transaction(async trx => GoldProductResolver.storeGoldProduct(params, trx));
   }
 
   static async storeGoldProduct({ banners = [], ...rest }, trx) {

@@ -46,9 +46,9 @@ input GoldProductsQuery {
 
 extend type Mutation {
   "创建金币商品"
-  createGoldProduct(input: CreateGoldProductInput): GoldProductNode
+  createGoldProduct(input: CreateGoldProductInput!): GoldProductNode
   "更新金币商品"
-  updateGoldProduct(input: UpdateGoldProductInput): GoldProductNode
+  updateGoldProduct(input: UpdateGoldProductInput!): GoldProductNode
   "删除金币商品"
   deleteGoldProduct(id: ID!): GoldProductNode
 }

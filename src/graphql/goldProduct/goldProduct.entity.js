@@ -2,7 +2,7 @@ import {
   BaseEntity, Entity, PrimaryGeneratedColumn, Column,
 } from 'typeorm';
 
-@Entity
+@Entity()
 export class GoldProduct extends BaseEntity {
   @PrimaryGeneratedColumn()
   id;
