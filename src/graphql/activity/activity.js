@@ -125,10 +125,10 @@ export default class ActivityResolver {
    * @param {*} activity 活动
    */
   static async checkUserCondition(user, activity) {
-    // const hasChecked = await CheckInResolver.hasChecked(user.id);
-    // if (!hasChecked) {
-    //   throw new ActivityCheckedError();
-    // }
+    const hasChecked = await CheckInResolver.hasChecked(user.id);
+    if (!hasChecked) {
+      throw new ActivityCheckedError();
+    }
     const record = await ActivityResolver.getTodayRecord(activity.id, user.id);
     if (record) {
       throw new ActivityHasDrawedError();

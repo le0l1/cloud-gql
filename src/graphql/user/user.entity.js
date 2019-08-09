@@ -84,6 +84,12 @@ export class User extends BaseEntity {
   @Column({ comment: 'user`s city', type: 'character varying', nullable: true })
   city;
 
+  @Column({
+    type: 'numeric',
+    default: 0,
+  })
+  gold;
+
   @OneToMany(type => Comment, comment => comment.belongto)
   comments;
 
