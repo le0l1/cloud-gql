@@ -1,5 +1,4 @@
 import fs from 'fs';
-import { format } from 'date-fns';
 import AlipaySdk from 'alipay-sdk';
 import { sign } from 'alipay-sdk/lib/util';
 import iconv from 'iconv-lite';

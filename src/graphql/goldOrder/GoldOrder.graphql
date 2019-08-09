@@ -1,0 +1,58 @@
+type GoldOrderNode implements Node {
+  id: ID!
+  userId: ID 
+  goldProductId: ID 
+  status: GoldOrderStatus
+  createdAt: String
+}
+
+enum GoldOrderStatus {
+  "待发货"
+  WAIT_SHIP
+  "待收货"
+  WAIT_RECEIPT
+  "异常"
+  UNUSUAL
+  "订单完成"
+  COMPLETE
+} 
+
+type GoldOrder {
+  id: ID!
+  user: User 
+  goldProduct: GoldProduct
+  status: GoldOrderStatus
+  createdAt: String
+}
+
+type GoldOrderConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [GoldOrderNode!]
+}
+
+input GoldOrdersQuery {
+  limit: Int
+  offset: Int
+  status: GoldOrderStatus
+}
+
+input CreateGoldOrderInput {
+ userId: ID!
+ goldProductId: ID! 
+}
+
+input UpdateGoldOrderInput {
+  id: ID!
+  status: GoldOrderStatus!
+}
+
+extend type Query {
+  goldOrders(input: GoldOrdersQuery): GoldOrderConnection
+  goldOrder(id: ID!): GoldOrder
+}
+
+extend type Mutation {
+  createGoldOrder(input: CreateGoldOrderInput!): GoldOrderNode
+  updateGoldOrder(input: UpdateGoldOrderInput!): GoldOrderNode
+  deleteGoldOrder(id: ID!): GoldOrderNode
+}
