@@ -57,8 +57,11 @@ export default class UserResolver {
   }
 
   static async loginIn({ phone, password }) {
-    const user = await User.findOneOrFail({
-      phone,
+    const user = await User.findOne({
+      where: {
+        phone,
+        deletedAt: null,
+      },
     });
     if (!user) throw new UserNotExistsError();
     if (
