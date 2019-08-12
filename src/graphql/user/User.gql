@@ -29,6 +29,9 @@ type User implements Node {
 
   "账户余额"
   totalFee: Float
+
+  "金币"
+  gold: Number
 }
 
 "用户注册输入"

@@ -1,4 +1,5 @@
 import { isBefore, isAfter, format } from 'date-fns';
+import { getManager } from 'typeorm';
 import { Activity } from './activity.entity';
 import { decodeNumberId, mergeIfValid } from '../../helper/util';
 import { ActivityProduct } from './activityProduct.entity';
@@ -141,12 +142,31 @@ export default class ActivityResolver {
    * @param {*} user 用户
    */
   static doLuckDraw(activity, user) {
-    const probabilities = activity.products.map(a => a.probability);
-    const awardIndex = aliasSampler(probabilities)();
-    return ActivityRecord.save({
-      userId: user.id,
-      activityProductId: activity.products[awardIndex].id,
-      activityId: activity.id,
-    }).then(() => activity.products[awardIndex]);
+    return getManager().transaction(async (trx) => {
+      const probabilities = activity.products.map(a => a.probability);
+      const awardIndex = aliasSampler(probabilities)();
+      const updateUserGold = async (time = 0) => {
+        const oldVersion = user.version;
+        const userAfterUpdate = await trx.save(
+          User,
+          User.merge(user, {
+            gold: Number(user.gold) + Number(activity.products[awardIndex].gold),
+          }),
+        );
+        if (time > 3) {
+          // 连续更新错误
+          return;
+        }
+        if (userAfterUpdate.version !== oldVersion + 1) {
+          await updateUserGold(time + 1);
+        }
+      };
+      await updateUserGold();
+      return ActivityRecord.save({
+        userId: user.id,
+        activityProductId: activity.products[awardIndex].id,
+        activityId: activity.id,
+      }).then(() => activity.products[awardIndex]);
+    });
   }
 }

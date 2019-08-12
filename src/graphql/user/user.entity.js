@@ -99,9 +99,7 @@ export class User extends BaseEntity {
   @OneToOne(type => Shop, shop => shop.belongto)
   shop;
 
-  @VersionColumn({
-    nullable: true,
-  })
+  @VersionColumn()
   version;
 
   @UpdateDateColumn({
