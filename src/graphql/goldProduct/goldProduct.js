@@ -48,12 +48,14 @@ export default class GoldProductResolver {
   static deleteGoldProduct(id) {
     return getManager().transaction(async (trx) => {
       const goldProduct = await GoldProduct.findOneOrFail(decodeNumberId(id));
+      const res = Object.assign({}, goldProduct);
       const oldBanners = await Banner.find({
         bannerType: 'goldProduct',
         bannerTypeId: goldProduct.id,
       });
       await trx.remove(Banner, oldBanners);
-      return trx.remove(GoldProduct, goldProduct);
+      await trx.remove(GoldProduct, goldProduct);
+      return res;
     });
   }
 
