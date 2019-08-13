@@ -11,9 +11,11 @@ import {
   ActivityDateError,
   ActivityCheckedError,
   ActivityHasDrawedError,
+  ActivityUnusualError,
 } from '../../helper/error';
 import { ActivityRecord } from './activityRecord.entity';
 import CheckInResolver from '../checkIn/checkIn';
+import logger from '../../helper/logger';
 
 export default class ActivityResolver {
   /**
@@ -154,8 +156,8 @@ export default class ActivityResolver {
           }),
         );
         if (time > 3) {
-          // 连续更新错误
-          return;
+          logger.warn(`用户${user.id}参与活动${activity.id}, 更新金币余额失败!`);
+          throw new ActivityUnusualError();
         }
         if (userAfterUpdate.version !== oldVersion + 1) {
           await updateUserGold(time + 1);

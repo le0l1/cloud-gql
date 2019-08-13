@@ -121,6 +121,13 @@ export class ActivityHadEndedError extends ApolloError {
   }
 }
 
+
+export class ActivityUnusualError extends ApolloError {
+  constructor() {
+    super('活动异常！请稍后再试', 'ActivityUnusualError');
+  }
+}
+
 export class ActivityCheckedError extends ApolloError {
   constructor() {
     super('今日尚未签到, 请签到后再参加活动!', 'ActivityCheckedError');
