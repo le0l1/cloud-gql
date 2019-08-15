@@ -21,6 +21,12 @@ export class GoldOrder extends BaseEntity {
   goldProductId;
 
   @Column({
+    type: 'int',
+    name: 'address_id',
+  })
+  addressId;
+
+  @Column({
     type: 'enum',
     enum: Object.values(GoldProductRecordStatus),
     default: GoldProductRecordStatus.WAIT_SHIP,

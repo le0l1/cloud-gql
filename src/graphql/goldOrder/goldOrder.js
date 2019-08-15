@@ -7,15 +7,18 @@ import {
 } from '../../helper/sql';
 import { GoldOrder } from './goldOrder.entity';
 import { Banner } from '../banner/banner.entity';
+import Address from '../address/address.entity';
 
 export default class GoldOrderResolver {
-  static async createGoldOrder({ userId, goldProductId }) {
+  static async createGoldOrder({ userId, goldProductId, addressId }) {
     const user = await User.findOneOrFail(decodeNumberId(userId));
     const goldProduct = await GoldProduct.findOneOrFail(decodeNumberId(goldProductId));
+    const address = await Address.findOneOrFail(decodeNumberId(addressId));
     if (user.gold < goldProduct.salePrice) throw new GoldLackError();
     return GoldOrder.save({
       userId: user.id,
       goldProductId: goldProduct.id,
+      addressId: address.id,
     });
   }
 
@@ -37,6 +40,7 @@ export default class GoldOrderResolver {
   static async searchGoldOrder(id) {
     const goldOrder = await GoldOrder.createQueryBuilder('goldOrder')
       .leftJoinAndMapOne('goldOrder.user', User, 'user', 'user.id = goldOrder.userId')
+      .leftJoinAndMapOne('goldOrder.address', Address, 'address', 'address.id = goldOrder.addressId')
       .where('goldOrder.id = :id', { id: decodeNumberId(id) })
       .getOne();
 
@@ -49,6 +53,7 @@ export default class GoldOrderResolver {
       )
       .where('goldProduct.id = :id', { id: goldOrder.goldProductId })
       .getOne();
+
     return goldOrder;
   }
 

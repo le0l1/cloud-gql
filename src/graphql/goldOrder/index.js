@@ -33,6 +33,9 @@ const resolvers = {
     goldProductId(v) {
       return formateID('goldProduct', v.goldProductId);
     },
+    addressId(v) {
+      return formateID('address', v.addressId);
+    },
   },
   GoldOrder: idResolver('goldOrder'),
   GoldOrderConnection: {
