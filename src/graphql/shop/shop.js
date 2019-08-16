@@ -164,7 +164,7 @@ export default class ShopResolver {
       where('category.id = :categoryId', {
         categoryId: categoryId ? decodeNumberId(categoryId) : null,
       }),
-      where('deletedAt is :deletedAt', { deletedAt: null }),
+      where('shop.deletedAt is :deletedAt', { deletedAt: null }),
       withRelation,
       withPagination(limit, offset),
       getManyAndCount,
