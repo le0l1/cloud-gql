@@ -178,7 +178,7 @@ export default class ShopResolver {
   static async deleteShop({ id }) {
     return getManager().transaction(async (trx) => {
       const shop = await Shop.findOneOrFail(decodeNumberId(id));
-      const merchant = await User.findOneOrFail(decodeNumberId(shop.user));
+      const merchant = await User.findOneOrFail(shop.belongto);
       merchant.deletedAt = new Date();
       shop.deletedAt = new Date();
       await trx.save(User, merchant);
