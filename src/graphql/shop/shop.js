@@ -112,7 +112,9 @@ export default class ShopResolver {
         shopBanners,
         shopImages,
       };
-      await trx.save(Shop.merge(shop, rest));
+      await trx.save(
+        Shop.merge(shop, { ...rest, cover: shopBanners[0] || null, phone: phones[0] || null }),
+      );
       await ShopResolver.rmOldRelations(trx, shop);
       await ShopResolver.storeShopRelation(trx, shop, params);
       return shop;
