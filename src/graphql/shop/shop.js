@@ -126,6 +126,7 @@ export default class ShopResolver {
       return Shop.findOneOrFail({
         where: {
           id: decodeNumberId(id),
+          deletedAt: null,
         },
         relations: ['categories'],
       });
@@ -134,6 +135,7 @@ export default class ShopResolver {
     return Shop.findOneOrFail({
       where: {
         user: owner,
+        deletedAt: null,
       },
       relations: ['categories'],
     });
@@ -174,9 +176,14 @@ export default class ShopResolver {
   }
 
   static async deleteShop({ id }) {
-    const shop = await Shop.findOneOrFail(decodeNumberId(id));
-    shop.deletedAt = new Date();
-    return shop.save();
+    return getManager().transaction(async (trx) => {
+      const shop = await Shop.findOneOrFail(decodeNumberId(id));
+      const merchant = await User.findOneOrFail(decodeNumberId(shop.user));
+      merchant.deletedAt = new Date();
+      shop.deletedAt = new Date();
+      await trx.save(User, merchant);
+      return trx.save(Shop, shop);
+    });
   }
 
   static searchShopCity() {
