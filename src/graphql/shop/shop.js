@@ -10,6 +10,7 @@ import {
   getQB, where, withPagination, getManyAndCount,
 } from '../../helper/sql';
 import { DumplicateShopNameError } from '../../helper/error';
+import { Good } from '../good/good.entity';
 
 export default class ShopResolver {
   static async storeShopRelation(trx, shop, {
@@ -179,9 +180,15 @@ export default class ShopResolver {
     return getManager().transaction(async (trx) => {
       const shop = await Shop.findOneOrFail(decodeNumberId(id));
       const merchant = await User.findOneOrFail(shop.belongto);
+      const goods = await Good.find({
+        where: {
+          shopId: shop.id,
+        },
+      });
       merchant.deletedAt = new Date();
       shop.deletedAt = new Date();
       await trx.save(User, merchant);
+      await trx.save(Good, goods.map(g => ({ ...g, deletedAt: new Date() })));
       return trx.save(Shop, shop);
     });
   }
