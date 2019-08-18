@@ -27,11 +27,12 @@ export default class GoldOrderResolver {
     return GoldOrder.merge(goldProductOrder, { status }).save();
   }
 
-  static searchGoldOrders({ limit, offset, status }) {
+  static searchGoldOrders({ limit, offset, status, userId }) {
     return pipe(
       getQB('goldOrder'),
       where('goldOrder.status  = :status', { status }),
       where('goldOrder.deletedAt is null'),
+      where('goldOrder.userId = :userId', { userId: decodeNumberId(userId) }),
       withPagination(limit, offset),
       getManyAndCount,
     )(GoldOrder);

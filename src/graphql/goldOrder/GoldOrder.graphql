@@ -36,6 +36,7 @@ input GoldOrdersQuery {
   limit: Int
   offset: Int
   status: GoldOrderStatus
+  userId: ID
 }
 
 input CreateGoldOrderInput {
