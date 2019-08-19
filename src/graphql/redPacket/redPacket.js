@@ -5,6 +5,7 @@ import { RedPacket } from './redPacket.entity';
 import { RedPacketEmptyError, RedPacketGrabedError, RedPacketFailError } from '../../helper/error';
 import { RedPacketRecord } from './redPacketRecord.entity';
 import logger from '../../helper/logger';
+import AliPay from '../payment/alipay';
 
 export default class RedPacketResolver {
   /**
@@ -27,7 +28,13 @@ export default class RedPacketResolver {
         totalFee: average,
       }));
       await trx.save(RedPacketRecord, redPacketRecords);
-      return redPacket;
+      // TODO: 目前仅支付宝支付
+      return new AliPay()
+        .setTotalFee(totalFee)
+        .setOrderNumber('12312313')
+        .setSubject('红包商品')
+        .pagePayment();
+      // return redPacket;
     });
   }
 

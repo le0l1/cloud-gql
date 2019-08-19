@@ -72,4 +72,15 @@ export default class AliPay {
       alipayInfo: this.getSignStr(this.getSign()),
     };
   }
+
+  /**
+   * 电脑支付
+   */
+  pagePayment() {
+    const alipaySdk = new AlipaySdk({
+      appId: env('ALIPAY_APP_ID'),
+      privateKey: fs.readFileSync(env('ALIPAY_PRIVATE_KEY'), 'ascii'),
+    });
+    return alipaySdk.exec('alipay.trade.page.pay', this.params);
+  }
 }
