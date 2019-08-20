@@ -3,8 +3,6 @@ import { Banner } from '../banner/banner.entity';
 import { GoldProduct } from './goldProduct.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
 import { getQB, withPagination, getManyAndCount } from '../../helper/sql';
-import { User } from '../user/user.entity';
-import { GoldLackError } from '../../helper/error';
 
 export default class GoldProductResolver {
   static createGoldProduct(params) {
