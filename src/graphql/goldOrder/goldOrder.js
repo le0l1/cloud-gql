@@ -4,7 +4,7 @@ import { decodeNumberId, pipe } from '../../helper/util';
 import { GoldProduct } from '../goldProduct/goldProduct.entity';
 import { GoldLackError, StockLackError } from '../../helper/error';
 import {
-  getQB, where, withPagination, getManyAndCount,
+  getQB, where, withPagination, getManyAndCount, leftJoinAndMapOne,
 } from '../../helper/sql';
 import { GoldOrder } from './goldOrder.entity';
 import { Banner } from '../banner/banner.entity';
@@ -39,9 +39,10 @@ export default class GoldOrderResolver {
   }) {
     return pipe(
       getQB('goldOrder'),
+      leftJoinAndMapOne('goldOrder.goldProduct', GoldProduct, 'goldProduct', 'goldProduct.id = goldOrder.goldProductId'),
       where('goldOrder.status  = :status', { status }),
       where('goldOrder.deletedAt is null'),
-      where('goldOrder.userId = :userId', { userId: decodeNumberId(userId) }),
+      where('goldOrder.userId = :userId', { userId: userId ? decodeNumberId(userId) : null }),
       withPagination(limit, offset),
       getManyAndCount,
     )(GoldOrder);

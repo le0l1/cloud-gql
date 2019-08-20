@@ -1,7 +1,7 @@
 type GoldOrderNode implements Node {
   id: ID!
   userId: ID 
-  goldProductId: ID 
+  goldProduct: GoldProduct
   addressId: ID
   status: GoldOrderStatus
   createdAt: String

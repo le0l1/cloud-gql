@@ -30,9 +30,6 @@ const resolvers = {
     userId(v) {
       return formateID('user', v.userId);
     },
-    goldProductId(v) {
-      return formateID('goldProduct', v.goldProductId);
-    },
     addressId(v) {
       return formateID('address', v.addressId);
     },
