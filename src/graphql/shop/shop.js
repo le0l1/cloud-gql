@@ -135,7 +135,7 @@ export default class ShopResolver {
     const owner = await User.findOneOrFail(decodeNumberId(user));
     return Shop.findOneOrFail({
       where: {
-        user: owner,
+        belongto: owner.id,
         deletedAt: null,
       },
       relations: ['categories'],
