@@ -21,7 +21,7 @@ input GrabRedPacketInput {
 
 extend type Mutation {
   "发红包"
-  sendRedPacket(input: SendRedPacketInput!): RedPacket
+  sendRedPacket(input: SendRedPacketInput!): String
   "抢红包"
   grabRedPacket(input: GrabRedPacketInput!): Int
 }

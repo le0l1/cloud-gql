@@ -1,10 +1,12 @@
 import { getManager } from 'typeorm';
+import { format } from 'date-fns';
 import { User } from '../user/user.entity';
 import { decodeNumberId } from '../../helper/util';
 import { RedPacket } from './redPacket.entity';
 import { RedPacketEmptyError, RedPacketGrabedError, RedPacketFailError } from '../../helper/error';
 import { RedPacketRecord } from './redPacketRecord.entity';
 import logger from '../../helper/logger';
+import AliPay from '../payment/alipay';
 
 export default class RedPacketResolver {
   /**
@@ -27,7 +29,15 @@ export default class RedPacketResolver {
         totalFee: average,
       }));
       await trx.save(RedPacketRecord, redPacketRecords);
-      return redPacket;
+      // return redPacket;
+      const orderNumber = `R${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(
+        Math.random() * 1000000,
+      )}`;
+      return new AliPay()
+        .setOrderNumber(orderNumber)
+        .setSubject('红包商品')
+        .setTotalFee(totalFee)
+        .pagePay();
     });
   }
 
