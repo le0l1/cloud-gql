@@ -7,6 +7,7 @@ import { RedPacketEmptyError, RedPacketGrabedError, RedPacketFailError } from '.
 import { RedPacketRecord } from './redPacketRecord.entity';
 import logger from '../../helper/logger';
 import AliPay from '../payment/alipay';
+import { Payment } from '../payment/payment.entity';
 
 export default class RedPacketResolver {
   /**
@@ -15,24 +16,23 @@ export default class RedPacketResolver {
   static sendRedPacket({ sponsor, quantity, totalFee }) {
     return getManager().transaction(async (trx) => {
       const user = await User.findOneOrFail(decodeNumberId(sponsor));
-      const average = totalFee / quantity;
-      const redPacket = await trx.save(RedPacket, {
-        sponsor: user.id,
-        quantity,
-        totalFee,
-        restQuantity: quantity,
-      });
-      const redPacketRecords = Array.from({
-        quantity,
-      }).map(() => RedPacketRecord.create({
-        redPacketId: redPacket.id,
-        totalFee: average,
-      }));
-      await trx.save(RedPacketRecord, redPacketRecords);
-      // return redPacket;
       const orderNumber = `R${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(
         Math.random() * 1000000,
       )}`;
+      const payment = await trx.save(Payment, {
+        paymentMethod: '1',
+        totalFee,
+      });
+
+      await trx.save(RedPacket, {
+        sponsor: user.id,
+        quantity,
+        totalFee,
+        orderNumber,
+        paymentId: payment.id,
+        restQuantity: quantity,
+      });
+
       return new AliPay()
         .setOrderNumber(orderNumber)
         .setSubject('红包商品')

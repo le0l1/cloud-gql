@@ -30,6 +30,7 @@ import payment from './graphql/payment';
 import transfer from './graphql/transfer';
 import router from './graphql/transfer/transfer.route';
 import orderRouter from './graphql/order/order.route';
+import redPacketRouter from './graphql/redPacket/redpacket.route';
 import cart from './graphql/cart';
 import address from './graphql/address';
 import collection from './graphql/collection';
@@ -65,6 +66,7 @@ app.use(async (ctx, next) => {
 });
 app.use(router.routes()).use(router.allowedMethods());
 app.use(orderRouter.routes()).use(orderRouter.allowedMethods());
+app.use(redPacketRouter.routes()).use(redPacketRouter.allowedMethods());
 
 // graphql voyager
 router.all(

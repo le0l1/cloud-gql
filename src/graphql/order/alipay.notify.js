@@ -38,7 +38,7 @@ const recordUnusalOrder = (order, description, trx) => trx.save(OrderLog, {
 });
 
 export default (router) => {
-  router.post(env('WXPAY_ORDER_NOTIFY_URL'), async ctx => getManager().transaction(async (trx) => {
+  router.post(env('ALIPAY_NOTIFY_URL'), async ctx => getManager().transaction(async (trx) => {
     const order = await getOrder(ctx.body.out_trade_no);
     const alipay = new AliPay({
       alipayPublicKey: fs.readFileSync(env('ALIPAY_PUBLIC_KEY'), 'ascii'),

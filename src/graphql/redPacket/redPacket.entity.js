@@ -29,6 +29,19 @@ export class RedPacket extends BaseEntity {
   })
   restQuantity
 
+  @Column({
+    type: 'char varying',
+    name: 'order_number',
+  })
+  orderNumber
+
+  @Column({
+    type: 'int',
+    name: 'payment_id',
+  })
+  paymentId
+
+
   @CreateDateColumn({
     name: 'created_at',
   })
