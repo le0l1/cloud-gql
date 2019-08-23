@@ -30,7 +30,7 @@ export class RedPacket extends BaseEntity {
   restQuantity
 
   @Column({
-    type: 'char varying',
+    type: 'character varying',
     name: 'order_number',
   })
   orderNumber
