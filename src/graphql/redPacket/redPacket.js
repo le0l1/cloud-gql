@@ -1,7 +1,7 @@
 import { getManager } from 'typeorm';
 import { format } from 'date-fns';
 import { User } from '../user/user.entity';
-import { decodeNumberId } from '../../helper/util';
+import { decodeNumberId, env } from '../../helper/util';
 import { RedPacket } from './redPacket.entity';
 import { RedPacketEmptyError, RedPacketGrabedError, RedPacketFailError } from '../../helper/error';
 import { RedPacketRecord } from './redPacketRecord.entity';
@@ -35,6 +35,7 @@ export default class RedPacketResolver {
 
       return new AliPay()
         .setOrderNumber(orderNumber)
+        .setNotifyUrl(env('HOST') + env('REDPACKET_NOTIFY_URL'))
         .setSubject('红包商品')
         .setTotalFee(totalFee)
         .pagePay();
