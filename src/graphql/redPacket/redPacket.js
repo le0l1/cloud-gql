@@ -8,6 +8,7 @@ import { RedPacketRecord } from './redPacketRecord.entity';
 import logger from '../../helper/logger';
 import AliPay from '../payment/alipay';
 import { Payment } from '../payment/payment.entity';
+import { PaymentStatus } from '../../helper/status';
 
 export default class RedPacketResolver {
   /**
@@ -114,6 +115,16 @@ export default class RedPacketResolver {
   }
 
   static searchRedPackets() {
-    return RedPacket.find();
+    return RedPacket.createQueryBuilder('redPacket')
+      .leftJoinAndMapOne(
+        'redPacket.payment',
+        Payment,
+        'payment',
+        'redPacket.paymentId = payment.id',
+      )
+      .where('payment.status = :status', {
+        orderNumber: PaymentStatus.PAID,
+      })
+      .getMany();
   }
 }
