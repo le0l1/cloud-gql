@@ -40,6 +40,7 @@ export default class GoldOrderResolver {
     return pipe(
       getQB('goldOrder'),
       leftJoinAndMapOne('goldOrder.goldProduct', GoldProduct, 'goldProduct', 'goldProduct.id = goldOrder.goldProductId'),
+      leftJoinAndMapOne('goldOrder.user', User, 'user', 'goldOrder.userId = user.id'),
       where('goldOrder.status  = :status', { status }),
       where('goldOrder.deletedAt is null'),
       where('goldOrder.userId = :userId', { userId: userId ? decodeNumberId(userId) : null }),
