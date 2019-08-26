@@ -29,9 +29,9 @@ export default class GoldOrderResolver {
     });
   }
 
-  static async updateGoldOrder({ id, status }) {
+  static async updateGoldOrder({ id, status, description }) {
     const goldProductOrder = await GoldOrder.findOneOrFail(decodeNumberId(id));
-    return GoldOrder.merge(goldProductOrder, { status }).save();
+    return GoldOrder.merge(goldProductOrder, { status, description }).save();
   }
 
   static searchGoldOrders({

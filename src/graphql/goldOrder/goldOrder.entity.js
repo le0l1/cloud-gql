@@ -33,6 +33,12 @@ export class GoldOrder extends BaseEntity {
   })
   status;
 
+  @Column({
+    type: 'character varying',
+    nullable: true,
+  })
+  description
+
   @CreateDateColumn({
     name: 'createdAt',
   })
