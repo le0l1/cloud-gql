@@ -44,6 +44,7 @@ import checkIn from './graphql/checkIn';
 import redPacket from './graphql/redPacket';
 import goldProduct from './graphql/goldProduct';
 import goldOrder from './graphql/goldOrder';
+import device from './graphql/device';
 
 const app = new Koa();
 
@@ -111,6 +112,7 @@ export const makeServer = context => new ApolloServer({
     redPacket.typeDef,
     goldProduct.typeDef,
     goldOrder.typeDef,
+    device.typeDef,
   ],
   resolvers: [
     dateResolver,
@@ -148,6 +150,7 @@ export const makeServer = context => new ApolloServer({
     redPacket.resolvers,
     goldProduct.resolvers,
     goldOrder.resolvers,
+    device.resolvers,
   ],
   context,
   schemaDirectives: {
