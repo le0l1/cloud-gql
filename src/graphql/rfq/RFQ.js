@@ -4,7 +4,7 @@ import { decodeNumberId, pipe } from '../../helper/util';
 import { RFQ } from './RFQ.entity';
 import { Accessories } from '../accessories/accessories.entity';
 import { Banner } from '../banner/banner.entity';
-import { withPagination, getManyAndCount, where } from '../../helper/sql';
+import { withPagination, getManyAndCount, where, orderBy } from '../../helper/sql';
 
 export default class RFQResolver {
   static async createRFQ({
@@ -35,7 +35,7 @@ export default class RFQResolver {
     });
   }
 
-  static searchRFQs({ limit, offset }) {
+  static searchRFQs({ limit, offset, sort = 'DESC' }) {
     const qb = RFQ.createQueryBuilder('RFQ')
       .leftJoinAndMapOne('RFQ.announcer', User, 'user', 'user.id = RFQ.announcerId')
       .leftJoinAndMapMany(
@@ -47,6 +47,9 @@ export default class RFQResolver {
 
     return pipe(
       withPagination(limit, offset),
+      orderBy({
+        'RFQ.announceAt': sort,
+      }),
       getManyAndCount,
     )(qb);
   }

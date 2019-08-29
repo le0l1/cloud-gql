@@ -62,6 +62,8 @@ input RFQSearchInput {
   offset: Int
   "分页条数"
   limit: Int
+  "创建时间排序 默认为倒叙"
+  sort: SortType
 }
 
 extend type Query {
