@@ -1,6 +1,7 @@
 type RedPacket {
   id: ID
   sponsor: ID
+  description: String
   quantity: Int
   totalFee: Int
   restQuantity: Int
@@ -12,6 +13,7 @@ input SendRedPacketInput {
   sponsor: ID!
   quantity: Int!
   totalFee: Int!
+  description: String!
 }
 
 input GrabRedPacketInput {

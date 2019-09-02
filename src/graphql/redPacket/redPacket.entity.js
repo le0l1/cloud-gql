@@ -13,6 +13,12 @@ export class RedPacket extends BaseEntity {
   sponsor;
 
   @Column({
+    type: 'character varying',
+    nullable: true,
+  })
+  description
+
+  @Column({
     type: 'int',
   })
   quantity;

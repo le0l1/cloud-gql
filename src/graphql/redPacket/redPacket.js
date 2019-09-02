@@ -14,7 +14,9 @@ export default class RedPacketResolver {
   /**
    * 发送红包
    */
-  static sendRedPacket({ sponsor, quantity, totalFee }) {
+  static sendRedPacket({
+    sponsor, quantity, totalFee, description,
+  }) {
     return getManager().transaction(async (trx) => {
       const user = await User.findOneOrFail(decodeNumberId(sponsor));
       const orderNumber = `R${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(
@@ -27,6 +29,7 @@ export default class RedPacketResolver {
 
       await trx.save(RedPacket, {
         sponsor: user.id,
+        description,
         quantity,
         totalFee,
         orderNumber,
