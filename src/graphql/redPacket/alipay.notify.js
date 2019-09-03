@@ -10,7 +10,8 @@ import { RedPacketRecord } from './redPacketRecord.entity';
 
 export default (router) => {
   router.post(env('REDPACKET_NOTIFY_URL'), ctx => getManager().transaction(async (trx) => {
-    logger.info(`支付宝回调:${ctx.body}`);
+    logger.info(`支付宝回调:${ctx.query}`);
+    logger.info(`支付宝回调:${ctx}`);
     const redPacket = await RedPacket.createQueryBuilder('redPacket')
       .leftJoinAndMapOne(
         'redPacket.payment',
