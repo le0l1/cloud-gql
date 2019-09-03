@@ -44,8 +44,8 @@ export default (router) => {
     }
 
     // 检查订单金额与支付金额是否匹配
-    if (Number(redPacket.totalFee) !== Number(ctx.body.total_fee) / 100) {
-      const totalCount = Number(ctx.body.total_fee) / 100;
+    if (Number(redPacket.totalFee) !== Number(ctx.body.total_fee)) {
+      const totalCount = Number(ctx.body.total_fee);
       const msg = `红包 ${redPacket.orderNumber} 金额不匹配,修改金额为: ${totalCount}`;
       await trx.update(RedPacket, redPacket.id, { totalFee: totalCount });
       await trx.update(Payment, redPacket.paymentId, { status: PaymentStatus.ODD });
