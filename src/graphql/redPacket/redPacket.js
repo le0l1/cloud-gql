@@ -41,7 +41,7 @@ export default class RedPacketResolver {
         .setOrderNumber(orderNumber)
         .setNotifyUrl(env('HOST') + env('REDPACKET_NOTIFY_URL'))
         .setSubject('红包商品')
-        .setTotalFee(totalFee)
+        .setTotalFee(0.01)
         .pagePay();
     });
   }
