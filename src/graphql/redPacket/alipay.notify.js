@@ -10,7 +10,7 @@ import { RedPacketRecord } from './redPacketRecord.entity';
 
 export default (router) => {
   router.post(env('REDPACKET_NOTIFY_URL'), ctx => getManager().transaction(async (trx) => {
-    logger.info(`支付宝回调:${ctx.query}`);
+    // logger.info(`支付宝回调:${ctx.query}`);
     const redPacket = await RedPacket.createQueryBuilder('redPacket')
       .leftJoinAndMapOne(
         'redPacket.payment',
@@ -33,9 +33,7 @@ export default (router) => {
       return 'success';
     }
 
-    /**
-       * 支付回调验签, 如果失败则支付异常
-       */
+    // 支付回调验签, 如果失败则支付异常
     if (!alipay.checkNotifySign(ctx.query)) {
       const failReason = `红包 ${redPacket.orderNumber} 验签失败! 更改交易支付状态为异常`;
       await trx.update(Payment, redPacket.paymentId, { status: PaymentStatus.ODD });
