@@ -1,17 +1,16 @@
 import { getManager } from 'typeorm';
 import fs from 'fs';
+import AlipaySdk from 'alipay-sdk';
 import { env } from '../../helper/util';
 import { RedPacket } from './redPacket.entity';
 import { Payment } from '../payment/payment.entity';
 import { PaymentStatus } from '../../helper/status';
 import logger from '../../helper/logger';
-import AliPay from '../payment/alipay';
 import { RedPacketRecord } from './redPacketRecord.entity';
 
 export default (router) => {
   router.post(env('REDPACKET_NOTIFY_URL'), ctx => getManager().transaction(async (trx) => {
-    logger.info(`支付宝回调:${ctx.body}`);
-    logger.info(`支付宝回调:${ctx.params}`);
+    logger.info(`支付宝回调:${ctx.query}`);
     const redPacket = await RedPacket.createQueryBuilder('redPacket')
       .leftJoinAndMapOne(
         'redPacket.payment',
@@ -20,11 +19,11 @@ export default (router) => {
         'redPacket.paymentId = payment.id',
       )
       .where('redPacket.orderNumber = :orderNumber', {
-        orderNumber: ctx.body.out_trade_no,
+        orderNumber: ctx.query.out_trade_no,
       })
       .getOne();
 
-    const alipay = new AliPay({
+    const alipay = new AlipaySdk({
       alipayPublicKey: fs.readFileSync(env('ALIPAY_PUBLIC_KEY'), 'ascii'),
     });
 
@@ -37,7 +36,7 @@ export default (router) => {
     /**
        * 支付回调验签, 如果失败则支付异常
        */
-    if (!alipay.checkNotifySign(ctx.body)) {
+    if (!alipay.checkNotifySign(ctx.query)) {
       const failReason = `红包 ${redPacket.orderNumber} 验签失败! 更改交易支付状态为异常`;
       await trx.update(Payment, redPacket.paymentId, { status: PaymentStatus.ODD });
       logger.warn(failReason);
@@ -45,8 +44,8 @@ export default (router) => {
     }
 
     // 检查订单金额与支付金额是否匹配
-    if (Number(redPacket.totalFee) !== Number(ctx.body.total_fee)) {
-      const totalCount = Number(ctx.body.total_fee);
+    if (Number(redPacket.totalFee) !== Number(ctx.query.total_amount)) {
+      const totalCount = Number(ctx.query.total_amount);
       const msg = `红包 ${redPacket.orderNumber} 金额不匹配,修改金额为: ${totalCount}`;
       await trx.update(RedPacket, redPacket.id, { totalFee: totalCount });
       await trx.update(Payment, redPacket.paymentId, { status: PaymentStatus.ODD });
