@@ -102,7 +102,7 @@ export default class UserResolver {
       where('user.phone != :phone', { phone: '888888' }),
       withPagination(limit, offset),
       orderBy({
-        createdAt: 'DESC',
+        'user.createdAt': 'DESC',
       }),
       getManyAndCount,
     )(User);
