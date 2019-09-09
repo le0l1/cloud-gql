@@ -99,7 +99,7 @@ export default class UserResolver {
       where('user.area = :area', { area: filters.area }),
       where('user.role = :role', { role: filters.role }),
       where('user.deletedAt is null'),
-      where('user.phone != 888888'),
+      where('user.phone!= "888888"'),
       withPagination(limit, offset),
       orderBy({
         createdAt: 'DESC',
