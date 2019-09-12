@@ -13,7 +13,9 @@ const doBroadcast = (params) => {
     env('UMENG_APP_SECRET'),
     params,
   )}`;
-  axios.post(url, params).catch((err) => {
+  axios.post(url, params).then(
+    logger.info('推送报文:', res.data);
+  ).catch((err) => {
     logger.warn('推送失败:', err);
   });
 };
@@ -50,7 +52,7 @@ const broadcastAndroidMessage = (devices, title) => doBroadcast({
   },
 });
 
-export const brodcastMessage = (title, subtitle, body) => {
-  broadcastAndroidMessage(title, subtitle, body);
-  broadcastIOSMessage(title, subtitle, body);
+export const brodcastMessage = (devices, body) => {
+  broadcastAndroidMessage(devices, body);
+  broadcastIOSMessage(devices, body);
 };
