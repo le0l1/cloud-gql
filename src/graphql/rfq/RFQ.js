@@ -116,7 +116,7 @@ export default class RFQResolver {
       .setParameter('tsQuery', `%${rfq.vehicleSeries}%`)
       .getMany();
     if (merchants.length) {
-      logger.info('推送到商家:', merchants);
+      console.log('broadcast merchants:', merchants);
       const devices = await Device.find({
         select: ['deviceToken'],
         where: {
