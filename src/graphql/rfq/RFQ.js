@@ -120,10 +120,14 @@ export default class RFQResolver {
       const devices = await Device.find({
         select: ['deviceToken'],
         where: {
-          userId: In(merchants),
+          userId: In(merchants.map(m => m.id)),
         },
       });
-      brodcastMessage(devices, '您有一条新的询价单消息');
+      if (devices) {
+        brodcastMessage(devices.map(d => d.deviceToken), '您有一条新的询价单消息');
+      } else {
+        logger.warn('推送取消: 无匹配商家设备');
+      }
     } else {
       logger.warn('推送取消: 无匹配商家');
     }
