@@ -13,9 +13,9 @@ const doBroadcast = (params) => {
     env('UMENG_APP_SECRET'),
     params,
   )}`;
-  axios.post(url, params).then(
-    logger.info('推送报文:', res.data);
-  ).catch((err) => {
+  axios.post(url, params).then((res) => {
+    logger.info('推送报文:', res.data)
+  }).catch((err) => {
     logger.warn('推送失败:', err);
   });
 };
