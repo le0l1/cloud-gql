@@ -109,7 +109,7 @@ export default class RFQResolver {
       .leftJoinAndSelect('shop.categories', 'category')
       .where('category.name like :tsQuery')
       .select('shop."userId"');
-      
+
     const merchants = await User.createQueryBuilder('user')
       .where(`user.id IN (${shopQb.getQuery()})`)
       .select(['user.id'])
@@ -122,6 +122,7 @@ export default class RFQResolver {
           userId: In([1]),
         },
       });
+      logger.info('推送到商家:', devices);
       brodcastMessage(devices, '您有一条新的询价单消息');
     } else {
       logger.warn('推送取消: 无匹配商家');
