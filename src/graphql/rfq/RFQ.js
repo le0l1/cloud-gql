@@ -116,13 +116,13 @@ export default class RFQResolver {
       .setParameter('tsQuery', `%${rfq.vehicleSeries}%`)
       .getMany();
     if (merchants.length) {
+      logger.info('推送到商家:', merchants);
       const devices = await Device.find({
         select: ['deviceToken'],
         where: {
-          userId: In([1]),
+          userId: In(merchants),
         },
       });
-      logger.info('推送到商家:', devices);
       brodcastMessage(devices, '您有一条新的询价单消息');
     } else {
       logger.warn('推送取消: 无匹配商家');
