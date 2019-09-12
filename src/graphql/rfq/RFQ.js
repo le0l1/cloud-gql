@@ -123,7 +123,8 @@ export default class RFQResolver {
           userId: In(merchants.map(m => m.id)),
         },
       });
-      if (devices) {
+      console.log('broadcast devices:', devices);
+      if (devices.length) {
         brodcastMessage(devices.map(d => d.deviceToken), '您有一条新的询价单消息');
       } else {
         logger.warn('推送取消: 无匹配商家设备');
