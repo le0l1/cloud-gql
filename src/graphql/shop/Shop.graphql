@@ -78,7 +78,7 @@ input ShopCreateInput {
   "商户微信"
   wechat: String
   "商户电话"
-  phones: [Number!]
+  phones: [String!]
   "商户介绍"
   description: String
   "商户状态"
@@ -116,7 +116,7 @@ input ShopUpdateInput {
   "商户微信"
   wechat: String
   "商户电话"
-  phones: [Number!]
+  phones: [String!]
   "商户介绍"
   description: String
   "商户状态"
