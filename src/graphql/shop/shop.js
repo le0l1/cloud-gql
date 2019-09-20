@@ -10,6 +10,7 @@ import {
   getQB, where, withPagination, getManyAndCount,
 } from '../../helper/sql';
 import { DumplicateShopNameError } from '../../helper/error';
+import { Good } from '../good/good.entity';
 
 export default class ShopResolver {
   static async storeShopRelation(trx, shop, {
@@ -112,7 +113,9 @@ export default class ShopResolver {
         shopBanners,
         shopImages,
       };
-      await trx.save(Shop.merge(shop, rest));
+      await trx.save(
+        Shop.merge(shop, { ...rest, cover: shopBanners[0] || null, phone: phones[0] || null }),
+      );
       await ShopResolver.rmOldRelations(trx, shop);
       await ShopResolver.storeShopRelation(trx, shop, params);
       return shop;
@@ -124,6 +127,7 @@ export default class ShopResolver {
       return Shop.findOneOrFail({
         where: {
           id: decodeNumberId(id),
+          deletedAt: null,
         },
         relations: ['categories'],
       });
@@ -131,7 +135,8 @@ export default class ShopResolver {
     const owner = await User.findOneOrFail(decodeNumberId(user));
     return Shop.findOneOrFail({
       where: {
-        user: owner,
+        user: owner.id,
+        deletedAt: null,
       },
       relations: ['categories'],
     });
@@ -172,9 +177,20 @@ export default class ShopResolver {
   }
 
   static async deleteShop({ id }) {
-    const shop = await Shop.findOneOrFail(decodeNumberId(id));
-    shop.deletedAt = new Date();
-    return shop.save();
+    return getManager().transaction(async (trx) => {
+      const shop = await Shop.findOneOrFail(decodeNumberId(id));
+      const merchant = await User.findOneOrFail(shop.belongto);
+      const goods = await Good.find({
+        where: {
+          shopId: shop.id,
+        },
+      });
+      merchant.deletedAt = new Date();
+      shop.deletedAt = new Date();
+      await trx.save(User, merchant);
+      await trx.save(Good, goods.map(g => ({ ...g, deletedAt: new Date() })));
+      return trx.save(Shop, shop);
+    });
   }
 
   static searchShopCity() {

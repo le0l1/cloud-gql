@@ -35,7 +35,7 @@ export const comparePassword = ({ pwd, hash, salt }) => {
 };
 
 export const generateToken = payload => jwt.sign({ ...payload }, process.env.PRIVATE_TOKEN_KEY, {
-  expiresIn: '1d',
+  expiresIn: '30 days',
 });
 
 export const tradeTokenForUser = token => jwt.verify(token, process.env.PRIVATE_TOKEN_KEY);

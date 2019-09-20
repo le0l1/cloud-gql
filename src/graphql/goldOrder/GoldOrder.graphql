@@ -1,7 +1,7 @@
 type GoldOrderNode implements Node {
   id: ID!
-  userId: ID 
-  goldProductId: ID 
+  user: User
+  goldProduct: GoldProduct
   addressId: ID
   status: GoldOrderStatus
   createdAt: String
@@ -24,6 +24,7 @@ type GoldOrder {
   goldProduct: GoldProduct
   address: Address
   status: GoldOrderStatus
+  description: String
   createdAt: String
 }
 
@@ -36,6 +37,7 @@ input GoldOrdersQuery {
   limit: Int
   offset: Int
   status: GoldOrderStatus
+  userId: ID
 }
 
 input CreateGoldOrderInput {
@@ -47,6 +49,7 @@ input CreateGoldOrderInput {
 input UpdateGoldOrderInput {
   id: ID!
   status: GoldOrderStatus!
+  description: String
 }
 
 extend type Query {

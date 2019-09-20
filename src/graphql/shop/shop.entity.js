@@ -15,6 +15,7 @@ import { Banner } from '../banner/banner.entity';
 import { Phone } from '../phone/phone.entity';
 import { Image } from '../image/image.entity';
 import { User } from '../user/user.entity';
+import { ShopType } from '../../helper/status';
 
 
 @Entity()
@@ -58,6 +59,14 @@ export class Shop extends BaseEntity {
     comment: '商户审核状态',
   })
   isPassed;
+
+  @Column({
+    type: 'enum',
+    enum: Object.values(ShopType),
+    comment: '商户类型',
+  })
+  type;
+
 
   @Column({
     type: 'character varying',

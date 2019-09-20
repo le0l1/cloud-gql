@@ -27,12 +27,6 @@ const resolvers = {
     id(v) {
       return formateID('goldOrder', v.id);
     },
-    userId(v) {
-      return formateID('user', v.userId);
-    },
-    goldProductId(v) {
-      return formateID('goldProduct', v.goldProductId);
-    },
     addressId(v) {
       return formateID('address', v.addressId);
     },

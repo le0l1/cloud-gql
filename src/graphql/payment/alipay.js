@@ -2,6 +2,7 @@ import fs from 'fs';
 import AlipaySdk from 'alipay-sdk';
 import { sign } from 'alipay-sdk/lib/util';
 import iconv from 'iconv-lite';
+import AliPayFormData from 'alipay-sdk/lib/form';
 import { env } from '../../helper/util';
 
 export default class AliPay {
@@ -73,14 +74,17 @@ export default class AliPay {
     };
   }
 
-  /**
-   * 电脑支付
-   */
-  pagePayment() {
-    const alipaySdk = new AlipaySdk({
+  pagePay() {
+    this.params.method = 'alipay.trade.page.pay';
+    this.params.bizContent.product_code = 'FAST_INSTANT_TRADE_PAY';
+    const formData = new AliPayFormData();
+    Object.keys(this.params).forEach((k) => {
+      formData.addField(k, this.params[k]);
+    });
+    formData.setMethod('get');
+    return new AlipaySdk({
       appId: env('ALIPAY_APP_ID'),
       privateKey: fs.readFileSync(env('ALIPAY_PRIVATE_KEY'), 'ascii'),
-    });
-    return alipaySdk.exec('alipay.trade.page.pay', this.params);
+    }).pageExec('alipay.trade.page.pay', { formData });
   }
 }

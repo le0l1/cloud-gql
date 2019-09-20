@@ -21,7 +21,7 @@ type Shop implements Node {
   belongto: ID!
   "主营业务"
   categories: [Category!]
-  
+
   "商家地址"
   address: String
   "商家地区"
@@ -38,6 +38,14 @@ enum ShopStatus {
   NORMAL
   "暂停营业"
   SUSPEND
+}
+
+"商户类型"
+enum ShopType {
+  "拆车件"
+  TRUCK_PARTS
+  "正常件"
+  NORMAL
 }
 
 input ShopQueryFilter {
@@ -78,7 +86,7 @@ input ShopCreateInput {
   "商户微信"
   wechat: String
   "商户电话"
-  phones: [Number!]
+  phones: [String!]
   "商户介绍"
   description: String
   "商户状态"
@@ -93,10 +101,10 @@ input ShopCreateInput {
   area: String
   "商家所在城市"
   city: String
-  
+  "商户类型"
+  type: ShopType
   "商户轮播图"
   shopBanners: [String!]
-
   "商户相册"
   shopImages: [String!]
 }
@@ -116,7 +124,7 @@ input ShopUpdateInput {
   "商户微信"
   wechat: String
   "商户电话"
-  phones: [Number!]
+  phones: [String!]
   "商户介绍"
   description: String
   "商户状态"
@@ -149,7 +157,7 @@ type ShopResult {
 
 extend type Query {
     "商户列表查询 支持模糊查询 筛选条件"
-    shops(query: ShopsQueryInput): ShopConnection! 
+    shops(query: ShopsQueryInput): ShopConnection!
     "单一商户查询"
     shop(query: ShopQueryInput): Shop!
     "获取所有城市"

@@ -30,6 +30,7 @@ import payment from './graphql/payment';
 import transfer from './graphql/transfer';
 import router from './graphql/transfer/transfer.route';
 import orderRouter from './graphql/order/order.route';
+import redPacketRouter from './graphql/redPacket/redpacket.route';
 import cart from './graphql/cart';
 import address from './graphql/address';
 import collection from './graphql/collection';
@@ -43,6 +44,7 @@ import checkIn from './graphql/checkIn';
 import redPacket from './graphql/redPacket';
 import goldProduct from './graphql/goldProduct';
 import goldOrder from './graphql/goldOrder';
+import device from './graphql/device';
 
 const app = new Koa();
 
@@ -65,6 +67,7 @@ app.use(async (ctx, next) => {
 });
 app.use(router.routes()).use(router.allowedMethods());
 app.use(orderRouter.routes()).use(orderRouter.allowedMethods());
+app.use(redPacketRouter.routes()).use(redPacketRouter.allowedMethods());
 
 // graphql voyager
 router.all(
@@ -109,6 +112,7 @@ export const makeServer = context => new ApolloServer({
     redPacket.typeDef,
     goldProduct.typeDef,
     goldOrder.typeDef,
+    device.typeDef,
   ],
   resolvers: [
     dateResolver,
@@ -146,6 +150,7 @@ export const makeServer = context => new ApolloServer({
     redPacket.resolvers,
     goldProduct.resolvers,
     goldOrder.resolvers,
+    device.resolvers,
   ],
   context,
   schemaDirectives: {

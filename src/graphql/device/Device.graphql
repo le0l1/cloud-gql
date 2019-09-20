@@ -1,0 +1,13 @@
+input BindDeviceInput {
+  userId: ID!
+  deviceToken: String!
+}
+
+type Device {
+  userId: ID
+  deviceToken: String
+}
+
+extend type Mutation {
+  bindDevice(input: BindDeviceInput!): Device
+}

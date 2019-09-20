@@ -13,7 +13,7 @@ import {
   ValidSmsCodeError,
 } from '../../helper/error';
 import {
-  getManyAndCount, getQB, where, withPagination,
+  getManyAndCount, getQB, where, withPagination, orderBy,
 } from '../../helper/sql';
 import { Shop } from '../shop/shop.entity';
 
@@ -99,7 +99,11 @@ export default class UserResolver {
       where('user.area = :area', { area: filters.area }),
       where('user.role = :role', { role: filters.role }),
       where('user.deletedAt is null'),
+      where('user.phone != :phone', { phone: '888888' }),
       withPagination(limit, offset),
+      orderBy({
+        'user.createdAt': 'DESC',
+      }),
       getManyAndCount,
     )(User);
   }

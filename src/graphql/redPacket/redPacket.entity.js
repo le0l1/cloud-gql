@@ -13,6 +13,12 @@ export class RedPacket extends BaseEntity {
   sponsor;
 
   @Column({
+    type: 'character varying',
+    nullable: true,
+  })
+  description
+
+  @Column({
     type: 'int',
   })
   quantity;
@@ -28,6 +34,19 @@ export class RedPacket extends BaseEntity {
     name: 'rest_quantity',
   })
   restQuantity
+
+  @Column({
+    type: 'character varying',
+    name: 'order_number',
+  })
+  orderNumber
+
+  @Column({
+    type: 'int',
+    name: 'payment_id',
+  })
+  paymentId
+
 
   @CreateDateColumn({
     name: 'created_at',

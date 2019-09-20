@@ -1,40 +1,48 @@
 import { getManager } from 'typeorm';
+import { format } from 'date-fns';
 import { User } from '../user/user.entity';
-import { decodeNumberId } from '../../helper/util';
+import { decodeNumberId, env } from '../../helper/util';
 import { RedPacket } from './redPacket.entity';
 import { RedPacketEmptyError, RedPacketGrabedError, RedPacketFailError } from '../../helper/error';
 import { RedPacketRecord } from './redPacketRecord.entity';
 import logger from '../../helper/logger';
 import AliPay from '../payment/alipay';
+import { Payment } from '../payment/payment.entity';
+import { PaymentStatus } from '../../helper/status';
 
 export default class RedPacketResolver {
   /**
    * 发送红包
    */
-  static sendRedPacket({ sponsor, quantity, totalFee }) {
+  static sendRedPacket({
+    sponsor, quantity, totalFee, description,
+  }) {
     return getManager().transaction(async (trx) => {
       const user = await User.findOneOrFail(decodeNumberId(sponsor));
-      const average = totalFee / quantity;
-      const redPacket = await trx.save(RedPacket, {
+      const orderNumber = `R${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(
+        Math.random() * 1000000,
+      )}`;
+      const payment = await trx.save(Payment, {
+        paymentMethod: '1',
+        totalFee,
+      });
+
+      await trx.save(RedPacket, {
         sponsor: user.id,
+        description,
         quantity,
         totalFee,
+        orderNumber,
+        paymentId: payment.id,
         restQuantity: quantity,
       });
-      const redPacketRecords = Array.from({
-        quantity,
-      }).map(() => RedPacketRecord.create({
-        redPacketId: redPacket.id,
-        totalFee: average,
-      }));
-      await trx.save(RedPacketRecord, redPacketRecords);
-      // TODO: 目前仅支付宝支付
+
       return new AliPay()
-        .setTotalFee(totalFee)
-        .setOrderNumber('12312313')
+        .setOrderNumber(orderNumber)
+        .setNotifyUrl(env('HOST') + env('REDPACKET_NOTIFY_URL'))
         .setSubject('红包商品')
-        .pagePayment();
-      // return redPacket;
+        .setTotalFee(0.01)
+        .pagePay();
     });
   }
 
@@ -110,6 +118,16 @@ export default class RedPacketResolver {
   }
 
   static searchRedPackets() {
-    return RedPacket.find();
+    return RedPacket.createQueryBuilder('redPacket')
+      .leftJoinAndMapOne(
+        'redPacket.payment',
+        Payment,
+        'payment',
+        'redPacket.paymentId = payment.id',
+      )
+      .where('payment.status = :status', {
+        orderNumber: PaymentStatus.PAID,
+      })
+      .getMany();
   }
 }
