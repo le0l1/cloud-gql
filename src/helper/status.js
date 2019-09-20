@@ -143,3 +143,12 @@ export const GoldProductRecordStatus = {
   UNUSUAL: 'UNUSUAL',
   COMPLETE: 'COMPLETE',
 };
+/**
+ * 商户类型
+ *  TRUCK_PARTS 拆车件
+ *  NORMAL  正常
+ */
+export const ShopType = {
+  TRUCK_PARTS: 'TRUCK_PARTS',
+  NORMAL: 'NORMAL',
+};
