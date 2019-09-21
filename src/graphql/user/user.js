@@ -30,7 +30,7 @@ export default class UserResolver {
   }) {
     return getManager().transaction(async (trx) => {
       const instane = await SMSCode.findOneOrFail(phone);
-      if (instane.smsCode !== smsCode) throw new ValidSmsCodeError();
+      if (Number(instane.smsCode) !== Number(smsCode)) throw new ValidSmsCodeError();
       if (role === 3) throw new RootRegistryError();
       const hasRegisterd = await User.findOne({ phone });
       if (hasRegisterd && !hasRegisterd.deletedAt) {
