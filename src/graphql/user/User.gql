@@ -118,17 +118,40 @@ type UserRegisterResult {
 "用户登陆返回"
 type UserLoginResult {
   "用户id"
-  id: ID
+  id: ID!
+  
   "用户姓名"
   name: String
+
+  "用户头像"
+  profilePicture: String
+
   "用户手机号"
   phone: Number
-  "用户地址"
+
+  "汽修厂名称"
+  garage: String
+
+  "订货城市"
+  city: String
+
+  "地区"
+  area: String
+
+  "详细地址"
   address: String
+
+  "用户角色"
+  role: Role
+
+  "账户余额"
+  totalFee: Float
+
+  "金币"
+  gold: Number
+  
   "用户登陆凭证"
   token: String
-  "用户角色"
-  role: Role!
 }
 
 "用户删除"
