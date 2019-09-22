@@ -1,0 +1,55 @@
+type PhoneRecord implements Node {
+  id: ID!
+
+  "手机号 考虑到座机号"
+  phone: String
+  
+  "用户id"
+  userId: ID
+
+  "是否为拨出电话"
+  isCall: Boolean
+
+  "创建时间 (拨出时间或者接听时间)"
+  createdAt: String
+}
+
+
+"电话记录列表"
+type PhoneRecordConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [PhoneRecord!]
+}
+
+input  CreatePhoneRecordInput {
+  "手机号 考虑到座机号"
+  phone: String!
+  
+  "用户id  若为商户的话 传入shop.belongto 即为对应的user id"
+  userId: ID!
+
+  "是否为拨出电话 拨出电话为true 接听电话为false"
+  isCall: Boolean!
+}
+
+input PhoneRecordsQuery {
+  "用户id"
+  userId: ID!
+  
+  "页面size"
+  limit: Int
+  "页数"
+  offset: Int
+  "是否为拨出电话 拨出电话为true 接听电话为false"
+  isCall: Boolean!
+}
+
+extend type Query {
+  "查询电话拨打记录"
+  phoneRecords(query: PhoneRecordsQuery!): PhoneRecordConnection
+}
+
+extend type Mutation {
+  "创建电话记录"
+  createPhoneRecord(input: CreatePhoneRecordInput!): PhoneRecord
+}
