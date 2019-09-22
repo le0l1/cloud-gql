@@ -62,7 +62,9 @@ input UserRegisterInput {
 
   "用户角色"
   role: Role
-
+  
+  "若用户选择角色为 MERCHANT 时, 则需要传入对应用户选择的商户类型(ShopTye)"
+  shopType: ShopTye
 }
 
 "用户登录输入"

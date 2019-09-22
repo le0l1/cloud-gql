@@ -50,6 +50,7 @@ export default class UserResolver {
           name: user.garage,
           area: user.area,
           city: user.city,
+          shopType: rest.shopType,
         });
       }
       return user;

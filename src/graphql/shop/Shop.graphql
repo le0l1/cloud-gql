@@ -31,6 +31,16 @@ type Shop implements Node {
   "商户封面"
   cover: String
 
+  "商户类型"
+  shopType: ShopType
+}
+
+"商户类型"
+enum ShopType {
+  "拆车件商户"
+  ORIGINAL_VEHICLE_PART
+  "正常商户"
+  NORMAL_VEHICLE
 }
 
 enum ShopStatus {
@@ -99,6 +109,9 @@ input ShopCreateInput {
 
   "商户相册"
   shopImages: [String!]
+
+  "商户类型"
+  shopType: ShopType
 }
 
 "删除商户输入"

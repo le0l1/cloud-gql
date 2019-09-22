@@ -15,6 +15,7 @@ import { Banner } from '../banner/banner.entity';
 import { Phone } from '../phone/phone.entity';
 import { Image } from '../image/image.entity';
 import { User } from '../user/user.entity';
+import { ShopType } from '../../helper/status';
 
 
 @Entity()
@@ -48,12 +49,21 @@ export class Shop extends BaseEntity {
   })
   cover;
 
+  @Column({
+    type: 'enum',
+    name: 'shop_type',
+    enum: Object.values(ShopType),
+    default: ShopType.NORMAL_VEHICLE,
+    comment: '商户类型: 拆车件商户、正常商户',
+  })
+  shopType;
+
   @CreateDateColumn()
   createdAt;
 
   @Column({
     type: 'boolean',
-    default: false,
+    default: true,
     name: 'is_passed',
     comment: '商户审核状态',
   })
