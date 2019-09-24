@@ -70,15 +70,6 @@ export class Shop extends BaseEntity {
   isPassed;
 
   @Column({
-    type: 'enum',
-    enum: Object.values(ShopType),
-    default: ShopType.NORMAL,
-    comment: '商户类型',
-  })
-  type;
-
-
-  @Column({
     type: 'character varying',
     comment: '商户所在地区',
     nullable: true,

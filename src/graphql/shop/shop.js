@@ -148,7 +148,7 @@ export default class ShopResolver {
     city,
     filter = {
       status: null,
-      shopType: ShopType.NORMAL,
+      shopType: ShopType.NORMAL_VEHICLE,
     },
     limit,
     offset,
@@ -166,7 +166,7 @@ export default class ShopResolver {
         tsQuery: tsQuery ? `%${tsQuery}%` : null,
       }),
       where('shop.status = :status', { status: filter.status }),
-      where('shop.type = :shopType', { shopType: filter.shopType }),
+      where('shop.shopType = :shopType', { shopType: filter.shopType }),
       where('shop.isPassed = :isPassed', { isPassed }),
       where('shop.city = :city', { city }),
       where('category.id = :categoryId', {

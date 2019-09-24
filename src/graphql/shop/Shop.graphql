@@ -50,14 +50,6 @@ enum ShopStatus {
   SUSPEND
 }
 
-"商户类型"
-enum ShopType {
-  "拆车件"
-  TRUCK_PARTS
-  "正常件"
-  NORMAL
-}
-
 input ShopQueryFilter {
   "商户状态"
   status: ShopStatus
