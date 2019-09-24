@@ -63,6 +63,7 @@ export class Shop extends BaseEntity {
   @Column({
     type: 'enum',
     enum: Object.values(ShopType),
+    default: ShopType.NORMAL,
     comment: '商户类型',
   })
   type;

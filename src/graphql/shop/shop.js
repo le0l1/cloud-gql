@@ -11,6 +11,7 @@ import {
 } from '../../helper/sql';
 import { DumplicateShopNameError } from '../../helper/error';
 import { Good } from '../good/good.entity';
+import { ShopType } from '../../helper/status';
 
 export default class ShopResolver {
   static async storeShopRelation(trx, shop, {
@@ -147,6 +148,7 @@ export default class ShopResolver {
     city,
     filter = {
       status: null,
+      shopType: ShopType.NORMAL,
     },
     limit,
     offset,
@@ -164,6 +166,7 @@ export default class ShopResolver {
         tsQuery: tsQuery ? `%${tsQuery}%` : null,
       }),
       where('shop.status = :status', { status: filter.status }),
+      where('shop.type = :shopType', { shopType: filter.shopType }),
       where('shop.isPassed = :isPassed', { isPassed }),
       where('shop.city = :city', { city }),
       where('category.id = :categoryId', {

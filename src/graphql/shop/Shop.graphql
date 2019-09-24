@@ -49,7 +49,10 @@ enum ShopType {
 }
 
 input ShopQueryFilter {
+  "商户状态"
   status: ShopStatus
+  "商户类型"
+  shopType: ShopType
 }
 
 "商户查询"
