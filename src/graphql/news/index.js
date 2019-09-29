@@ -7,6 +7,9 @@ const resolvers = {
     news(_, { query }) {
       return NewsResolver.searchNews(query);
     },
+    newsDetail(_, { id }) {
+      return NewsResolver.searchNewsDetail(id);
+    },
   },
   Mutation: {
     createNews(_, { createNewsInput }) {
