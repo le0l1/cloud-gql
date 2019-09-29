@@ -3,7 +3,7 @@ import { searchPhoneRecords, createPhoneRecord } from './phoneRecord';
 import { idResolver } from '../../helper/resolver';
 import { formateID } from '../../helper/util';
 
-export const resolvers = {
+const resolvers = {
   Query: {
     phoneRecords(_, { query }) {
       return searchPhoneRecords(query);
