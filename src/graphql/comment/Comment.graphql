@@ -54,7 +54,7 @@ extend type Query {
   comments(query: getCommentInput): CommentConnection!
 }
 
-extend type {
+extend type Mutation {
   "创建评论"
   createComment(createCommentInput: CreateCommentInput!): CommentResult
   "删除评论"
