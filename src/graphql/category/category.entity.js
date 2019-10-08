@@ -3,29 +3,11 @@ import {
   BaseEntity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToMany,
   TreeParent,
   TreeChildren,
   Tree,
-  getTreeRepository,
-  JoinTable,
-  Repository,
   CreateDateColumn,
-  ManyToOne,
 } from 'typeorm';
-import { Shop } from '../shop/shop.entity';
-import {
-  getQB, where, getMany, getOne,
-} from '../../helper/sql';
-import {
-  isValid,
-  flatEntitiesTree,
-  pipe,
-  decodeID,
-  formateID,
-  decodeNumberId,
-} from '../../helper/util';
-import { Good } from '../good/good.entity';
 
 @Entity()
 @Tree('closure-table')
