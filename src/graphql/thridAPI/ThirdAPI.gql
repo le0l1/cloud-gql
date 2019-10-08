@@ -35,7 +35,7 @@ type VehicleInfo {
 
 extend type Query {
   "上传凭证"
-  ossToken: String! @auth(requires: MERCHANT)
+  ossToken: String! @auth(requires: CUSTOMER)
   "车架号查询"
   vin(vin: String!): VehicleInfo
 }
