@@ -20,6 +20,8 @@ export const withPagination = (limit = 8, offset = 1) => (query) => {
 };
 export const leftJoinAndSelect = (property, alias) => orm => orm.leftJoinAndSelect(property, alias);
 export const leftJoinAndMapOne = (property, entity, alias, condition) => orm => orm.leftJoinAndMapOne(property, entity, alias, condition);
+export const leftJoinAndMapMany = (property, entity, alias, condition) => orm => orm.leftJoinAndMapMany(property, entity, alias, condition);
+export const setParamter = (paramter, val) => orm => orm.setParamter(paramter, val);
 
 export const orderBy = obj => (orm) => {
   const valid = mergeIfValid(obj, {});

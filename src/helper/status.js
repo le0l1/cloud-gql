@@ -153,3 +153,13 @@ export const ShopType = {
   ORIGINAL_VEHICLE_PART: 'ORIGINAL_VEHICLE_PART',
   NORMAL_VEHICLE: 'NORMAL_VEHICLE',
 };
+
+/**
+ * 报价状态
+ * 待报价 已报价 未参与
+ */
+export const OfferStatus = {
+  WAIT_OFFER: 'WAIT_OFFER',
+  HAS_OFFERED: 'HAS_OFFERED',
+  NOT_PARTICIPATING: 'NOT_PARTICIPATING',
+};
