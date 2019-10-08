@@ -103,6 +103,9 @@ input ShopCreateInput {
   area: String
   "商家所在城市"
   city: String
+
+  "商家封面"
+  cover: String
   
   "商户轮播图"
   shopBanners: [String!]
@@ -140,10 +143,10 @@ input ShopUpdateInput {
   categories: [ID!]
   "商家地址"
   address: String
-
+  "商家封面"
+  cover: String
   "商户轮播图"
   shopBanners: [String!]
-
   "商户相册"
   shopImages: [String!]
 }

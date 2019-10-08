@@ -71,10 +71,9 @@ export default class ShopResolver {
     return getManager().transaction(async (trx) => {
       const shop = await trx.save(
         Shop.create({
-          rest,
           user,
-          cover: shopBanners[0] || null,
           phone: phones[0] || null,
+          ...rest,
         }),
       );
       await ShopResolver.storeShopRelation(trx, shop, {
@@ -114,7 +113,7 @@ export default class ShopResolver {
         shopImages,
       };
       await trx.save(
-        Shop.merge(shop, { ...rest, cover: shopBanners[0] || null, phone: phones[0] || null }),
+        Shop.merge(shop, { ...rest, phone: phones[0] || null }),
       );
       await ShopResolver.rmOldRelations(trx, shop);
       await ShopResolver.storeShopRelation(trx, shop, params);
