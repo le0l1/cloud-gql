@@ -7,6 +7,9 @@ type Recommend {
 
   "推荐的节点"
   recommendNode: Node
+
+  "排名"
+  index: Number
 }
 
 "推荐类型"
@@ -24,6 +27,7 @@ input RecommendCreateInput {
 
   "推荐类型ID  如果是商户 就传商户id  如果是商品 则传商品id 以此类推 "
   typeId: ID!
+
 }
 
 "查询推荐输入"
@@ -32,14 +36,13 @@ input RecommendSearchInput {
   route: String!
 }
 
-#"更新推荐输入"
-#input RecommendUpdateInput {
-#  "推荐列表对应路由"
-#  route: String!
-#
-#  "推荐类型ID  如果是商户 就传商户id  如果是商品 则传商品id 以此类推 "
-#  typeIds: [ID!]
-#}
+"更新推荐输入"
+input RecommendUpdateInput {
+  "推荐id"
+  id: ID!
+  "排名"
+  index: Number
+}
 
 "创建推荐返回"
 type RecommendActionResult {
@@ -62,10 +65,10 @@ extend type Mutation {
   createRecommend(
     createRecommendInput: RecommendCreateInput!
   ): RecommendActionResult
-#  "更新推荐"
-#  updateRecommend(
-#    updateRecommendInput: RecommendUpdateInput!
-#  ): RecommendActionResult
+  "更新推荐"
+  updateRecommend(
+    updateRecommendInput: RecommendUpdateInput!
+  ): RecommendActionResult
   "删除推荐"
   deleteRecommend(
     deleteRecommendInput: RecommendDeleteInput!

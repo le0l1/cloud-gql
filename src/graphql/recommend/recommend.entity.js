@@ -5,8 +5,7 @@ import {
   Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { tryStatement } from '@babel/types';
-import { decodeID, decodeTypeAndId, decodeNumberId } from '../../helper/util';
+import { decodeTypeAndId, decodeNumberId } from '../../helper/util';
 import { Good } from '../good/good.entity';
 import { Shop } from '../shop/shop.entity';
 
@@ -30,6 +29,14 @@ export class Recommend extends BaseEntity {
     name: 'recommend_type_id',
   })
   recommendTypeId
+
+  @Column({
+    type: 'int',
+    name: 'index',
+    comment: '排名',
+    default: 0,
+  })
+  index;
 
   @Column({
     type: 'timestamp',
@@ -63,6 +70,9 @@ export class Recommend extends BaseEntity {
   static async searchRecommend({ route }) {
     const recommends = await Recommend.find({
       where: { route },
+      order: {
+        index: 'DESC',
+      },
     });
     if (!recommends.length) return [];
 
@@ -72,26 +82,18 @@ export class Recommend extends BaseEntity {
     };
     const nodeIds = recommends.map(a => a.recommendTypeId);
     const res = await recommendClass[recommends[0].recommendType].findByIds(nodeIds);
-    
+
     return res.map((node, idx) => ({
       id: recommends[idx].id,
       route,
       recommendNode: node,
-    }))
+    }));
   }
 
-  // static async updateRecommend ({ route, typeIds }) {
-  //   try {
-  //     await Recommend.delete({
-  //       route
-  //     })
-  //     return Recommend.createRecommend({ route, typeIds })
-  //   } catch (e) {
-  //     return {
-  //       status: false
-  //     }
-  //   }
-  // }
+  static async updateRecommend({ id, index }) {
+    const recommend = await Recommend.findOneOrFail(decodeNumberId(id));
+    return Recommend.save(Recommend.merge(recommend, { index }));
+  }
 
   static async deleteRecommend({ id }) {
     try {
