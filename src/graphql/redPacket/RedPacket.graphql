@@ -1,6 +1,8 @@
 type RedPacket {
   id: ID
   sponsor: ID
+  "商户信息"
+  shop: Shop
   description: String
   quantity: Int
   totalFee: Int

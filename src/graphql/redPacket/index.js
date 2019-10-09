@@ -1,6 +1,7 @@
 import RedPacketSchema from './RedPacket.graphql';
 import RedPacketResolver from './redPacket';
 import { idResolver } from '../../helper/resolver';
+import { formateID } from '../../helper/util';
 
 const resolvers = {
   Query: {
@@ -19,7 +20,12 @@ const resolvers = {
       return RedPacketResolver.grabRedPacket(currentUser, input);
     },
   },
-  RedPacket: idResolver('redpacket'),
+  RedPacket: {
+    ...idResolver('redpacket'),
+    sponsor(v) {
+      return formateID('user', v.sponsor);
+    },
+  },
 };
 
 export default {

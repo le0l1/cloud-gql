@@ -9,6 +9,7 @@ import logger from '../../helper/logger';
 import AliPay from '../payment/alipay';
 import { Payment } from '../payment/payment.entity';
 import { PaymentStatus } from '../../helper/status';
+import { Shop } from '../shop/shop.entity';
 
 export default class RedPacketResolver {
   /**
@@ -112,7 +113,15 @@ export default class RedPacketResolver {
    * 查询红包详情
    */
   static searchRedPacket(id) {
-    return RedPacket.findOneOrFail(decodeNumberId(id));
+    return RedPacket.createQueryBuilder('redPacket')
+      .leftJoinAndMapOne(
+        'redPacket.shop',
+        Shop,
+        'shop',
+        'shop.user_id = redPacket.sponsor',
+      )
+      .where('redPacket.id = :id', { id: decodeNumberId(id) })
+      .getOne();
   }
 
   static searchRedPackets() {
@@ -122,6 +131,12 @@ export default class RedPacketResolver {
         Payment,
         'payment',
         'redPacket.paymentId = payment.id',
+      )
+      .leftJoinAndMapOne(
+        'redPacket.shop',
+        Shop,
+        'shop',
+        'shop.user_id = redPacket.sponsor',
       )
       .where('payment.paymentStatus = :status', {
         status: PaymentStatus.PAID,
