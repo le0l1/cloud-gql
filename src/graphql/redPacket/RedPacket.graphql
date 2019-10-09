@@ -9,23 +9,20 @@ type RedPacket {
 }
 
 input SendRedPacketInput {
-  "发红包人ID"
-  sponsor: ID!
   quantity: Int!
   totalFee: Int!
   description: String!
 }
 
 input GrabRedPacketInput {
-  userId: Int!
   redPacketId: ID!
 }
 
 extend type Mutation {
   "发红包"
-  sendRedPacket(input: SendRedPacketInput!): String
+  sendRedPacket(input: SendRedPacketInput!): String @auth(requires: MERCHANT)
   "抢红包"
-  grabRedPacket(input: GrabRedPacketInput!): Int
+  grabRedPacket(input: GrabRedPacketInput!): Int @auth(requires: CUSTOMER)
 }
 
 extend type Query {

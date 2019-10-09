@@ -16,6 +16,13 @@ export default class PhoneRecord extends BaseEntity {
 
   @Column({
     type: 'int',
+    name: 'shop_id',
+    comment: '商户id',
+  })
+  shopId;
+
+  @Column({
+    type: 'int',
     name: 'user_id',
     comment: '用户id',
   })

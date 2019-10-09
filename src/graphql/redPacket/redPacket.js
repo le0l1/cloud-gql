@@ -14,11 +14,10 @@ export default class RedPacketResolver {
   /**
    * 发送红包
    */
-  static sendRedPacket({
-    sponsor, quantity, totalFee, description,
+  static sendRedPacket(user, {
+    quantity, totalFee, description,
   }) {
     return getManager().transaction(async (trx) => {
-      const user = await User.findOneOrFail(decodeNumberId(sponsor));
       const orderNumber = `R${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(
         Math.random() * 1000000,
       )}`;
@@ -49,8 +48,7 @@ export default class RedPacketResolver {
   /**
    * 抢红包
    */
-  static async grabRedPacket({ userId, redPacketId }) {
-    const user = await User.findOneOrFail(userId);
+  static async grabRedPacket(user, { redPacketId }) {
     const redPacket = await RedPacket.findOneOrFail({
       id: decodeNumberId(redPacketId),
       lock: { mode: 'optimistic' },
@@ -125,8 +123,8 @@ export default class RedPacketResolver {
         'payment',
         'redPacket.paymentId = payment.id',
       )
-      .where('payment.status = :status', {
-        orderNumber: PaymentStatus.PAID,
+      .where('payment.paymentStatus = :status', {
+        status: PaymentStatus.PAID,
       })
       .getMany();
   }

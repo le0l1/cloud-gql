@@ -5,13 +5,13 @@ import { formateID } from '../../helper/util';
 
 const resolvers = {
   Query: {
-    phoneRecords(_, { query }) {
-      return searchPhoneRecords(query);
+    phoneRecords(_, { query }, { currentUser }) {
+      return searchPhoneRecords(currentUser, query);
     },
   },
   Mutation: {
-    createPhoneRecord(_, { input }) {
-      return createPhoneRecord(input);
+    createPhoneRecord(_, { input }, { currentUser }) {
+      return createPhoneRecord(currentUser, input);
     },
   },
   PhoneRecord: {
