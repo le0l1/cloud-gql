@@ -1,0 +1,59 @@
+type Offer {
+  id: ID
+  "报价人id"
+  userId: ID
+  "询价单id"
+  quoteId: ID
+  "报价价格"
+  offerPrice: Float
+  "竞标描述"
+  description: String
+  "是否已中标"
+  isAcceptance: Boolean
+  "投标时间"
+  createdAt: String
+}
+
+type OfferNode implements Node {
+  id: ID!
+  "报价人id"
+  userId: ID
+  "询价单id"
+  quoteId: ID
+  "报价价格"
+  offerPrice: Float
+  "竞标描述"
+  description: String
+  "竞标图片"
+  images: [Image!]
+  "是否已中标"
+  isAcceptance: Boolean
+  "报价商户"
+  shop: Shop
+  "投标时间"
+  createdAt: String
+}
+
+
+input CreateOfferInput {
+  "询价单id"
+  quoteId: ID!
+  "竞标价格"
+  offerPrice: Float!
+  "竞标图片"
+  images: [String!]
+  "竞标描述"
+  description: String
+}
+
+extend type Mutation {
+  "报价竞标"
+  createOffer(input: CreateOfferInput!): Offer @auth(requires: MERCHANT)
+}
+
+extend type Query {
+  "报价列表"
+  offers(quoteId: ID!): [OfferNode!]
+  "报价详情"
+  offer(id: ID!): OfferNode
+}

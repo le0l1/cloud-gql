@@ -5,7 +5,7 @@ import Quote from './quote.entity';
 import logger from '../../helper/logger';
 import { Image } from '../image/image.entity';
 import {
-  getQB, withPagination, getManyAndCount, where, setParamter, leftJoinAndSelect, leftJoinAndMapMany,
+  getQB, withPagination, getManyAndCount, where, setParamter, leftJoinAndMapMany,
 } from '../../helper/sql';
 import { OfferStatus } from '../../helper/status';
 import Offer from '../offer/offer.entity';

@@ -1,17 +1,37 @@
 import { getManager } from 'typeorm';
 import Quote from '../quote/quote.entity';
-import { decodeNumberId } from '../../helper/util';
+import { decodeNumberId, pipe } from '../../helper/util';
 import Offer from './offer.entity';
+import { Image } from '../image/image.entity';
+import {
+  getQB, leftJoinAndMapMany, leftJoinAndMapOne, where, getMany, getOne,
+} from '../../helper/sql';
+import { Shop } from '../shop/shop.entity';
 
 /**
  * 创建报价
  */
-export async function createOffer(user, { quoteId, offerPrice }) {
-  const quote = await Quote.findOneOrFail(decodeNumberId(quoteId));
-  return Offer.save({
-    quoteId: quote.id,
-    userId: user.id,
-    offerPrice,
+export function createOffer(user, { quoteId, images = [], ...rest }) {
+  return getManager().transaction(async (trx) => {
+    const quote = await Quote.findOneOrFail(decodeNumberId(quoteId));
+    const oldOffer = await Offer.findOne({
+      userId: user.id,
+      quoteId: quote.id,
+    });
+    const offer = await trx.save(!oldOffer
+      ? Offer.create({
+        quoteId: quote.id,
+        userId: user.id,
+        ...rest,
+      })
+      : Offer.merge(oldOffer, rest));
+
+    await trx.save(images.map(path => Image.create({
+      path,
+      imageType: 'offer',
+      imageTypeId: offer.id,
+    })));
+    return offer;
   });
 }
 /**
@@ -25,4 +45,28 @@ export function accpetOffer(user, { offerId }) {
     // TODO: 还需要创建出对应的订单
     return offer;
   });
+}
+/**
+ * 报价列表
+ */
+export function getOffers(quoteId) {
+  return pipe(
+    getQB('offer'),
+    leftJoinAndMapOne('offer.shop', Shop, 'shop', 'shop.user_id = offer.userId'),
+    leftJoinAndMapMany('offer.images', Image, 'image', "image.imageType = 'offer' and image.imageTypeId = offer.id"),
+    where('offer.quoteId = :quoteId', { quoteId: decodeNumberId(quoteId) }),
+    getMany,
+  )(Offer);
+}
+/**
+ * 报价详情
+ */
+export function getOffer(id) {
+  return pipe(
+    getQB('offer'),
+    leftJoinAndMapOne('offer.shop', Shop, 'shop', 'shop.belongto = offer.userId'),
+    leftJoinAndMapMany('offer.images', Image, 'image', "image.imageType = 'offer' and image.imageTypeId = offer.id"),
+    where('offer.id = :id', { id: decodeNumberId(id) }),
+    getOne,
+  )(Offer);
 }

@@ -2,7 +2,7 @@ import {
   BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn,
 } from 'typeorm';
 
-@Entity
+@Entity()
 export default class Offer extends BaseEntity {
   @PrimaryGeneratedColumn()
   id;
@@ -27,6 +27,14 @@ export default class Offer extends BaseEntity {
     commnet: '报价价格',
   })
   offerPrice;
+
+  @Column({
+    name: 'offer_description',
+    type: 'character varying',
+    comment: '报价描述',
+    nullable: true,
+  })
+  description
 
   @Column({
     name: 'is_acceptance',
