@@ -46,9 +46,18 @@ input CreateOfferInput {
   description: String
 }
 
+input AccpetOfferInput {
+  "竞标id"
+  offerId: ID!
+  "支付方式"
+  paymentMethod: PAYMENTMETHOD!
+}
+
 extend type Mutation {
   "报价竞标"
   createOffer(input: CreateOfferInput!): Offer @auth(requires: MERCHANT)
+  "采纳竞标"
+  accpetOffer(input: AccpetOfferInput!): WXPayPrepare @auth(requires: CUSTOMER)
 }
 
 extend type Query {

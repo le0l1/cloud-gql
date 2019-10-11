@@ -44,6 +44,7 @@ export default class Offer extends BaseEntity {
   })
   isAcceptance;
 
+
   @CreateDateColumn({
     name: 'created_at',
   })

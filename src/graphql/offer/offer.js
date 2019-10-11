@@ -1,12 +1,17 @@
 import { getManager } from 'typeorm';
 import Quote from '../quote/quote.entity';
-import { decodeNumberId, pipe } from '../../helper/util';
+import {
+  decodeNumberId, pipe, env, makeOfferNumber,
+} from '../../helper/util';
 import Offer from './offer.entity';
 import { Image } from '../image/image.entity';
 import {
   getQB, leftJoinAndMapMany, leftJoinAndMapOne, where, getMany, getOne,
 } from '../../helper/sql';
 import { Shop } from '../shop/shop.entity';
+import OfferRecord from './offerRecord.entity';
+import { Payment } from '../payment/payment.entity';
+import { createPay } from '../payment/pay';
 
 /**
  * 创建报价
@@ -37,13 +42,32 @@ export function createOffer(user, { quoteId, images = [], ...rest }) {
 /**
  * 采纳报价
  */
-export function accpetOffer(user, { offerId }) {
+export function accpetOffer(user, { offerId, paymentMethod }) {
   return getManager().transaction(async (trx) => {
     const offer = await Offer.findOneOrFail(decodeNumberId(offerId));
     await trx.save(Offer.merge(offer, { isAcceptance: true }));
     await trx.update(Quote, { id: offer.quoteId, offerId: null }, { offerId: offer.id });
-    // TODO: 还需要创建出对应的订单
-    return offer;
+
+    const payment = Payment.create({
+      totalFee: offer.offerPrice,
+      paymentMethod,
+    });
+    await trx.save(payment);
+
+    const offerRecord = OfferRecord.create({
+      orderNumber: makeOfferNumber(),
+      paymentId: payment.id,
+      offerId: offer.id,
+    });
+    await trx.save(offerRecord);
+
+    const notifyUrl = env('HOST') + paymentMethod === 1 ? env('OFFER_ALIPAY_URL') : env('OFFER_WXPAY_URL');
+
+    return createPay(paymentMethod)
+      .setOrderNumber(offer.orderNumber)
+      .setTotalFee()
+      .setNotifyUrl(notifyUrl)
+      .preparePayment();
   });
 }
 /**

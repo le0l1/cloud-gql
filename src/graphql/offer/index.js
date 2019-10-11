@@ -1,5 +1,7 @@
 import OfferSchema from './Offer.graphql';
-import { getOffers, getOffer, createOffer } from './offer';
+import {
+  getOffers, getOffer, createOffer, accpetOffer,
+} from './offer';
 import { formateID } from '../../helper/util';
 
 const resolvers = {
@@ -14,6 +16,9 @@ const resolvers = {
   Mutation: {
     createOffer(_, { input }, { currentUser }) {
       return createOffer(currentUser, input);
+    },
+    accpetOffer(_, { input }, { currentUser }) {
+      return accpetOffer(currentUser, input);
     },
   },
   Offer: {
