@@ -169,7 +169,13 @@ export default class OrderResolver {
       OrderDetail,
       'orderDetail',
       'orderDetail.orderId = order.id',
-    );
+    )
+      .leftJoinAndMapOne(
+        'orderDetail.shop',
+        Shop,
+        'shop',
+        'orderDetail.shopId = shop.id',
+      );
     return pipe(
       where('order.status = :status', { status }),
       where('order.userId = :userId', { userId: userId ? decodeNumberId(userId) : null }),
