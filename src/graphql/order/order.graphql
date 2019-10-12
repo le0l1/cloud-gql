@@ -43,8 +43,8 @@ type OrderActionResult {
 }
 
 type OrderDetail {
-  "商户id"
-  shopId: ID!
+  "商户"
+  shop: Shop!
   
   "商品id"
   goodId: ID!
