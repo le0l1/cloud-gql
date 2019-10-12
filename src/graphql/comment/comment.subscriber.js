@@ -2,6 +2,7 @@
 import { EventSubscriber } from 'typeorm';
 import { Comment } from './comment.entity';
 import { BusinessCircle } from '../businessCircle/businessCircle.entity';
+import { createCommentMessage } from '../message/message';
 
 @EventSubscriber()
 export default class CommentSubscriber {
@@ -16,5 +17,10 @@ export default class CommentSubscriber {
         commentCount: () => 'comment_count + 1',
       });
     }
+    createCommentMessage({
+      triggerUserId: entity.userId,
+      type: entity.commentType,
+      typeId: entity.commentTypeId,
+    });
   }
 }
