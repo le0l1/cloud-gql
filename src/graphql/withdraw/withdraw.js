@@ -11,6 +11,7 @@ import logger from '../../helper/logger';
 
 export default class WithdrawResolver {
   static async createWithdraw({ userId, totalCount, method }) {
+    // TODO: 通过绑定记录提现到对应的账号
     const user = await User.findOneOrFail(decodeNumberId(userId));
     if (user.totalFee < totalCount) {
       throw new InsufficientBalanceError();
