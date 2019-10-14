@@ -10,7 +10,7 @@ type QuoteNode implements Node {
   description: String
   "图片"
   images: [Image!]
-  "配件":
+  "配件"
   accessories: [Accessories!]
   "创建时间"
   createdAt: String
