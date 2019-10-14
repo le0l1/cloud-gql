@@ -44,6 +44,12 @@ export function searchQuotes(user, { limit, offset, status }) {
     getQB('quote'),
     withPagination(limit, offset),
     leftJoinAndMapMany(
+      'quote.accessories',
+      Accessories,
+      'accssories',
+      'accssories.quoteId = quote.id',
+    ),
+    leftJoinAndMapMany(
       'quote.images',
       Image,
       'image',
@@ -108,6 +114,12 @@ export function searchQuotes(user, { limit, offset, status }) {
 export function searchQuote(id) {
   return pipe(
     getQB('quote'),
+    leftJoinAndMapMany(
+      'quote.accessories',
+      Accessories,
+      'accssories',
+      'accssories.quoteId = quote.id',
+    ),
     leftJoinAndMapMany(
       'quote.images',
       Image,
