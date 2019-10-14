@@ -65,8 +65,9 @@ export function searchQuotes(user, { limit, offset, status }) {
           .select('offer.quoteId')
           .from(Offer, 'offer')
           .where('offer.userId = :userId')
+          .andWhere('offer.quoteId = quote.id')
           .getQuery();
-        return `quote.id NOT IN ${subQuery}`;
+        return `NOT EXISTS ${subQuery}`;
       }),
       setParameter('userId', user.id),
     )(orm);
@@ -78,11 +79,12 @@ export function searchQuotes(user, { limit, offset, status }) {
       where((qb) => {
         const subQuery = qb
           .subQuery()
-          .select('offer.quoteId')
+          .select('offer.quoteId', 'quote_id')
           .from(Offer, 'offer')
           .where('offer.userId = :userId')
+          .andWhere('offer.quoteId = quote.id')
           .getQuery();
-        return `quote.id IN ${subQuery}`;
+        return `EXISTS ${subQuery}`;
       }),
       setParameter('userId', user.id),
       getManyAndCount,
@@ -97,6 +99,7 @@ export function searchQuotes(user, { limit, offset, status }) {
           .select('offer.quoteId')
           .from(Offer, 'offer')
           .where('offer.userId != :userId')
+          .andWhere('offer.quoteId = quote.id')
           .getQuery();
         return `quote.id IN ${subQuery}`;
       }),
