@@ -1,5 +1,7 @@
 import QuoteSchema from './Quote.graphql';
-import { searchQuotes, searchQuote, createQuote } from './quote';
+import {
+  searchQuotes, searchQuote, createQuote, searchCustomerQuotes,
+} from './quote';
 import { idResolver } from '../../helper/resolver';
 import { formateID } from '../../helper/util';
 
@@ -10,6 +12,9 @@ const resolvers = {
     },
     quote(_, { id }) {
       return searchQuote(id);
+    },
+    customerQuotes(_, params, { currentUser }) {
+      return searchCustomerQuotes(currentUser);
     },
   },
   Mutation: {

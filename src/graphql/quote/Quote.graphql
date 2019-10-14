@@ -64,7 +64,9 @@ input QuotesQuery {
 
 extend type Query {
   "询价单列表"
-  quotes(query: QuotesQuery): QuoteConnection! @auth(requires: CUSTOMER)
+  quotes(query: QuotesQuery): QuoteConnection! @auth(requires: Merchant)
+  "用户的询价单列表"
+  customerQuotes: QuoteConnection! @auth(requires: CUSTOMER)
   "询价单详情"
   quote(id: ID!): QuoteNode!
 }

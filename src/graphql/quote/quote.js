@@ -5,7 +5,7 @@ import Quote from './quote.entity';
 import logger from '../../helper/logger';
 import { Image } from '../image/image.entity';
 import {
-  getQB, withPagination, getManyAndCount, where, setParamter, leftJoinAndMapMany,
+  getQB, withPagination, getManyAndCount, where, setParameter, leftJoinAndMapMany,
 } from '../../helper/sql';
 import { OfferStatus } from '../../helper/status';
 import Offer from '../offer/offer.entity';
@@ -58,7 +58,7 @@ export function searchQuotes(user, { limit, offset, status }) {
   )(Quote);
   // 未报价
   if (status === OfferStatus.WAIT_OFFER) {
-    return pipe(
+    const q = pipe(
       where((qb) => {
         const subQuery = qb
           .subQuery()
@@ -66,11 +66,11 @@ export function searchQuotes(user, { limit, offset, status }) {
           .from(Offer, 'offer')
           .where('offer.userId = :userId')
           .getQuery();
-        return `quote.id NOT EXISTS ${subQuery}`;
+        return `quote.id NOT IN ${subQuery}`;
       }),
-      setParamter('userId', user.id),
-      getManyAndCount,
+      setParameter('userId', user.id),
     )(orm);
+    return getManyAndCount(q);
   }
   // 已报价
   if (status === OfferStatus.HAS_OFFERED) {
@@ -82,9 +82,9 @@ export function searchQuotes(user, { limit, offset, status }) {
           .from(Offer, 'offer')
           .where('offer.userId = :userId')
           .getQuery();
-        return `quote.id EXISTS ${subQuery}`;
+        return `quote.id IN ${subQuery}`;
       }),
-      setParamter('userId', user.id),
+      setParameter('userId', user.id),
       getManyAndCount,
     )(orm);
   }
@@ -98,9 +98,9 @@ export function searchQuotes(user, { limit, offset, status }) {
           .from(Offer, 'offer')
           .where('offer.userId != :userId')
           .getQuery();
-        return `quote.id EXISTS ${subQuery}`;
+        return `quote.id IN ${subQuery}`;
       }),
-      setParamter('userId', user.id),
+      setParameter('userId', user.id),
       where('quote.offerId is not null'),
       getManyAndCount,
     )(orm);
@@ -127,6 +127,17 @@ export function searchQuote(id) {
       'image.imageType = "quote" and image.imageTypeId = quote.id',
     ),
     where('quote.id = :id', { id: decodeNumberId(id) }),
+    getManyAndCount,
+  )(Quote);
+}
+
+/**
+ * 查询用户询价单
+ */
+export function searchCustomerQuotes(user) {
+  return pipe(
+    getQB('quote'),
+    where('quote.userId = :userId', { userId: user.id }),
     getManyAndCount,
   )(Quote);
 }
