@@ -101,7 +101,7 @@ export function searchQuotes(user, { limit, offset, status }) {
           .where('offer.userId != :userId')
           .andWhere('offer.quoteId = quote.id')
           .getQuery();
-        return `quote.id IN ${subQuery}`;
+        return `EXSITS ${subQuery}`;
       }),
       setParameter('userId', user.id),
       where('quote.offerId is not null'),
