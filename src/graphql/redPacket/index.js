@@ -11,6 +11,9 @@ const resolvers = {
     redPackets() {
       return RedPacketResolver.searchRedPackets();
     },
+    myRedPackets(_, params, { currentUser }) {
+      return RedPacketResolver.searchUserRedPackets(currentUser);
+    },
   },
   Mutation: {
     sendRedPacket(_, { input }, { currentUser }) {
@@ -26,6 +29,7 @@ const resolvers = {
       return formateID('user', v.sponsor);
     },
   },
+  RedPacketRecord: idResolver('redpacketRecord'),
 };
 
 export default {

@@ -1,7 +1,7 @@
 import { getManager } from 'typeorm';
 import { format } from 'date-fns';
 import { User } from '../user/user.entity';
-import { decodeNumberId, env } from '../../helper/util';
+import { decodeNumberId, env, pipe } from '../../helper/util';
 import { RedPacket } from './redPacket.entity';
 import { RedPacketEmptyError, RedPacketGrabedError, RedPacketFailError } from '../../helper/error';
 import { RedPacketRecord } from './redPacketRecord.entity';
@@ -10,6 +10,9 @@ import AliPay from '../payment/alipay';
 import { Payment } from '../payment/payment.entity';
 import { PaymentStatus } from '../../helper/status';
 import { Shop } from '../shop/shop.entity';
+import {
+  getQB, leftJoinAndMapOne, where, getMany,
+} from '../../helper/sql';
 
 export default class RedPacketResolver {
   /**
@@ -142,5 +145,15 @@ export default class RedPacketResolver {
         status: PaymentStatus.PAID,
       })
       .getMany();
+  }
+
+  // 获取用户抢红包记录
+  static searchUserRedPackets(user) {
+    return pipe(
+      getQB('redPacketRecord'),
+      leftJoinAndMapOne('redPacketRecord.redPacket', RedPacket, 'redPacket', 'redPacket.id = redPacketRecord.redPacketId'),
+      where('redPacketRecord.userId = :userId', { userId: user.id }),
+      getMany,
+    )(RedPacketRecord);
   }
 }

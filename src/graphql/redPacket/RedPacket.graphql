@@ -10,6 +10,16 @@ type RedPacket {
   createdAt: String
 }
 
+type RedPacketRecord {
+  id: ID
+  "红包"
+  redPacket: RedPacket
+  "抢到的金额"
+  totalFee: Float
+  "创建时间"
+  createdAt: String
+}
+
 input SendRedPacketInput {
   quantity: Int!
   totalFee: Int!
@@ -32,4 +42,6 @@ extend type Query {
   redPacket(id: ID!): RedPacket
   "获取红包列表"
   redPackets: [RedPacket]
+  "我的红包"
+  myRedPackets: [RedPacketRecord]
 }
