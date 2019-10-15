@@ -10,8 +10,8 @@ const resolvers = {
     },
   },
   Mutation: {
-    createPhoneRecord(_, { input }, { currentUser }) {
-      return createPhoneRecord(currentUser, input);
+    createPhoneRecord(_, { input }) {
+      return createPhoneRecord(input);
     },
   },
   PhoneRecord: {

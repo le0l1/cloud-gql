@@ -10,7 +10,7 @@ import { User } from '../user/user.entity';
  * 创建电话记录
  */
 export async function createPhoneRecord({
-  phone, shopId, userId, isCall,
+  phone, userId, isCall, shopId,
 }) {
   const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
   const user = await User.findOneOrFail(decodeNumberId(userId));
