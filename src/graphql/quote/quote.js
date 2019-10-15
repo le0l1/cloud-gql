@@ -9,7 +9,6 @@ import {
 } from '../../helper/sql';
 import { OfferStatus } from '../../helper/status';
 import Offer from '../offer/offer.entity';
-import { Device } from '../device/Device.entity';
 import { broadcastMessageToShops } from '../device/device';
 
 /**

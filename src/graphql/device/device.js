@@ -23,14 +23,17 @@ export async function broadcastMessageToShops(body) {
       const subQuery = qb
         .subQuery()
         .select('user.id')
+        .from(User, 'user')
         .where('user.id = device.userId')
-        .andWhere('user.role = 2');
-      return `EXSITS ${subQuery}`;
+        .andWhere('user.role = 2')
+        .getQuery();
+      return `EXISTS ${subQuery}`;
     }),
     getMany,
   )(Device);
+  if (!devices.length) return;
   logger.info(`推送消息到所有的商户的设备: ${devices}`);
-  return brodcastMessage(
+  brodcastMessage(
     devices.map(a => a.deviceToken),
     body,
   );
