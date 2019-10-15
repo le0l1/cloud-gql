@@ -28,6 +28,9 @@ input RecommendCreateInput {
   "推荐类型ID  如果是商户 就传商户id  如果是商品 则传商品id 以此类推 "
   typeId: ID!
 
+
+  "排名"
+  index: Number
 }
 
 "查询推荐输入"

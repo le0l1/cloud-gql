@@ -46,15 +46,16 @@ export class Recommend extends BaseEntity {
   })
   deletedAt
 
-  static async createRecommend({ route, typeId }) {
-    return Recommend.storeRecommends(route, typeId);
+  static async createRecommend({ route, typeId, index = 1 }) {
+    return Recommend.storeRecommends(route, typeId, index);
   }
 
-  static async storeRecommends(route, recommnedNode) {
+  static async storeRecommends(route, recommnedNode, index) {
     try {
       const [recommendType, recommendTypeId] = decodeTypeAndId(recommnedNode);
       const { id } = await Recommend.create({
         route,
+        index,
         recommendType,
         recommendTypeId,
       }).save();

@@ -14,7 +14,7 @@ const doBroadcast = (params) => {
     params,
   )}`;
   axios.post(url, params).then((res) => {
-    logger.info(`推送报文: ${res.data}`)
+    logger.info(`推送报文: ${JSON.stringify(res.data)}`);
   }).catch((err) => {
     logger.warn(`推送失败: ${err}`);
   });
