@@ -1,8 +1,9 @@
 import { User } from '../user/user.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
 import { Device } from './Device.entity';
-import { getQB, where } from '../../helper/sql';
+import { getQB, where, getMany } from '../../helper/sql';
 import { brodcastMessage } from '../../helper/umeng';
+import logger from '../../helper/logger';
 
 export default class DeviceResolver {
   static async bindDevice({ userId, deviceToken }) {
@@ -26,7 +27,9 @@ export async function broadcastMessageToShops(body) {
         .andWhere('user.role = 2');
       return `EXSITS ${subQuery}`;
     }),
-  );
+    getMany,
+  )(Device);
+  logger.info(`推送消息到所有的商户的设备: ${devices}`);
   return brodcastMessage(
     devices.map(a => a.deviceToken),
     body,
