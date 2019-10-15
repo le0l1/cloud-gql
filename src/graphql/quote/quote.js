@@ -140,6 +140,18 @@ export function searchQuote(id) {
 export function searchCustomerQuotes(user) {
   return pipe(
     getQB('quote'),
+    leftJoinAndMapMany(
+      'quote.accessories',
+      Accessories,
+      'accssories',
+      'accssories.quoteId = quote.id',
+    ),
+    leftJoinAndMapMany(
+      'quote.images',
+      Image,
+      'image',
+      'image.imageType = "quote" and image.imageTypeId = quote.id',
+    ),
     where('quote.userId = :userId', { userId: user.id }),
     getManyAndCount,
   )(Quote);
