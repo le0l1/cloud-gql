@@ -4,12 +4,16 @@ import {
   getQB, where, withPagination, getManyAndCount, leftJoinAndMapOne,
 } from '../../helper/sql';
 import { Shop } from '../shop/shop.entity';
+import { User } from '../user/user.entity';
 
 /**
  * 创建电话记录
  */
-export async function createPhoneRecord(user, { phone, shopId, isCall }) {
+export async function createPhoneRecord({
+  phone, shopId, userId, isCall,
+}) {
   const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
+  const user = await User.findOneOrFail(decodeNumberId(userId));
   const phoneRecord = await PhoneRecord.save({
     phone,
     userId: user.id,

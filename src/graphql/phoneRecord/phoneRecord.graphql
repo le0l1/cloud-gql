@@ -31,6 +31,9 @@ input  CreatePhoneRecordInput {
   "商户id"
   shopId: ID!
 
+  "用户id"
+  userId: ID!
+
   "是否为拨出电话 拨出电话为true 接听电话为false"
   isCall: Boolean!
 }
