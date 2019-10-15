@@ -1,18 +1,21 @@
 import { getManager } from 'typeorm';
 import { User } from '../user/user.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
-import { InsufficientBalanceError } from '../../helper/error';
+import { InsufficientBalanceError, ValidSmsCodeError } from '../../helper/error';
 import { Withdraw } from './withdraw.entity';
 import {
   withPagination, getManyAndCount, getQB, orderBy, where, leftJoinAndMapOne,
 } from '../../helper/sql';
 import { WithdrawStatus } from '../../helper/status';
 import logger from '../../helper/logger';
+import { SMSCode } from '../thridAPI/smsCode.entity';
 
 export default class WithdrawResolver {
-  static async createWithdraw({ userId, totalCount, method }) {
+  static async createWithdraw(currentUser, { totalCount, method, code }) {
     // TODO: 通过绑定记录提现到对应的账号
-    const user = await User.findOneOrFail(decodeNumberId(userId));
+    const user = await User.findOne({ id: currentUser.id });
+    const { smsCode } = await SMSCode.findOne({ phone: user.phone });
+    if (Number(smsCode) !== Number(code)) throw new ValidSmsCodeError();
     if (user.totalFee < totalCount) {
       throw new InsufficientBalanceError();
     }

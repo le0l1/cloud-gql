@@ -50,6 +50,8 @@ input CreateWithdrawInput {
   totalCount: Int!
   "提现方式"
   method: WithdrawMethod!
+  "短信验证码"
+  code: Int!
 }
 
 input UpdateWithdrawInput {
@@ -94,7 +96,7 @@ extend type Query {
 
 extend type Mutation {
   "提现"
-  createWithdraw(input: CreateWithdrawInput!): Withdraw
+  createWithdraw(input: CreateWithdrawInput!): Withdraw @auth(requires: CUSTOMER)
   "改变提现状态"
   updateWithdraw(input: UpdateWithdrawInput!): Withdraw @auth(requires: ROOT)
   "绑定提现支付宝账号(多次提交为更新)"
