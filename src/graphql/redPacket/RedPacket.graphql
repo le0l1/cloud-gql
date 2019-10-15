@@ -43,5 +43,5 @@ extend type Query {
   "获取红包列表"
   redPackets: [RedPacket]
   "我的红包"
-  myRedPackets: [RedPacketRecord]
+  myRedPackets: [RedPacketRecord] @auth(requires: CUSTOMER)
 }
