@@ -16,6 +16,8 @@ const doBroadcast = (params) => {
   axios.post(url, params).then((res) => {
     logger.info(`推送报文: ${JSON.stringify(res.data)}`);
   }).catch((err) => {
+    console.log('umeng error', err);
+    console.log('umeng error', err.data);
     logger.warn(`推送失败: ${err}`);
   });
 };
