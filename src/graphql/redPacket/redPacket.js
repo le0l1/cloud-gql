@@ -1,6 +1,5 @@
 import { getManager } from 'typeorm';
 import { format } from 'date-fns';
-import { User } from '../user/user.entity';
 import { decodeNumberId, env, pipe } from '../../helper/util';
 import { RedPacket } from './redPacket.entity';
 import {
@@ -44,12 +43,21 @@ export default class RedPacketResolver {
         restQuantity: quantity,
       });
 
+
       return createPay(paymentMethod)
         .setOrderNumber(orderNumber)
-        .setNotifyUrl(env('HOST') + env('REDPACKET_NOTIFY_URL'))
+        .setNotifyUrl(RedPacketResolver.getNotifyUrl(paymentMethod))
         .setTotalFee(totalFee)
         .preparePayment();
     });
+  }
+
+  /**
+   * 获取支付回调地址
+   * @param {} paymentMethod
+   */
+  static getNotifyUrl(paymentMethod) {
+    return env('HOST') + paymentMethod === 1 ? env('REDPACKET_ALIPAY_URL') : env('REDPACKET_WXPAY_URL');
   }
 
   /**
