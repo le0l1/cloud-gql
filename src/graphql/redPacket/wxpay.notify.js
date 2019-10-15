@@ -37,7 +37,7 @@ function diffTotalFee(totalFee, orderTotalFee) {
 }
 
 export default (router) => {
-  router.post(env('REDPACKET_NOTIFY_URL'), ctx => getManager().transaction(async (trx) => {
+  router.post(env('REDPACKET_WXPAY_URL'), ctx => getManager().transaction(async (trx) => {
     const xml = mapObjectArr(ctx.request.body.xml);
     const redPacket = await getRedPacketByOrderNumber(xml.out_trade_no);
     if (!checkSignature(xml)) {
