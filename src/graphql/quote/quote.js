@@ -22,9 +22,7 @@ export function createQuote(user, {
       ...rest,
     }));
     logger.info('存储询价单配件');
-    const accessories = await Accessories.find({
-      where: In(accessoriesIds.map(decodeNumberId)),
-    });
+    const accessories = await Accessories.findByIds(accessoriesIds.map(decodeNumberId));
     await trx.save(accessories.map(a => Accessories.merge(a, { quoteId: quote.id })));
     logger.info('存储询价单图片');
     const imageInstances = await images.map(path => Image.create({
