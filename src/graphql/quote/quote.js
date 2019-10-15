@@ -9,6 +9,8 @@ import {
 } from '../../helper/sql';
 import { OfferStatus } from '../../helper/status';
 import Offer from '../offer/offer.entity';
+import { Device } from '../device/Device.entity';
+import { broadcastMessageToShops } from '../device/device';
 
 /**
  * 创建询价单
@@ -31,6 +33,7 @@ export function createQuote(user, {
       imageTypeId: quote.id,
     }));
     await trx.save(imageInstances);
+    broadcastMessageToShops('您有一条询价单信息!请注意查收');
     return quote;
   });
 }
