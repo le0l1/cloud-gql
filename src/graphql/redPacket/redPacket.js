@@ -3,30 +3,34 @@ import { format } from 'date-fns';
 import { User } from '../user/user.entity';
 import { decodeNumberId, env, pipe } from '../../helper/util';
 import { RedPacket } from './redPacket.entity';
-import { RedPacketEmptyError, RedPacketGrabedError, RedPacketFailError } from '../../helper/error';
+import {
+  RedPacketEmptyError,
+  RedPacketGrabedError,
+  RedPacketFailError,
+} from '../../helper/error';
 import { RedPacketRecord } from './redPacketRecord.entity';
 import logger from '../../helper/logger';
-import AliPay from '../payment/alipay';
 import { Payment } from '../payment/payment.entity';
 import { PaymentStatus } from '../../helper/status';
 import { Shop } from '../shop/shop.entity';
 import {
   getQB, leftJoinAndMapOne, where, getMany,
 } from '../../helper/sql';
+import { createPay } from '../payment/pay';
 
 export default class RedPacketResolver {
   /**
    * 发送红包
    */
   static sendRedPacket(user, {
-    quantity, totalFee, description,
+    quantity, totalFee, description, paymentMethod,
   }) {
     return getManager().transaction(async (trx) => {
       const orderNumber = `R${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(
         Math.random() * 1000000,
       )}`;
       const payment = await trx.save(Payment, {
-        paymentMethod: '1',
+        paymentMethod,
         totalFee,
       });
 
@@ -40,12 +44,11 @@ export default class RedPacketResolver {
         restQuantity: quantity,
       });
 
-      return new AliPay()
+      return createPay(paymentMethod)
         .setOrderNumber(orderNumber)
         .setNotifyUrl(env('HOST') + env('REDPACKET_NOTIFY_URL'))
-        .setSubject('红包商品')
-        .setTotalFee(0.01)
-        .pagePay();
+        .setTotalFee(totalFee)
+        .preparePayment();
     });
   }
 
@@ -151,7 +154,12 @@ export default class RedPacketResolver {
   static searchUserRedPackets(user) {
     return pipe(
       getQB('redPacketRecord'),
-      leftJoinAndMapOne('redPacketRecord.redPacket', RedPacket, 'redPacket', 'redPacket.id = redPacketRecord.redPacketId'),
+      leftJoinAndMapOne(
+        'redPacketRecord.redPacket',
+        RedPacket,
+        'redPacket',
+        'redPacket.id = redPacketRecord.redPacketId',
+      ),
       where('redPacketRecord.userId = :userId', { userId: user.id }),
       getMany,
     )(RedPacketRecord);

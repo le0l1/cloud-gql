@@ -24,6 +24,7 @@ input SendRedPacketInput {
   quantity: Int!
   totalFee: Int!
   description: String!
+  paymentMethod: PAYMENTMETHOD!
 }
 
 input GrabRedPacketInput {
@@ -32,7 +33,7 @@ input GrabRedPacketInput {
 
 extend type Mutation {
   "发红包"
-  sendRedPacket(input: SendRedPacketInput!): String @auth(requires: MERCHANT)
+  sendRedPacket(input: SendRedPacketInput!): WXPayPrepare @auth(requires: MERCHANT)
   "抢红包"
   grabRedPacket(input: GrabRedPacketInput!): Int @auth(requires: CUSTOMER)
 }
