@@ -42,11 +42,11 @@ export default class RedPacketResolver {
         paymentId: payment.id,
         restQuantity: quantity,
       });
-
-
+      const notifyUrl = RedPacketResolver.getNotifyUrl(paymentMethod);
+      logger.info(`发送红包, 支付回调地址为${notifyUrl}`);
       return createPay(paymentMethod)
         .setOrderNumber(orderNumber)
-        .setNotifyUrl(RedPacketResolver.getNotifyUrl(paymentMethod))
+        .setNotifyUrl(notifyUrl)
         .setTotalFee(totalFee)
         .preparePayment();
     });
