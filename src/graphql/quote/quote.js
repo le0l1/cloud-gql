@@ -5,7 +5,7 @@ import Quote from './quote.entity';
 import logger from '../../helper/logger';
 import { Image } from '../image/image.entity';
 import {
-  getQB, withPagination, getManyAndCount, where, setParameter, leftJoinAndMapMany,
+  getQB, withPagination, getManyAndCount, where, setParameter, leftJoinAndMapMany, orderBy,
 } from '../../helper/sql';
 import { OfferStatus } from '../../helper/status';
 import Offer from '../offer/offer.entity';
@@ -55,6 +55,9 @@ export function searchQuotes(user, { limit, offset, status }) {
       'image',
       "image.imageType = 'quote' and image.imageTypeId = quote.id",
     ),
+    orderBy({
+      'quote.createdAt': 'DESC',
+    }),
   )(Quote);
   // 未报价
   if (status === OfferStatus.WAIT_OFFER) {
@@ -153,6 +156,9 @@ export function searchCustomerQuotes(user) {
       "image.imageType = 'quote' and image.imageTypeId = quote.id",
     ),
     where('quote.userId = :userId', { userId: user.id }),
+    orderBy({
+      'quote.createdAt': 'DESC',
+    }),
     getManyAndCount,
   )(Quote);
 }
