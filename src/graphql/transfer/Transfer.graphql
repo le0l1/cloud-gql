@@ -60,6 +60,8 @@ type TransferConnection implements Connection {
 
 extend type Query {
   transfers(transfersQuery: TransfersQuery!): TransferConnection
+  "我的交易记录"
+  myTransfers(query: TransfersQuery): TransferConnection @auth(requires: CUSTOMER)
 }
 
 extend type Mutation  {

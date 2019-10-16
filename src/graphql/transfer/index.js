@@ -13,6 +13,9 @@ const resolvers = {
     transfers(_, { transfersQuery }) {
       return TransferResolver.getTransfers(transfersQuery);
     },
+    myTransfers(_, { query = {} }, { currentUser }) {
+      return TransferResolver.getTransfersByUser(currentUser, query);
+    },
   },
   TransferConnection: connectionResolver,
   Transfer: mergeIfValid(idResolver('transfer'), {}),

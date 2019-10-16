@@ -1,10 +1,11 @@
 import { format } from 'date-fns';
 import { Shop } from '../shop/shop.entity';
-import { decodeNumberId } from '../../helper/util';
+import { decodeNumberId, pipe } from '../../helper/util';
 import { Transfer } from './transfer.entity';
 import { User } from '../user/user.entity';
 import { Payment } from '../payment/payment.entity';
 import { createPay } from '../payment/pay';
+import { getQB } from '../../helper/sql';
 
 export default class TransferResolver {
   /**
@@ -61,6 +62,18 @@ export default class TransferResolver {
       skip: Math.max(0, offset - 1),
       take: limit,
       relations: ['payee', 'payer', 'payment'],
+    });
+  }
+
+  // 我的交易记录
+  static getTransfersByUser(user, { offset = 1, limit = 8 }) {
+    return Transfer.findAndCount({
+      skip: Math.max(0, offset - 1),
+      take: limit,
+      relations: ['payee', 'payer', 'payment'],
+      where: {
+        payer: user,
+      },
     });
   }
 }
