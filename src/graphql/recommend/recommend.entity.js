@@ -85,7 +85,7 @@ export class Recommend extends BaseEntity {
     const res = await recommendClass[recommends[0].recommendType].findByIds(nodeIds);
 
     return res.map((node, idx) => ({
-      id: recommends[idx].id,
+      ...recommends[idx],
       route,
       recommendNode: node,
     }));
