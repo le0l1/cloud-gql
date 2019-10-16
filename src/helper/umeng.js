@@ -16,7 +16,12 @@ const doBroadcast = (params) => {
   axios.post(url, params).then((res) => {
     logger.info(`推送报文: ${JSON.stringify(res.data)}`);
   }).catch((err) => {
-    console.log('umeng error', err.request.data.data);
+    if (err.response) {
+      console.log('UMENG推送失败, 返回报文:', err.response);
+    }
+    if (err.request) {
+      console.log('UMENG推送失败, 返回报文:', err.request);
+    }
     logger.warn(`推送失败: ${err}`);
   });
 };
