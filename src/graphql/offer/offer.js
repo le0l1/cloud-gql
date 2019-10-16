@@ -12,6 +12,7 @@ import { Shop } from '../shop/shop.entity';
 import OfferRecord from './offerRecord.entity';
 import { Payment } from '../payment/payment.entity';
 import { createPay } from '../payment/pay';
+import logger from '../../helper/logger';
 
 /**
  * 创建报价
@@ -63,7 +64,7 @@ export function accpetOffer(user, { offerId, paymentMethod }) {
     await trx.save(offerRecord);
 
     const notifyUrl = env('HOST') + (paymentMethod === 1 ? env('OFFER_ALIPAY_URL') : env('OFFER_WXPAY_URL'));
-
+    logger.info(`询价单报价,支付回调地址: ${notifyUrl}`);
     return createPay(paymentMethod)
       .setOrderNumber(offer.orderNumber)
       .setTotalFee()

@@ -38,6 +38,7 @@ function diffTotalFee(totalFee, orderTotalFee) {
 
 export default (router) => {
   router.post(env('REDPACKET_WXPAY_URL'), ctx => getManager().transaction(async (trx) => {
+    logger.info('开始处理红包微信支付回调');
     const xml = mapObjectArr(ctx.request.body.xml);
     const redPacket = await getRedPacketByOrderNumber(xml.out_trade_no);
     if (!checkSignature(xml)) {
@@ -56,6 +57,7 @@ export default (router) => {
       return;
     }
     await trx.update(Payment, redPacket.paymentId, { paymentStatus: PaymentStatus.PAID });
+    logger.info('处理红包微信支付回调结束');
     ctx.body = 'success';
   }));
 };
