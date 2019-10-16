@@ -28,13 +28,6 @@ export default class PhoneRecord extends BaseEntity {
   })
   userId;
 
-  @Column({
-    type: 'boolean',
-    name: 'is_call',
-    comment: '是否为拨出电话',
-  })
-  isCall;
-
   @CreateDateColumn({
     name: 'created_at',
   })

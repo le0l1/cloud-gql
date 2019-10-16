@@ -33,9 +33,6 @@ input  CreatePhoneRecordInput {
 
   "用户id"
   userId: ID!
-
-  "是否为拨出电话 拨出电话为true 接听电话为false"
-  isCall: Boolean!
 }
 
 input PhoneRecordsQuery {
@@ -43,8 +40,6 @@ input PhoneRecordsQuery {
   limit: Int
   "页数"
   offset: Int
-  "是否为拨出电话 拨出电话为true 接听电话为false"
-  isCall: Boolean!
 }
 
 extend type Query {
