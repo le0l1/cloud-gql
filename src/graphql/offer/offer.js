@@ -62,7 +62,7 @@ export function accpetOffer(user, { offerId, paymentMethod }) {
     });
     await trx.save(offerRecord);
 
-    const notifyUrl = env('HOST') + paymentMethod === 1 ? env('OFFER_ALIPAY_URL') : env('OFFER_WXPAY_URL');
+    const notifyUrl = env('HOST') + (paymentMethod === 1 ? env('OFFER_ALIPAY_URL') : env('OFFER_WXPAY_URL'));
 
     return createPay(paymentMethod)
       .setOrderNumber(offer.orderNumber)
