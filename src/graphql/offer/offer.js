@@ -23,6 +23,7 @@ export function createOffer(user, { quoteId, images = [], ...rest }) {
       userId: user.id,
       quoteId: quote.id,
     });
+
     const offer = await trx.save(!oldOffer
       ? Offer.create({
         quoteId: quote.id,

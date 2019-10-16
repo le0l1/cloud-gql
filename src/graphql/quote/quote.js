@@ -103,11 +103,11 @@ export function searchQuotes(user, { limit, offset, status }) {
           .from(Offer, 'offer')
           .where('offer.userId != :userId')
           .andWhere('offer.quoteId = quote.id')
+          .andWhere('offer.isAcceptance = true')
           .getQuery();
-        return `EXSITS ${subQuery}`;
+        return `EXISTS ${subQuery}`;
       }),
       setParameter('userId', user.id),
-      where('quote.offerId is not null'),
       getManyAndCount,
     )(orm);
   }
