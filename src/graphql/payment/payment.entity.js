@@ -1,6 +1,7 @@
 import {
   BaseEntity, Column, Entity, PrimaryGeneratedColumn,
 } from 'typeorm';
+import { PaymentStatus } from '../../helper/status';
 
 @Entity()
 export class Payment extends BaseEntity {
@@ -26,7 +27,7 @@ export class Payment extends BaseEntity {
   @Column({
     type: 'int',
     name: 'payment_status',
-    default: 3,
+    default: PaymentStatus.PENDING,
   })
   paymentStatus;
 

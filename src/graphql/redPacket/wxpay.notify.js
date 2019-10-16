@@ -28,7 +28,7 @@ function checkSignature(data) {
 
 // 检查支付状态
 function isProcessed(order) {
-  return order.status !== PaymentStatus.PENDING;
+  return order.paymentStatus !== PaymentStatus.PENDING;
 }
 
 // 检查订单价格
