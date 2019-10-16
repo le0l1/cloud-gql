@@ -57,7 +57,7 @@ export default class RedPacketResolver {
    * @param {} paymentMethod
    */
   static getNotifyUrl(paymentMethod) {
-    return env('HOST') + paymentMethod === 1 ? env('REDPACKET_ALIPAY_URL') : env('REDPACKET_WXPAY_URL');
+    return env('HOST') + (paymentMethod === 1 ? env('REDPACKET_ALIPAY_URL') : env('REDPACKET_WXPAY_URL'));
   }
 
   /**
