@@ -1,7 +1,6 @@
 import PhoneRecordSchema from './phoneRecord.graphql';
 import { searchPhoneRecords, createPhoneRecord } from './phoneRecord';
 import { idResolver } from '../../helper/resolver';
-import { formateID } from '../../helper/util';
 
 const resolvers = {
   Query: {
@@ -14,12 +13,7 @@ const resolvers = {
       return createPhoneRecord(input);
     },
   },
-  PhoneRecord: {
-    ...idResolver('phoneRecord'),
-    userId(v) {
-      return formateID('user', v.userId);
-    },
-  },
+  PhoneRecord: idResolver('phoneRecord'),
   PhoneRecordConnection: {
     edges(v) {
       return v[0];

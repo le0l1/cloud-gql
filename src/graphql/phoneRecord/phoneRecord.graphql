@@ -4,8 +4,8 @@ type PhoneRecord implements Node {
   "手机号 考虑到座机号"
   phone: String
   
-  "用户id"
-  userId: ID
+  "用户"
+  user:  User
 
   "商家"
   shop: Shop
