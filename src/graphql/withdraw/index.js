@@ -17,8 +17,8 @@ const resolvers = {
     },
   },
   Mutation: {
-    createWithdraw(_, { input }) {
-      return WithdrawResolver.createWithdraw(input);
+    createWithdraw(_, { input }, { currentUser }) {
+      return WithdrawResolver.createWithdraw(currentUser, input);
     },
     updateWithdraw(_, { input }) {
       return WithdrawResolver.updateWithdraw(input);
