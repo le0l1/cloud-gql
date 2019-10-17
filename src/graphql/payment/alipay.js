@@ -1,7 +1,6 @@
 import fs from 'fs';
 import AlipaySdk from 'alipay-sdk';
 import { sign } from 'alipay-sdk/lib/util';
-import iconv from 'iconv-lite';
 import AliPayFormData from 'alipay-sdk/lib/form';
 import { env } from '../../helper/util';
 

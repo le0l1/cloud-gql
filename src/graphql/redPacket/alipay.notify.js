@@ -9,8 +9,8 @@ import logger from '../../helper/logger';
 import { RedPacketRecord } from './redPacketRecord.entity';
 
 export default (router) => {
-  router.post(env('REDPACKET_NOTIFY_URL'), ctx => getManager().transaction(async (trx) => {
-    // logger.info(`支付宝回调:${ctx.query}`);
+  router.post(env('REDPACKET_ALIPAY_URL'), ctx => getManager().transaction(async (trx) => {
+    logger.info(`开始处理支付宝红包回调:${ctx.query}`);
     const redPacket = await RedPacket.createQueryBuilder('redPacket')
       .leftJoinAndMapOne(
         'redPacket.payment',
@@ -59,6 +59,7 @@ export default (router) => {
     }));
     await trx.save(RedPacketRecord, redPacketRecords);
     await trx.update(Payment, redPacket.paymentId, { paymentStatus: PaymentStatus.PAID });
+    logger.info('处理支付宝红包回调结束');
     return 'success';
   }));
 };
