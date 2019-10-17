@@ -1,14 +1,16 @@
-import { env, pipe } from '../../helper/util';
-import logger from '../../helper/logger';
-import PaymentOrder from '../paymentOrder.entity';
+import { env, pipe } from '../helper/util';
+import logger from '../helper/logger';
+import PaymentOrder from './paymentOrder.entity';
 import {
   getQB, getOne, where, leftJoinAndMapOne,
-} from '../../helper/sql';
-import { Payment } from '../../graphql/payment/payment.entity';
-import { hasPaid, alipayCheckSign } from '../util';
-import handleOrderAlipayNotify from './order.alipay';
-import handleOfferAlipayNotify from './offer.alipay';
-import handleRedpacketAlipayNotify from './redpacket.alipay';
+} from '../helper/sql';
+import { Payment } from '../graphql/payment/payment.entity';
+import { hasPaid, alipayCheckSign, diffTotalFee } from './util';
+import handleOrderPayNotify from './handler/order';
+import handleOfferPayNotify from './handler/offer';
+import handleRedpacketPayNotify from './handler/redpacket';
+import handleTransferPayNotify from './handler/transfer';
+
 
 export default (router) => {
   router.post(env('ALIPAY_NOTIFY_URL'), async (ctx) => {
@@ -33,10 +35,17 @@ export default (router) => {
       return;
     }
 
+    if (diffTotalFee(ctx.body.total_amount, paymentOrder.payment.totalFee)) {
+      logger.warn(`订单${paymentOrder.orderNumber}支付金额不匹配!`);
+      ctx.body = 'success';
+      return;
+    }
+
     const methods = {
-      order: handleOrderAlipayNotify,
-      offer: handleOfferAlipayNotify,
-      redpacket: handleRedpacketAlipayNotify,
+      order: handleOrderPayNotify,
+      offer: handleOfferPayNotify,
+      redpacket: handleRedpacketPayNotify,
+      transfer: handleTransferPayNotify,
     };
 
     if (paymentOrder.orderType in methods) {

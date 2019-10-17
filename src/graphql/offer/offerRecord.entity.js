@@ -34,14 +34,6 @@ export default class OfferRecord extends BaseEntity {
   })
   paymentId;
 
-  @Column({
-    name: 'is_completed',
-    type: 'boolean',
-    default: false,
-    comment: '是否已完成',
-  })
-  isCompleted;
-
   @CreateDateColumn({
     name: 'created_at',
   })

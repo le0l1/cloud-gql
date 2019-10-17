@@ -1,7 +1,7 @@
 import { getManager } from 'typeorm';
 import Quote from '../quote/quote.entity';
 import {
-  decodeNumberId, pipe, env, makeOfferNumber,
+  decodeNumberId, pipe, makeOfferNumber,
 } from '../../helper/util';
 import Offer from './offer.entity';
 import { Image } from '../image/image.entity';
@@ -12,7 +12,8 @@ import { Shop } from '../shop/shop.entity';
 import OfferRecord from './offerRecord.entity';
 import { Payment } from '../payment/payment.entity';
 import { createPay } from '../payment/pay';
-import logger from '../../helper/logger';
+import PaymentOrder from '../../payment/paymentOrder.entity';
+import { PaymentOrderType } from '../../helper/status';
 
 /**
  * 创建报价
@@ -63,12 +64,16 @@ export function accpetOffer(user, { offerId, paymentMethod }) {
     });
     await trx.save(offerRecord);
 
-    const notifyUrl = env('HOST') + (paymentMethod === 1 ? env('OFFER_ALIPAY_URL') : env('OFFER_WXPAY_URL'));
-    logger.info(`询价单报价,支付回调地址: ${notifyUrl}`);
+    await trx.save(PaymentOrder, {
+      paymentId: payment.id,
+      orderType: PaymentOrderType.offer,
+      orderTypeId: offerRecord.id,
+      orderNumber: offerRecord.orderNumber,
+    });
+
     return createPay(paymentMethod)
       .setOrderNumber(offer.orderNumber)
       .setTotalFee()
-      .setNotifyUrl(notifyUrl)
       .preparePayment();
   });
 }

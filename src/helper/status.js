@@ -163,3 +163,13 @@ export const OfferStatus = {
   HAS_OFFERED: 'HAS_OFFERED',
   NOT_PARTICIPATING: 'NOT_PARTICIPATING',
 };
+
+/**
+ * 支付订单类型
+ */
+export const PaymentOrderType = {
+  redpacket: 'redpacket',
+  transfer: 'transfer',
+  offer: 'offer',
+  order: 'order',
+};

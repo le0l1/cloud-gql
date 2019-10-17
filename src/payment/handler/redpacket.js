@@ -5,9 +5,9 @@ import { Payment } from '../../graphql/payment/payment.entity';
 import { PaymentStatus } from '../../helper/status';
 import logger from '../../helper/logger';
 
-export default function handleRedpacketAlipayNotify({ orderNumber, payment }) {
+export default function handleRedpacketPayNotify({ orderNumber, payment }) {
   return getManager().transaction(async (trx) => {
-    logger.info('开始处理红包支付宝回调');
+    logger.info('开始处理红包支付回调');
     const redPacket = await RedPacket.createQueryBuilder('redPacket')
       .where('redPacket.orderNumber = :orderNumber', {
         orderNumber,
@@ -26,6 +26,6 @@ export default function handleRedpacketAlipayNotify({ orderNumber, payment }) {
     await trx.update(Payment, payment.id, {
       paymentStatus: PaymentStatus.PAID,
     });
-    logger.info('结束处理红包支付宝回调');
+    logger.info('结束处理红包支付回调');
   });
 }

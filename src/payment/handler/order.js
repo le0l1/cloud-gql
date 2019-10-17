@@ -14,18 +14,18 @@ const getOrder = orderNumber => Order.createQueryBuilder('order')
   })
   .getOne();
 
-export default async function handleOrderAlipayNotify({
+export default async function handleOrderPayNotify({
   orderNumber,
   payment,
 }) {
   return getManager().transaction(async (trx) => {
-    logger.info('开始处理订单支付宝回调');
+    logger.info('开始处理订单支付回调');
     const order = await getOrder(orderNumber);
     order.status = OrderStatus.WAIT_SHIP;
     logger.info('修改对应的支付记录为已支付');
     await trx.update(Payment, payment.id, { paymentStatus: PaymentStatus.PAID });
     logger.info('修改订单状态为待发货');
     await trx.save(order);
-    logger.info('结束处理订单支付宝回调');
+    logger.info('结束处理订单支付回调');
   });
 }

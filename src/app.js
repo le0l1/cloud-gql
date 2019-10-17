@@ -28,9 +28,6 @@ import { coupon } from './graphql/coupon';
 import order from './graphql/order';
 import payment from './graphql/payment';
 import transfer from './graphql/transfer';
-import router from './graphql/transfer/transfer.route';
-import orderRouter from './graphql/order/order.route';
-import redPacketRouter from './graphql/redPacket/redpacket.route';
 import cart from './graphql/cart';
 import address from './graphql/address';
 import collection from './graphql/collection';
@@ -49,6 +46,7 @@ import phoneRecord from './graphql/phoneRecord';
 import video from './graphql/video';
 import quote from './graphql/quote';
 import offer from './graphql/offer';
+import paymentRouter from './payment';
 
 const app = new Koa();
 
@@ -58,6 +56,11 @@ app.use(xmlParser());
 app.use(bodyparser());
 app.use(session(app));
 parameter(app);
+
+// 支付网关
+app
+  .use(paymentRouter.routes())
+  .use(paymentRouter.allowedMethods());
 
 app.use(async (ctx, next) => {
   try {
@@ -69,17 +72,7 @@ app.use(async (ctx, next) => {
     };
   }
 });
-app.use(router.routes()).use(router.allowedMethods());
-app.use(orderRouter.routes()).use(orderRouter.allowedMethods());
-app.use(redPacketRouter.routes()).use(redPacketRouter.allowedMethods());
 
-// graphql voyager
-router.all(
-  '/voyager',
-  voyagerMiddleware({
-    endpointUrl: '/graphql',
-  }),
-);
 
 export const makeServer = context => new ApolloServer({
   typeDefs: [

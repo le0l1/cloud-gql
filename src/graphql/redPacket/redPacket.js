@@ -10,12 +10,13 @@ import {
 import { RedPacketRecord } from './redPacketRecord.entity';
 import logger from '../../helper/logger';
 import { Payment } from '../payment/payment.entity';
-import { PaymentStatus } from '../../helper/status';
+import { PaymentStatus, PaymentOrderType } from '../../helper/status';
 import { Shop } from '../shop/shop.entity';
 import {
   getQB, leftJoinAndMapOne, where, getMany,
 } from '../../helper/sql';
 import { createPay } from '../payment/pay';
+import PaymentOrder from '../../payment/paymentOrder.entity';
 
 export default class RedPacketResolver {
   /**
@@ -33,7 +34,7 @@ export default class RedPacketResolver {
         totalFee,
       });
 
-      await trx.save(RedPacket, {
+      const redPacket = await trx.save(RedPacket, {
         sponsor: user.id,
         description,
         quantity,
@@ -42,23 +43,21 @@ export default class RedPacketResolver {
         paymentId: payment.id,
         restQuantity: quantity,
       });
-      const notifyUrl = RedPacketResolver.getNotifyUrl(paymentMethod);
-      logger.info(`发送红包, 支付回调地址为${notifyUrl}`);
+
+      await trx.save(PaymentOrder, {
+        orderNumber,
+        paymentId: payment.id,
+        orderType: PaymentOrderType.redpacket,
+        orderTypeId: redPacket.id,
+      });
+
       return createPay(paymentMethod)
         .setOrderNumber(orderNumber)
-        .setNotifyUrl(notifyUrl)
         .setTotalFee(totalFee)
         .preparePayment();
     });
   }
 
-  /**
-   * 获取支付回调地址
-   * @param {} paymentMethod
-   */
-  static getNotifyUrl(paymentMethod) {
-    return env('HOST') + (paymentMethod === 1 ? env('REDPACKET_ALIPAY_URL') : env('REDPACKET_WXPAY_URL'));
-  }
 
   /**
    * 抢红包
@@ -141,20 +140,19 @@ export default class RedPacketResolver {
   static searchRedPackets() {
     return RedPacket.createQueryBuilder('redPacket')
       .leftJoinAndMapOne(
-        'redPacket.payment',
-        Payment,
-        'payment',
-        'redPacket.paymentId = payment.id',
-      )
-      .leftJoinAndMapOne(
         'redPacket.shop',
         Shop,
         'shop',
         'shop.user_id = redPacket.sponsor',
       )
-      .where('payment.paymentStatus = :status', {
-        status: PaymentStatus.PAID,
-      })
+      .where(qb => `EXISTS ${qb
+        .subQuery()
+        .select('payment.id')
+        .from(Payment, 'payment')
+        .where('payment.id = redPacket.paymentId')
+        .andwhere('payment.paymentStatus = :status')
+        .getQuery()}`)
+      .setParameter('status', PaymentStatus.PAID)
       .getMany();
   }
 

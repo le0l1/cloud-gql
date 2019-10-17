@@ -23,11 +23,12 @@ import {
   UniqueShopOrderError,
   OrderUpdateStatusError,
 } from '../../helper/error';
-import { OrderStatus } from '../../helper/status';
+import { OrderStatus, PaymentOrderType } from '../../helper/status';
 import { OrderLog } from './orderLog.entity';
 import logger from '../../helper/logger';
 import { createPay } from '../payment/pay';
 import { Shop } from '../shop/shop.entity';
+import PaymentOrder from '../../payment/paymentOrder.entity';
 
 export default class OrderResolver {
   static async createOrder({ userId, orderItems = [], addressId }) {
@@ -92,12 +93,17 @@ export default class OrderResolver {
         });
         await trx.save(payment);
         await trx.update(Order, order.id, { paymentId: payment.id });
+
+        await trx.save(PaymentOrder, {
+          orderNumber: order.orderNumber,
+          orderType: PaymentOrderType.order,
+          orderTypeId: order.id,
+          paymentId: payment.id,
+        });
         // 1为支付宝 2为微信
-        const notifyUrl = env('HOST') + paymentMethod === 1 ? env('ALIPAY_ORDER_NOTIFY_URL') : env('WXPAY_ORDER_NOTIFY_URL');
         return createPay(paymentMethod)
           .setOrderNumber(order.orderNumber)
           .setTotalFee(totalFee)
-          .setNotifyUrl(notifyUrl)
           .preparePayment();
       })
       .catch((e) => {

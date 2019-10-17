@@ -1,11 +1,16 @@
 import { format } from 'date-fns';
+import { getManager } from 'typeorm';
 import { Shop } from '../shop/shop.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
 import { Transfer } from './transfer.entity';
 import { User } from '../user/user.entity';
 import { Payment } from '../payment/payment.entity';
 import { createPay } from '../payment/pay';
-import { getQB } from '../../helper/sql';
+import PaymentOrder from '../../payment/paymentOrder.entity';
+import { PaymentOrderType } from '../../helper/status';
+import {
+  getQB, withLimit, withPagination, where,
+} from '../../helper/sql';
 
 export default class TransferResolver {
   /**
@@ -18,30 +23,38 @@ export default class TransferResolver {
    * @returns {Promise<any | never>}
    */
   static async createTransfer({
-    payer, payee, totalFee, paymentMethod, remark,
+    payer,
+    payee,
+    totalFee,
+    paymentMethod,
+    remark,
   }) {
-    try {
+    return getManager().transaction(async (trx) => {
       const recordNumber = TransferResolver.makeTransitionRecordNumber();
       const payerUser = await User.findOneOrFail(decodeNumberId(payer));
       const shop = await Shop.findOneOrFail(decodeNumberId(payee));
-      const payment = await Payment.create({
+      const payment = await trx.save(Payment.create({
         totalFee,
         paymentMethod,
-      }).save();
-      await Transfer.create({
+      }));
+      const transfer = await trx.save(Transfer.create({
         remark,
-        payment,
         recordNumber,
+        payment,
         payer: payerUser,
         payee: shop,
-      }).save();
+      }));
+      await trx.save(PaymentOrder.create({
+        orderNumber: transfer.recordNumber,
+        orderType: PaymentOrderType.transfer,
+        orderTypeId: transfer.id,
+        paymentId: payment.id,
+      }));
       return createPay(paymentMethod)
         .setOrderNumber(recordNumber)
         .setTotalFee(totalFee)
         .preparePayment();
-    } catch (e) {
-      throw e;
-    }
+    });
   }
 
   /**
@@ -49,7 +62,9 @@ export default class TransferResolver {
    * @returns {string}
    */
   static makeTransitionRecordNumber() {
-    return `S${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(Math.random() * 1000000)}`;
+    return `S${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(
+      Math.random() * 1000000,
+    )}`;
   }
 
   /**
