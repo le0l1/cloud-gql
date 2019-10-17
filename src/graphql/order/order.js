@@ -100,7 +100,6 @@ export default class OrderResolver {
           orderTypeId: order.id,
           paymentId: payment.id,
         });
-        // 1为支付宝 2为微信
         return createPay(paymentMethod)
           .setOrderNumber(order.orderNumber)
           .setTotalFee(totalFee)

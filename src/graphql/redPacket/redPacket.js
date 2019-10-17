@@ -1,6 +1,6 @@
 import { getManager } from 'typeorm';
 import { format } from 'date-fns';
-import { decodeNumberId, env, pipe } from '../../helper/util';
+import { decodeNumberId, pipe } from '../../helper/util';
 import { RedPacket } from './redPacket.entity';
 import {
   RedPacketEmptyError,
