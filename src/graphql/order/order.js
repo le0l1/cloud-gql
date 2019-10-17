@@ -28,7 +28,7 @@ import { OrderLog } from './orderLog.entity';
 import logger from '../../helper/logger';
 import { createPay } from '../payment/pay';
 import { Shop } from '../shop/shop.entity';
-import PaymentOrder from '../../payment/paymentOrder.entity';
+import { PaymentOrder } from '../../payment/paymentOrder.entity';
 
 export default class OrderResolver {
   static async createOrder({ userId, orderItems = [], addressId }) {

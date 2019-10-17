@@ -5,7 +5,7 @@ import { env } from '../../helper/util';
 
 const setNofityUrl = (pay, paymentMethod) => {
   const notifyUrl = env('HOST') + (paymentMethod === 1 ? env('ALIPAY_NOTIFY_URL') : env('WXPAY_NOTIFY_URL'));
-  pay.setNofityUrl(notifyUrl);
+  pay.setNotifyUrl(notifyUrl);
   return pay;
 };
 export const createPay = (method) => {

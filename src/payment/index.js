@@ -5,7 +5,6 @@ import makeWXPayNotify from './wxpay';
 
 const router = new Router();
 
-
 makeAliPayNotify(router);
 makeWXPayNotify(router);
 

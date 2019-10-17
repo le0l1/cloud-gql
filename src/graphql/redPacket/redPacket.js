@@ -16,7 +16,7 @@ import {
   getQB, leftJoinAndMapOne, where, getMany,
 } from '../../helper/sql';
 import { createPay } from '../payment/pay';
-import PaymentOrder from '../../payment/paymentOrder.entity';
+import { PaymentOrder } from '../../payment/paymentOrder.entity';
 
 export default class RedPacketResolver {
   /**

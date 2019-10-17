@@ -1,16 +1,13 @@
 import { format } from 'date-fns';
 import { getManager } from 'typeorm';
 import { Shop } from '../shop/shop.entity';
-import { decodeNumberId, pipe } from '../../helper/util';
+import { decodeNumberId } from '../../helper/util';
 import { Transfer } from './transfer.entity';
 import { User } from '../user/user.entity';
 import { Payment } from '../payment/payment.entity';
 import { createPay } from '../payment/pay';
-import PaymentOrder from '../../payment/paymentOrder.entity';
+import { PaymentOrder } from '../../payment/paymentOrder.entity';
 import { PaymentOrderType } from '../../helper/status';
-import {
-  getQB, withLimit, withPagination, where,
-} from '../../helper/sql';
 
 export default class TransferResolver {
   /**

@@ -3,7 +3,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export default class PaymentOrder extends BaseEntity {
+export class PaymentOrder extends BaseEntity {
   @PrimaryGeneratedColumn()
   id
 

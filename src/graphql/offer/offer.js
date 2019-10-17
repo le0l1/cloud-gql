@@ -12,7 +12,7 @@ import { Shop } from '../shop/shop.entity';
 import OfferRecord from './offerRecord.entity';
 import { Payment } from '../payment/payment.entity';
 import { createPay } from '../payment/pay';
-import PaymentOrder from '../../payment/paymentOrder.entity';
+import { PaymentOrder } from '../../payment/paymentOrder.entity';
 import { PaymentOrderType } from '../../helper/status';
 
 /**
