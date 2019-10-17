@@ -31,6 +31,16 @@ type Shop implements Node {
   "商户封面"
   cover: String
 
+  "商户类型"
+  shopType: ShopType
+}
+
+"商户类型"
+enum ShopType {
+  "拆车件商户"
+  ORIGINAL_VEHICLE_PART
+  "正常商户"
+  NORMAL_VEHICLE
 }
 
 enum ShopStatus {
@@ -38,14 +48,6 @@ enum ShopStatus {
   NORMAL
   "暂停营业"
   SUSPEND
-}
-
-"商户类型"
-enum ShopType {
-  "拆车件"
-  TRUCK_PARTS
-  "正常件"
-  NORMAL
 }
 
 input ShopQueryFilter {
@@ -104,12 +106,19 @@ input ShopCreateInput {
   area: String
   "商家所在城市"
   city: String
+
+  "商家封面"
+  cover: String
+  
   "商户类型"
   type: ShopType
   "商户轮播图"
   shopBanners: [String!]
   "商户相册"
   shopImages: [String!]
+
+  "商户类型"
+  shopType: ShopType
 }
 
 "删除商户输入"
@@ -138,10 +147,10 @@ input ShopUpdateInput {
   categories: [ID!]
   "商家地址"
   address: String
-
+  "商家封面"
+  cover: String
   "商户轮播图"
   shopBanners: [String!]
-
   "商户相册"
   shopImages: [String!]
 }

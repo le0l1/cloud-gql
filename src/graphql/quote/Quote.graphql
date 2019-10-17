@@ -1,0 +1,77 @@
+type QuoteNode implements Node {
+  id: ID!
+  "用户id(发布人)"
+  userId: ID
+  "车型"
+  vehicleModel: String,
+  "车系"
+  vehicleSeries: String
+  "描述"
+  description: String
+  "图片"
+  images: [Image!]
+  "配件"
+  accessories: [Accessories!]
+  "创建时间"
+  createdAt: String
+}
+
+type Quote {
+  id: ID
+  "用户id(发布人)"
+  userId: ID
+  "车型"
+  vehicleModel: String,
+  "车系"
+  vehicleSeries: String
+  "描述"
+  description: String
+  "创建时间"
+  createdAt: String
+}
+
+type QuoteConnection implements Connection {
+  pageInfo: PageInfo
+  edges: [QuoteNode!]
+}
+
+enum OfferStatus {
+  "待报价"
+  WAIT_OFFER
+  "已报价"
+  HAS_OFFERED
+  "未参与"
+  NOT_PARTICIPATING
+}
+
+input CreateQuoteInput {
+  vehicleModel: String!
+  vehicleSeries: String!
+  description: String!
+  images: [String!],
+  "配件id"
+  accessoriesIds: [ID!],
+}
+
+input QuotesQuery {
+  "偏离值"
+  offset: Int
+  "分页条数"
+  limit: Int
+  "询价单状态"
+  status: OfferStatus
+}
+
+extend type Query {
+  "询价单列表"
+  quotes(query: QuotesQuery): QuoteConnection! @auth(requires: Merchant)
+  "用户的询价单列表"
+  customerQuotes: QuoteConnection! @auth(requires: CUSTOMER)
+  "询价单详情"
+  quote(id: ID!): QuoteNode!
+}
+
+extend type Mutation {
+  "创建询价单"
+  createQuote(input: CreateQuoteInput!): Quote @auth(requires: CUSTOMER)
+}

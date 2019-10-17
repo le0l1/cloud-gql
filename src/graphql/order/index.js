@@ -44,9 +44,9 @@ const resolvers = {
   },
   OrderStatus,
   OrderDetail: {
-    shopId(v) {
-      return v ? formateID('shop', v.shopId) : null;
-    },
+    // shopId(v) {
+    //   return v ? formateID('shop', v.shopId) : null;
+    // },
     goodId(v) {
       return v ? formateID('good', v.goodId) : null;
     },

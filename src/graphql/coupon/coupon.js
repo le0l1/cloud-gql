@@ -38,7 +38,7 @@ export default class CouponResolver {
 
     const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
     const user = await User.findOneOrFail(decodeNumberId(userId));
-    const qb = Coupon.createQueryBuilder('coupon')
+    let qb = Coupon.createQueryBuilder('coupon')
       .leftJoinAndMapOne(
         'coupon.userCoupon',
         'coupon.userCoupon',
@@ -49,25 +49,29 @@ export default class CouponResolver {
         },
       )
       .andWhere('coupon.shop = :shop', { shop: shop.id });
-    return pipe(
-      where('coupon.expiredAt < :expiredAt', { expiredAt: isExpired ? Date.now() : null }),
-      getMany,
-    )(qb);
+
+    if (!isExpired) {
+      qb = qb.andWhere('coupon.expiredAt > :expiredAt', { expiredAt: Date.now() });
+    }
+    return getMany(qb);
   }
 
   static async searchShopCoupons({ shopId, isExpired }) {
     const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
-    return pipe(
+    let qb = pipe(
       getQB('coupon'),
       where('coupon.shop = :shop', { shop: shop.id }),
-      where('coupon.expiredAt < :expiredAt', { expiredAt: isExpired ? Date.now() : null }),
-      getMany,
     )(Coupon);
+
+    if (!isExpired) {
+      qb = qb.andWhere('coupon.expiredAt > :expiredAt', { expiredAt: Date.now() });
+    }
+    return getMany(qb);
   }
 
   static async searchUserCoupons({ userId, isExpired }) {
     const user = await User.findOneOrFail(decodeNumberId(userId));
-    const qb = Coupon.createQueryBuilder('coupon').leftJoinAndMapOne(
+    let qb = Coupon.createQueryBuilder('coupon').leftJoinAndMapOne(
       'coupon.userCoupon',
       'coupon.userCoupon',
       'userCoupon',
@@ -76,10 +80,11 @@ export default class CouponResolver {
         user: user.id,
       },
     );
-    return pipe(
-      where('coupon.expiredAt < :expiredAt', { expiredAt: isExpired ? Date.now() : null }),
-      getMany,
-    )(qb);
+
+    if (!isExpired) {
+      qb = qb.andWhere('coupon.expiredAt > :expiredAt', { expiredAt: Date.now() });
+    }
+    return getMany(qb);
   }
 
   /**

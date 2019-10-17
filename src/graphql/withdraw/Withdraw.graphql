@@ -14,6 +14,19 @@ type Withdraw  implements Node {
   rejectDesc: String
 }
 
+type WithdrawBank {
+  id: ID
+  userId: ID
+  "用户中文名"
+  cnname: String
+  "支付宝账号"
+  alipayAccount: String
+  "创建时间"
+  createdAt: String
+  "更新时间"
+  updatedAt: String
+}
+
 enum WithdrawStatus {
   "待审核"
   WAIT_REVIEW
@@ -37,6 +50,8 @@ input CreateWithdrawInput {
   totalCount: Int!
   "提现方式"
   method: WithdrawMethod!
+  "短信验证码"
+  code: Int!
 }
 
 input UpdateWithdrawInput {
@@ -46,6 +61,15 @@ input UpdateWithdrawInput {
   status: WithdrawStatus!
   "提现拒绝原因"
   rejectDesc: String
+}
+
+input BindWithdrawBankInput {
+  "用户中文名"
+  cnname: String
+  "支付宝账号"
+  alipayAccount: String
+  "短信验证码"
+  code: Int
 }
 
 type WithdrawConnection implements Connection {
@@ -66,11 +90,17 @@ extend type Query {
   withdraws(query: WithdrawsQuery!): WithdrawConnection
   "提现详情"
   withdraw(id: ID!): Withdraw
+  "提现账号详情"
+  withdrawBank: WithdrawBank @auth(requires: CUSTOMER)
 }
 
 extend type Mutation {
   "提现"
-  createWithdraw(input: CreateWithdrawInput!): Withdraw
+  createWithdraw(input: CreateWithdrawInput!): Withdraw @auth(requires: CUSTOMER)
   "改变提现状态"
   updateWithdraw(input: UpdateWithdrawInput!): Withdraw @auth(requires: ROOT)
+  "绑定提现支付宝账号(多次提交为更新)"
+  bindWithdrawBank(input: BindWithdrawBankInput!): WithdrawBank @auth(requires: CUSTOMER)
+  "取消绑定提现账号"
+  cancelWithdrawBank(id: ID!): WithdrawBank @auth(requires: CUSTOMER)
 }

@@ -8,20 +8,23 @@ const umengSign = (appSecret, body, url = 'https://msgapi.umeng.com/api/send', m
   .update(method + url + JSON.stringify(body) + appSecret)
   .digest('hex');
 
-const doBroadcast = (params) => {
+const doBroadcast = (params, end) => {
   const url = `https://msgapi.umeng.com/api/send?sign=${umengSign(
-    env('UMENG_APP_SECRET'),
+    end === 'ios' ? env('UMENG_IOS_SECRET') : env('UMENG_ANDORID_SECRET'),
     params,
   )}`;
   axios.post(url, params).then((res) => {
-    logger.info('推送报文:', res.data)
+    logger.info(`推送报文: ${JSON.stringify(res.data)}`);
   }).catch((err) => {
-    logger.warn('推送失败:', err);
+    if (err.response) {
+      logger.warn(`UMENG ${end}端推送失败, 返回报文:${JSON.stringify(err.response.data)}`);
+    }
+    logger.warn(`推送失败: ${err}`);
   });
 };
 
 const broadcastIOSMessage = (devices, title) => doBroadcast({
-  appkey: env('UMENG_APP_KEY'),
+  appkey: env('UMENG_IOS_KEY'),
   timestamp: Date.now(),
   type: 'listcast',
   device_tokens: devices.join(','),
@@ -34,10 +37,11 @@ const broadcastIOSMessage = (devices, title) => doBroadcast({
       },
     },
   },
-});
+  production_mode: 'false',
+}, 'ios');
 
 const broadcastAndroidMessage = (devices, title) => doBroadcast({
-  appkey: env('UMENG_APP_KEY'),
+  appkey: env('UMENG_ANDORID_KEY'),
   timestamp: Date.now(),
   type: 'listcast',
   device_tokens: devices.join(','),
@@ -50,7 +54,7 @@ const broadcastAndroidMessage = (devices, title) => doBroadcast({
       after_open: 'go_app',
     },
   },
-});
+}, 'android');
 
 export const brodcastMessage = (devices, body) => {
   broadcastAndroidMessage(devices, body);

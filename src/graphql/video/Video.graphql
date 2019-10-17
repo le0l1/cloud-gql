@@ -1,0 +1,56 @@
+type VideoNode implements Node{
+    id: ID!
+    "上传视频的用户信息"
+    user: User
+    "视频地址"
+    videoUrl: String
+    "视频标题"
+    title: String
+    "创建时间"
+    createdAt: String
+    "评论次数"
+    commentCount: Number
+}
+
+type Video {
+    id: ID
+    "上传视频的用户id"
+    userId: ID
+    "视频地址"
+    videoUrl: String
+    "视频标题"
+    title: String
+    "创建时间"
+    createdAt: String
+}
+
+type VideoConnection implements Connection {
+    pageInfo: PageInfo
+    edges: [VideoNode!]
+}
+
+input CreateVideoInput {
+    "用户id"
+    userId: ID!
+    "视频地址"
+    videoUrl: String!
+    "视频标题"
+    title: String!
+}
+
+input VideosQuery {
+    "页面size"
+    limit: Int
+    "页数"
+    offset: Int
+}
+
+extend type Mutation {
+    createVideo(input: CreateVideoInput!):Video @auth
+    deleteVideo(id: ID!): Video @auth(requires: ROOT)
+}
+
+extend  type  Query  {
+   video(id: ID!): VideoNode
+   videos(query: VideosQuery): VideoConnection
+}

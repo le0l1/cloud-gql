@@ -33,7 +33,7 @@ type CommentResult {
 input getCommentInput {
   "评论类型id 若是商户就传商户id 以此类推"
   typeId: ID!
-  
+
   "页面size"
   limit: Int
   "页数"

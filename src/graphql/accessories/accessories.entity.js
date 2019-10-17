@@ -15,6 +15,13 @@ export class Accessories extends BaseEntity {
   rfqId;
 
   @Column({
+    name: 'quote_id',
+    type: 'int',
+    nullable: true,
+  })
+  quoteId;
+
+  @Column({
     type: 'character varying',
     name: 'accessories_name',
   })

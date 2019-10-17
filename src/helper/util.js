@@ -1,3 +1,5 @@
+import { format } from 'date-fns';
+
 export const isValid = val => val !== null && val !== '' && val !== undefined;
 // 生成随机验证码
 export const generateSMSCode = () => Math.floor(100000 + Math.random() * 900000);
@@ -80,3 +82,11 @@ export const select = (conditions, def) => (payload) => {
   }
   return def;
 };
+
+
+/**
+ * 创建报价订单号
+ */
+export function makeOfferNumber() {
+  return `Q${format(new Date(), 'YYYYMMDDHHmm')}${Math.floor(Math.random() * 1000000)}`;
+}

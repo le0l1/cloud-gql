@@ -27,6 +27,7 @@ import { OrderStatus } from '../../helper/status';
 import { OrderLog } from './orderLog.entity';
 import logger from '../../helper/logger';
 import { createPay } from '../payment/pay';
+import { Shop } from '../shop/shop.entity';
 
 export default class OrderResolver {
   static async createOrder({ userId, orderItems = [], addressId }) {
@@ -168,7 +169,13 @@ export default class OrderResolver {
       OrderDetail,
       'orderDetail',
       'orderDetail.orderId = order.id',
-    );
+    )
+      .leftJoinAndMapOne(
+        'orderDetail.shop',
+        Shop,
+        'shop',
+        'orderDetail.shopId = shop.id',
+      );
     return pipe(
       where('order.status = :status', { status }),
       where('order.userId = :userId', { userId: userId ? decodeNumberId(userId) : null }),
@@ -190,6 +197,12 @@ export default class OrderResolver {
         OrderDetail,
         'orderDetail',
         'orderDetail.orderId = order.id',
+      )
+      .leftJoinAndMapOne(
+        'orderDetail.shop',
+        Shop,
+        'shop',
+        'orderDetail.shopId = shop.id',
       )
       .where('order.id = :id', { id: decodeNumberId(id) })
       .andWhere('order.deletedAt is null')

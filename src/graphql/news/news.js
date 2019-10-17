@@ -26,4 +26,10 @@ export default class NewsResolver {
     const news = await News.findOneOrFail(decodeNumberId(id));
     return News.merge(news, rest).save();
   }
+
+  static searchNewsDetail(id) {
+    return News.findOneOrFail({
+      id: decodeNumberId(id),
+    });
+  }
 }

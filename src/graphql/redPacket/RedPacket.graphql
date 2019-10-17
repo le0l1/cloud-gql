@@ -1,6 +1,8 @@
 type RedPacket {
   id: ID
   sponsor: ID
+  "商户信息"
+  shop: Shop
   description: String
   quantity: Int
   totalFee: Int
@@ -8,24 +10,32 @@ type RedPacket {
   createdAt: String
 }
 
+type RedPacketRecord {
+  id: ID
+  "红包"
+  redPacket: RedPacket
+  "抢到的金额"
+  totalFee: Float
+  "创建时间"
+  createdAt: String
+}
+
 input SendRedPacketInput {
-  "发红包人ID"
-  sponsor: ID!
   quantity: Int!
   totalFee: Int!
   description: String!
+  paymentMethod: PAYMENTMETHOD!
 }
 
 input GrabRedPacketInput {
-  userId: Int!
   redPacketId: ID!
 }
 
 extend type Mutation {
   "发红包"
-  sendRedPacket(input: SendRedPacketInput!): String
+  sendRedPacket(input: SendRedPacketInput!): WXPayPrepare @auth(requires: MERCHANT)
   "抢红包"
-  grabRedPacket(input: GrabRedPacketInput!): Int
+  grabRedPacket(input: GrabRedPacketInput!): Int @auth(requires: CUSTOMER)
 }
 
 extend type Query {
@@ -33,4 +43,6 @@ extend type Query {
   redPacket(id: ID!): RedPacket
   "获取红包列表"
   redPackets: [RedPacket]
+  "我的红包"
+  myRedPackets: [RedPacketRecord] @auth(requires: CUSTOMER)
 }

@@ -52,6 +52,7 @@ type NewsActionResult {
 
 extend type Query {
   news(query: NewsQueryInput!):NewsConnection
+  newsDetail(id: ID!): News
 }
 
 extend type Mutation {

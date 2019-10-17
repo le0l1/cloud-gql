@@ -10,7 +10,7 @@ import { RedPacketRecord } from './redPacketRecord.entity';
 
 export default (router) => {
   router.post(env('REDPACKET_ALIPAY_URL'), ctx => getManager().transaction(async (trx) => {
-    logger.info(`开始处理支付宝红包回调:${ctx.query}`);
+    logger.info(`处理支付宝红包回调:${ctx.query}`);
     const redPacket = await RedPacket.createQueryBuilder('redPacket')
       .leftJoinAndMapOne(
         'redPacket.payment',
