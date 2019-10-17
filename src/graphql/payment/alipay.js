@@ -2,6 +2,7 @@ import fs from 'fs';
 import AlipaySdk from 'alipay-sdk';
 import { sign } from 'alipay-sdk/lib/util';
 import iconv from 'iconv-lite';
+import { format } from 'date-fns';
 import AliPayFormData from 'alipay-sdk/lib/form';
 import { env } from '../../helper/util';
 
@@ -12,7 +13,7 @@ export default class AliPay {
     charset: 'utf-8',
     sign_type: 'RSA2',
     format: 'json',
-    timestamp: '2019-08-04 11:23:50',
+    timestamp: format(new Date(), 'YYYY-MM-DD hh:mm:ss'),
     version: '1.0',
     notify_url: env('HOST') + env('ALIPAY_NOTIFY_URL'),
     bizContent: {
@@ -35,13 +36,6 @@ export default class AliPay {
     return this;
   }
 
-  /**
-   * 设置回调
-   */
-  setNotifyUrl(url) {
-    this.params.notify_url = url;
-    return this;
-  }
 
   getSign() {
     const alipaySdk = new AlipaySdk({

@@ -14,6 +14,8 @@ import handleTransferPayNotify from './handler/transfer';
 
 export default (router) => {
   router.post(env('ALIPAY_NOTIFY_URL'), async (ctx) => {
+    console.log('alipay response', ctx.request.body);
+    console.log('alipay query', ctx.query);
     logger.info(`开始处理支付宝支付回调! 订单号:${ctx.body.out_trade_no} 回调报文: ${JSON.stringify(ctx.body)}`);
     const paymentOrder = await pipe(
       getQB('paymentOrder'),
