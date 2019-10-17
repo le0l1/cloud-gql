@@ -1,4 +1,4 @@
-import { env, pipe } from '../../helper/util';
+import { env, pipe, mapObjectArr } from '../../helper/util';
 import logger from '../../helper/logger';
 import PaymentOrder from '../paymentOrder.entity';
 import {
@@ -8,8 +8,10 @@ import { Payment } from '../../graphql/payment/payment.entity';
 import { hasPaid, wxpayCheckSign } from '../util';
 
 export default (router) => {
-  router.post(env('ALIPAY_NOTIFY_URL'), async (ctx) => {
-    logger.info(`开始处理支付宝支付回调! 订单号:${ctx.body.out_trade_no} 回调报文: ${JSON.stringify(ctx.body)}`);
+  router.post(env('WXPAY_NOTIFY_URL'), async (ctx) => {
+    const xml = mapObjectArr(ctx.request.body.xml);
+    logger.info(`开始处理微信支付回调! 订单号:${ctx.body.out_trade_no} 回调报文: ${JSON.stringify(ctx.body)}`);
+
     const paymentOrder = await pipe(
       getQB('paymentOrder'),
       where('paymentOrder.orderNumber = :orderNumber', { orderNumber: ctx.body.out_trade_no }),

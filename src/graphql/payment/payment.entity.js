@@ -17,19 +17,6 @@ export class Payment extends BaseEntity {
   })
   transactionId;
 
-  @Column({
-    type: 'character varying',
-    name: 'order_number',
-    comment: '内部订单号',
-  })
-  orderNumber
-
-  @Column({
-    type: 'character varying',
-    name: 'order_type',
-    comment: '内部订单类型',
-  })
-  orderType
 
   @Column({
     type: 'int',
