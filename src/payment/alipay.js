@@ -14,12 +14,11 @@ import handleTransferPayNotify from './handler/transfer';
 
 export default (router) => {
   router.post(env('ALIPAY_NOTIFY_URL'), async (ctx) => {
-    console.log('alipay response', ctx.request.body);
-    console.log('alipay query', ctx.query);
-    logger.info(`开始处理支付宝支付回调! 订单号:${ctx.body.out_trade_no} 回调报文: ${JSON.stringify(ctx.body)}`);
+    const { body } = ctx.request;
+    logger.info(`开始处理支付宝支付回调! 订单号:${body.out_trade_no} 回调报文: ${JSON.stringify(body)}`);
     const paymentOrder = await pipe(
       getQB('paymentOrder'),
-      where('paymentOrder.orderNumber = :orderNumber', { orderNumber: ctx.body.out_trade_no }),
+      where('paymentOrder.orderNumber = :orderNumber', { orderNumber: body.out_trade_no }),
       leftJoinAndMapOne('paymentOrder.payment', Payment, 'payment', 'paymentOrder.paymentId = payment.id'),
       getOne,
     )(PaymentOrder);
@@ -31,13 +30,13 @@ export default (router) => {
       return;
     }
 
-    if (alipayCheckSign(ctx.body)) {
+    if (alipayCheckSign(body)) {
       logger.warn(`订单${paymentOrder.orderNumber}支付验签失败!`);
       ctx.body = 'success';
       return;
     }
 
-    if (diffTotalFee(ctx.body.total_amount, paymentOrder.payment.totalFee)) {
+    if (diffTotalFee(body.total_amount, paymentOrder.payment.totalFee)) {
       logger.warn(`订单${paymentOrder.orderNumber}支付金额不匹配!`);
       ctx.body = 'success';
       return;
