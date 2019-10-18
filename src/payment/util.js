@@ -18,7 +18,8 @@ export function wxpayCheckSign(data) {
 // 支付宝验证
 export function alipayCheckSign(data) {
   const alipay = new AlipaySdk({
-    alipayPublicKey: fs.readFileSync(env('ALIPAY_PUBLIC_KEY'), 'ascii'),
+    appId: env('ALIPAY_APP_ID'),
+    privateKey: fs.readFileSync(env('ALIPAY_PRIVATE_KEY'), 'ascii'),
   });
   return alipay.checkNotifySign(data);
 }

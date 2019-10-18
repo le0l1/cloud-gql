@@ -14,6 +14,11 @@ import { PaymentOrderType } from '../helper/status';
 
 export default (router) => {
   router.post(env('WXPAY_NOTIFY_URL'), async (ctx) => {
+    if (wxpayCheckSign(ctx.request.body)) {
+      logger.warn(`订单${ctx.request.body.out_trade_no}支付验签失败!`);
+      ctx.body = 'success';
+      return;
+    }
     const xml = mapObjectArr(ctx.request.body.xml);
     logger.info(`开始处理微信支付回调! 订单号:${xml.out_trade_no} 回调报文: ${JSON.stringify(xml)}`);
 
@@ -31,7 +36,7 @@ export default (router) => {
       return;
     }
 
-    if (wxpayCheckSign(xml)) {
+    if (!wxpayCheckSign(xml)) {
       logger.warn(`订单${paymentOrder.orderNumber}支付验签失败!`);
       ctx.body = 'success';
       return;

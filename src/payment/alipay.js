@@ -31,7 +31,7 @@ export default (router) => {
       return;
     }
 
-    if (alipayCheckSign(body)) {
+    if (!alipayCheckSign(body)) {
       logger.warn(`订单${paymentOrder.orderNumber}支付验签失败!`);
       ctx.body = 'success';
       return;
