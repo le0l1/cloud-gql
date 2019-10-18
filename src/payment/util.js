@@ -1,7 +1,7 @@
 import fs from 'fs';
+import AlipaySdk from 'alipay-sdk';
 import { PaymentStatus } from '../helper/status';
 import { WXPay } from '../graphql/payment/wxpay';
-import AliPay from '../graphql/payment/alipay';
 import { env } from '../helper/util';
 
 // 是否已支付
@@ -17,7 +17,7 @@ export function wxpayCheckSign(data) {
 
 // 支付宝验证
 export function alipayCheckSign(data) {
-  const alipay = new AliPay({
+  const alipay = new AlipaySdk({
     alipayPublicKey: fs.readFileSync(env('ALIPAY_PUBLIC_KEY'), 'ascii'),
   });
   return alipay.checkNotifySign(data);

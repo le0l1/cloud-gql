@@ -1,6 +1,6 @@
 import { env, pipe, mapObjectArr } from '../helper/util';
 import logger from '../helper/logger';
-import PaymentOrder from './paymentOrder.entity';
+import { PaymentOrder } from './paymentOrder.entity';
 import {
   getQB, getOne, where, leftJoinAndMapOne,
 } from '../helper/sql';
@@ -10,6 +10,7 @@ import handleOrderPayNotify from './handler/order';
 import handleOfferPayNotify from './handler/offer';
 import handleRedpacketPayNotify from './handler/redpacket';
 import handleTransferPayNotify from './handler/transfer';
+import { PaymentOrderType } from '../helper/status';
 
 export default (router) => {
   router.post(env('WXPAY_NOTIFY_URL'), async (ctx) => {
@@ -43,10 +44,10 @@ export default (router) => {
     }
 
     const methods = {
-      order: handleOrderPayNotify,
-      offer: handleOfferPayNotify,
-      redpacket: handleRedpacketPayNotify,
-      transfer: handleTransferPayNotify,
+      [PaymentOrderType.order]: handleOrderPayNotify,
+      [PaymentOrderType.offer]: handleOfferPayNotify,
+      [PaymentOrderType.redpacket]: handleRedpacketPayNotify,
+      [PaymentOrderType.transfer]: handleTransferPayNotify,
     };
 
     if (paymentOrder.orderType in methods) {
