@@ -24,7 +24,7 @@ export default (router) => {
     )(PaymentOrder);
 
 
-    if (hasPaid(paymentOrder.payemnt.paymentStatus)) {
+    if (hasPaid(paymentOrder.payment.paymentStatus)) {
       logger.warn(`订单${paymentOrder.orderNumber}已支付,请勿重复处理!`);
       ctx.body = 'success';
       return;
