@@ -1,6 +1,6 @@
 import { env, pipe } from '../helper/util';
 import logger from '../helper/logger';
-import PaymentOrder from './paymentOrder.entity';
+import { PaymentOrder } from './paymentOrder.entity';
 import {
   getQB, getOne, where, leftJoinAndMapOne,
 } from '../helper/sql';
@@ -18,8 +18,8 @@ export default (router) => {
     logger.info(`开始处理支付宝支付回调! 订单号:${body.out_trade_no} 回调报文: ${JSON.stringify(body)}`);
     const paymentOrder = await pipe(
       getQB('paymentOrder'),
-      where('paymentOrder.orderNumber = :orderNumber', { orderNumber: body.out_trade_no }),
       leftJoinAndMapOne('paymentOrder.payment', Payment, 'payment', 'paymentOrder.paymentId = payment.id'),
+      where('paymentOrder.orderNumber = :orderNumber', { orderNumber: body.out_trade_no }),
       getOne,
     )(PaymentOrder);
 
