@@ -74,7 +74,7 @@ export default class TransferResolver {
       skip: Math.max(0, offset - 1),
       take: limit,
       where: {
-        'payment.status': PaymentStatus.PAID,
+        'payment.paymentStatus': PaymentStatus.PAID,
       },
       relations: ['payee', 'payer', 'payment'],
       order: {
@@ -91,7 +91,7 @@ export default class TransferResolver {
       relations: ['payee', 'payer', 'payment'],
       where: {
         payer: user,
-        'payment.status': PaymentStatus.PAID,
+        'payment.paymentStatus': PaymentStatus.PAID,
       },
       order: {
         createdAt: 'DESC',
