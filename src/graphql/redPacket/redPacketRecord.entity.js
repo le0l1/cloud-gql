@@ -26,6 +26,14 @@ export class RedPacketRecord extends BaseEntity {
   })
   totalFee;
 
+  @Column({
+    name: 'had_settled',
+    type: 'boolean',
+    default: false,
+    comment: '是否已清算',
+  })
+  hadSettled
+
   @CreateDateColumn({
     name: 'created_at',
   })

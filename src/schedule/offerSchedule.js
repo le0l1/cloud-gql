@@ -16,10 +16,7 @@ function completeOffer(offerRecord) {
     const oldVersion = user.version;
     user.totalFee = Number(user.totalFee) + Number(totalFee);
     await trx.save(user);
-    await trx.update(OfferRecord, {
-      id: offerRecord.id,
-      isCompleted: false,
-    }, { isCompleted: true });
+    await trx.update(OfferRecord, offerRecord, { isCompleted: true });
     if (user.version !== (oldVersion + 1)) {
       throw new Error();
     }
@@ -35,12 +32,17 @@ function completeOffer(offerRecord) {
 }
 
 export default async function () {
+  logger.info('开始清算报价记录!');
   const offerRecords = await OfferRecord
     .createQueryBuilder('offerRecord')
     .leftJoinAndMapOne('offerRecord.payment', Payment, 'payment', 'payment.id = offerRecord.paymentId')
     .leftJoinAndMapOne('offerRecord.offer', Offer, 'offer', 'offer.id = offerRecord.offerId')
     .where('payment.paymentStatus = :paymentStatus', { paymentStatus: PaymentStatus.PAID })
-    .andWhere('offerRecord.isCompleted = false')
+    .andWhere('offerRecord.hadSettled = :hadSettled', { hadSettled: false })
     .getMany();
-  await Promise.all(offerRecords.map(completeOffer));
+  await Promise.all(offerRecords.map(completeOffer)).then(() => {
+    logger.info('开始清算报价记录!');
+  }).catch((e) => {
+    logger.warn(`清算报价记录失败! 错误报文: ${e}`);
+  });
 }

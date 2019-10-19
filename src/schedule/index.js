@@ -3,11 +3,13 @@ import { createConnection } from 'typeorm';
 import orderSchedule from './orderSchedule';
 import transferSchedule from './transferSchedule';
 import statisticsSchedule from './statisticsSchedule';
-// import offerSchedule from './offerSchedule';
+import redPacketSchedule from './redPacketSchedule';
+import offerSchedule from './offerSchedule';
 
 createConnection().then(() => {
   schedule.scheduleJob('*/30 * * * *', transferSchedule);
   schedule.scheduleJob('* */1 * * *', orderSchedule);
   schedule.scheduleJob('30 23 * * *', statisticsSchedule);
-  // schedule.scheduleJob('* */1 * * *', offerSchedule);
+  schedule.scheduleJob('* */1 * * *', offerSchedule);
+  schedule.scheduleJob('*/40 * * * *', redPacketSchedule);
 });

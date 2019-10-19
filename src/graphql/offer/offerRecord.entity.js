@@ -26,6 +26,14 @@ export default class OfferRecord extends BaseEntity {
     comment: '报价id',
   })
   offerId;
+  
+  @Column({
+    name: 'had_settled',
+    type: 'boolean',
+    default: false,
+    comment: '是否已清算',
+  })
+  hadSettled
 
   @Column({
     name: 'payment_id',
