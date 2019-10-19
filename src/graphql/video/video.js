@@ -1,7 +1,7 @@
 import Video from './video.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
 import {
-  getManyAndCount, getQB, withPagination, where, leftJoinAndMapOne, getOne,
+  getManyAndCount, getQB, withPagination, where, leftJoinAndMapOne, getOne, orderBy,
 } from '../../helper/sql';
 import { User } from '../user/user.entity';
 import { Comment } from '../comment/comment.entity';
@@ -47,6 +47,9 @@ export function searchVideos({
     addCommentCount,
     where('video.deletedAt is null'),
     withPagination(limit, offset),
+    orderBy({
+      'video.createdAt': 'DESC',
+    }),
     getManyAndCount,
   )(Video);
 }

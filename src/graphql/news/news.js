@@ -1,6 +1,6 @@
 import { News } from './news.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
-import { getQB, withPagination, getManyAndCount } from '../../helper/sql';
+import { getQB, withPagination, getManyAndCount, orderBy } from '../../helper/sql';
 
 export default class NewsResolver {
   static createNews(params) {
@@ -18,6 +18,9 @@ export default class NewsResolver {
     return pipe(
       getQB('news'),
       withPagination(limit, offset),
+      orderBy({
+        'news.createdAt': 'DESC',
+      }),
       getManyAndCount,
     )(News);
   }

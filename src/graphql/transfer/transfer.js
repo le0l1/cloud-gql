@@ -74,6 +74,9 @@ export default class TransferResolver {
       skip: Math.max(0, offset - 1),
       take: limit,
       relations: ['payee', 'payer', 'payment'],
+      order: {
+        createdAt: 'DESC',
+      },
     });
   }
 
@@ -85,6 +88,9 @@ export default class TransferResolver {
       relations: ['payee', 'payer', 'payment'],
       where: {
         payer: user,
+      },
+      order: {
+        createdAt: 'DESC',
       },
     });
   }
