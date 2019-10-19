@@ -5,9 +5,10 @@ import {
   Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { decodeTypeAndId, decodeNumberId } from '../../helper/util';
+import { decodeTypeAndId, decodeNumberId, pipe } from '../../helper/util';
 import { Good } from '../good/good.entity';
 import { Shop } from '../shop/shop.entity';
+import { leftJoinAndSelect, getQB, where, getMany } from '../../helper/sql';
 
 @Entity()
 export class Recommend extends BaseEntity {
@@ -76,14 +77,18 @@ export class Recommend extends BaseEntity {
       },
     });
     if (!recommends.length) return [];
-
     const recommendClass = {
-      good: Good,
-      shop: Shop,
+      good: ids => Good.findByIds(ids),
+      shop: ids => pipe(
+        getQB('shop'),
+        leftJoinAndSelect('shop.categories', 'category'),
+        where('shop.id IN (:...ids)', { ids }),
+        getMany,
+      )(Shop),
     };
-    const nodeIds = recommends.map(a => a.recommendTypeId);
-    const res = await recommendClass[recommends[0].recommendType].findByIds(nodeIds);
 
+    const nodeIds = recommends.map(a => a.recommendTypeId);
+    const res = await recommendClass[recommends[0].recommendType](nodeIds);
     return res.map((node, idx) => ({
       ...recommends[idx],
       route,
