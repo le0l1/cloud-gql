@@ -154,6 +154,7 @@ export default class RedPacketResolver {
           .getQuery();
         return `EXISTS ${subQuery}`;
       })
+      .andWhere('redPacket.restQuantity != 0')
       .setParameter('status', PaymentStatus.PAID)
       .getMany();
   }

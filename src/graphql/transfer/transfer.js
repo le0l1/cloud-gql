@@ -7,7 +7,7 @@ import { User } from '../user/user.entity';
 import { Payment } from '../payment/payment.entity';
 import { createPay } from '../payment/pay';
 import { PaymentOrder } from '../../payment/paymentOrder.entity';
-import { PaymentOrderType } from '../../helper/status';
+import { PaymentOrderType, PaymentStatus } from '../../helper/status';
 
 export default class TransferResolver {
   /**
@@ -73,6 +73,9 @@ export default class TransferResolver {
     return Transfer.findAndCount({
       skip: Math.max(0, offset - 1),
       take: limit,
+      where: {
+        'payment.status': PaymentStatus.PAID,
+      },
       relations: ['payee', 'payer', 'payment'],
       order: {
         createdAt: 'DESC',
@@ -88,6 +91,7 @@ export default class TransferResolver {
       relations: ['payee', 'payer', 'payment'],
       where: {
         payer: user,
+        'payment.status': PaymentStatus.PAID,
       },
       order: {
         createdAt: 'DESC',
