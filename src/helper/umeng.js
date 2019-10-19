@@ -37,7 +37,6 @@ const broadcastIOSMessage = (devices, title) => doBroadcast({
       },
     },
   },
-  production_mode: 'false',
 }, 'ios');
 
 const broadcastAndroidMessage = (devices, title) => doBroadcast({
