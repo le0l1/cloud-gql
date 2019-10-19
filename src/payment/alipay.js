@@ -15,13 +15,7 @@ import { PaymentOrderType } from '../helper/status';
 
 export default (router) => {
   router.post(env('ALIPAY_NOTIFY_URL'), async (ctx) => {
-
     const { body } = ctx.request;
-    if (!alipayCheckSign(body)) {
-      logger.warn('订单支付验签失败!');
-      ctx.body = 'success';
-      return;
-    }
     logger.info(`开始处理支付宝支付回调! 订单号:${body.out_trade_no} 回调报文: ${JSON.stringify(body)}`);
     const paymentOrder = await pipe(
       getQB('paymentOrder'),
@@ -59,7 +53,7 @@ export default (router) => {
     if (paymentOrder.orderType in methods) {
       await methods[paymentOrder.orderType](paymentOrder);
     }
-    logger.info('处理支付宝红包回调结束');
+    logger.info('处理支付宝回调结束');
     ctx.body = 'success';
   });
 };

@@ -145,13 +145,16 @@ export default class RedPacketResolver {
         'shop',
         'shop.user_id = redPacket.sponsor',
       )
-      .where(qb => `EXISTS ${qb
-        .subQuery()
-        .select('payment.id')
-        .from(Payment, 'payment')
-        .where('payment.id = redPacket.paymentId')
-        .andwhere('payment.paymentStatus = :status')
-        .getQuery()}`)
+      .where((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('payment.id')
+          .from(Payment, 'payment')
+          .where('payment.id = redPacket.paymentId')
+          .andWhere('payment.paymentStatus = :status')
+          .getQuery();
+        return `EXISTS ${subQuery}`;
+      })
       .setParameter('status', PaymentStatus.PAID)
       .getMany();
   }
