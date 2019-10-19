@@ -65,9 +65,8 @@ export default class RedPacketResolver {
   static async grabRedPacket(user, { redPacketId }) {
     const redPacket = await RedPacket.findOneOrFail({
       id: decodeNumberId(redPacketId),
-      lock: { mode: 'optimistic' },
     });
-    if (redPacket.restQuantity === 0) {
+    if (Number(redPacket.restQuantity) === 0) {
       throw new RedPacketEmptyError();
     }
     if (
