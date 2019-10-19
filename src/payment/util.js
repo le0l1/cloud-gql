@@ -20,6 +20,7 @@ export function alipayCheckSign(data) {
   const alipay = new AlipaySdk({
     appId: env('ALIPAY_APP_ID'),
     privateKey: fs.readFileSync(env('ALIPAY_PRIVATE_KEY'), 'ascii'),
+    alipayPublicKey: fs.readFileSync(env('ALIPAY_PUBLIC_KEY'), 'ascii'),
   });
   return alipay.checkNotifySign(data);
 }

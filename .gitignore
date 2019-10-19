@@ -92,3 +92,4 @@ typings/
 
 #pem 
 rsa_private_key.pem
+*.pem

@@ -72,7 +72,7 @@ export class User extends BaseEntity {
   garage;
 
   @Column({
-    type: 'bigint',
+    type: 'numeric',
     default: 0,
     name: 'total_fee',
   })
