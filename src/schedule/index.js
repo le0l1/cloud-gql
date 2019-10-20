@@ -10,6 +10,6 @@ createConnection().then(() => {
   schedule.scheduleJob('*/30 * * * *', transferSchedule);
   schedule.scheduleJob('* */1 * * *', orderSchedule);
   schedule.scheduleJob('30 23 * * *', statisticsSchedule);
-  schedule.scheduleJob('* */1 * * *', offerSchedule);
+  schedule.scheduleJob('*/50 * * * *', offerSchedule);
   schedule.scheduleJob('*/40 * * * *', redPacketSchedule);
 });
