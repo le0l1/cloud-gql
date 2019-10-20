@@ -164,6 +164,12 @@ export default class RedPacketResolver {
     return pipe(
       getQB('redPacketRecord'),
       leftJoinAndMapOne(
+        'redPacket.shop',
+        Shop,
+        'shop',
+        'shop.user_id = redPacket.sponsor',
+      ),
+      leftJoinAndMapOne(
         'redPacketRecord.redPacket',
         RedPacket,
         'redPacket',

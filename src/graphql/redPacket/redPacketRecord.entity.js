@@ -21,7 +21,7 @@ export class RedPacketRecord extends BaseEntity {
   redPacketId;
 
   @Column({
-    type: 'int',
+    type: 'numeric',
     name: 'total_fee',
   })
   totalFee;

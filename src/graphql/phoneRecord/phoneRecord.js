@@ -52,7 +52,7 @@ export async function searchPhoneRecords(user, { limit, offset }) {
       'user',
       'user.id = phoneRecord.userId',
     ),
-    where('phoneRecord.userId = :userId', { userId: user.id }),
+    where('phoneRecord.userId = :userId OR shop.user_id = :userId', { userId: user.id }),
     withPagination(limit, offset),
     orderBy({
       'phoneRecord.createdAt': 'DESC',
