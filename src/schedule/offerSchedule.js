@@ -38,7 +38,7 @@ export default async function () {
     .where('payment.paymentStatus = :paymentStatus', { paymentStatus: PaymentStatus.PAID })
     .andWhere('offerRecord.hadSettled = :hadSettled', { hadSettled: false })
     .getMany();
-  await Promise.all(offerRecords.map(completeOffer))
+  Promise.all(offerRecords.map(completeOffer))
     .then(() => {
       logger.info('清算报价记录结束!');
     }).catch((e) => {
