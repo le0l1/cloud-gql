@@ -6,17 +6,15 @@ import { User } from '../graphql/user/user.entity';
 import logger from '../helper/logger';
 import OfferRecord from '../graphql/offer/offerRecord.entity';
 
-function completeOffer(offerRecord) {
+async function completeOffer(offerRecord) {
   const { userId } = offerRecord.offer;
   const totalFee = offerRecord.offer.offerPrice;
-  const time = 1;
-
-  const doComplete = () => getManager().transaction(async (trx) => {
-    const user = await User.findOne(userId);
+  const user = await User.findOne(userId);
+  const doComplete = (time = 1) => getManager().transaction(async (trx) => {
     const oldVersion = user.version;
     user.totalFee = Number(user.totalFee) + Number(totalFee);
     await trx.save(user);
-    await trx.update(OfferRecord, offerRecord, { isCompleted: true });
+    await trx.update(OfferRecord, offerRecord.id, { hadSettled: true });
     if (user.version !== (oldVersion + 1)) {
       throw new Error();
     }
@@ -28,7 +26,7 @@ function completeOffer(offerRecord) {
     logger.warn(`询价单${offerRecord.orderNumber}更新用户余额失败!自动尝试超过最大次数`);
     return {};
   });
-  return doComplete(time);
+  return doComplete();
 }
 
 export default async function () {

@@ -7,34 +7,34 @@ import logger from '../helper/logger';
 
 
 function getRedpacketRecords() {
-  const qb = pipe(
+  return pipe(
     getQB('redpacketRecord'),
     where('redpacketRecord.hadSettled = :hadSettled', { hadSettled: false }),
+    getMany,
   )(RedPacketRecord);
-  return getMany(qb);
 }
 
 // 进行清算
-function doSettle(redpacketRecord) {
-  const time = 1;
-  const settleFun = getManager().transaction(async (trx) => {
+async function doSettle(redpacketRecord) {
+  const user = await User.findOne(redpacketRecord.userId);
+  const settleFun = (time = 1) => getManager().transaction(async (trx) => {
     try {
-      const user = await User.findOne(redpacketRecord.userId);
       const { version: oldVersion } = user;
       user.totalFee = Number(user.totalFee) + Number(redpacketRecord.totalFee);
       await trx.save(user);
-      await trx.update(RedPacketRecord, redpacketRecord, { hadSettled: true });
+      await trx.update(RedPacketRecord, redpacketRecord.id, { hadSettled: true });
       if (user.version !== (oldVersion + 1)) {
         throw new Error();
       }
     } catch {
       logger.warn(`红包记录${redpacketRecord.id}更新用户余额失败!尝试第${time}次`);
       if (time < 3) {
-        return settleFun();
+        return settleFun(time + 1);
       }
       logger.warn(`红包记录${redpacketRecord.id}更新用户余额失败! 超过最大重试次数`);
     }
   });
+  return settleFun();
 }
 
 export default async () => {

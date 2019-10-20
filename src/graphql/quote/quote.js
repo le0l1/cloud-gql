@@ -9,7 +9,7 @@ import {
 } from '../../helper/sql';
 import { OfferStatus } from '../../helper/status';
 import Offer from '../offer/offer.entity';
-import { broadcastMessageToShops } from '../device/device';
+import { brodcastMessage } from '../../helper/umeng';
 
 /**
  * 创建询价单
@@ -32,7 +32,7 @@ export function createQuote(user, {
       imageTypeId: quote.id,
     }));
     await trx.save(imageInstances);
-    broadcastMessageToShops('您有一条询价单信息!请注意查收');
+    brodcastMessage('pushvadio2.caf', '您有一条询价单信息!请注意查收');
     return quote;
   });
 }

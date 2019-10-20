@@ -1,4 +1,4 @@
-import { getManager, In } from 'typeorm';
+import { getManager } from 'typeorm';
 import { User } from '../user/user.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
 import { RFQ } from './RFQ.entity';
@@ -7,10 +7,7 @@ import { Banner } from '../banner/banner.entity';
 import {
   withPagination, getManyAndCount, where, orderBy,
 } from '../../helper/sql';
-import { Shop } from '../shop/shop.entity';
-import { Device } from '../device/Device.entity';
 import { brodcastMessage } from '../../helper/umeng';
-import logger from '../../helper/logger';
 
 export default class RFQResolver {
   static async createRFQ({
@@ -37,7 +34,7 @@ export default class RFQResolver {
         rfq,
       }));
       await trx.save(banners);
-      RFQResolver.publishMessage(rfq);
+      brodcastMessage('pushvadio.caf', '您有一条求购信息!请注意查收');
       return rfq;
     });
   }
@@ -102,35 +99,5 @@ export default class RFQResolver {
       await trx.remove(rfq);
       return { id: decodeNumberId(id) };
     });
-  }
-
-  static async publishMessage(rfq) {
-    const shopQb = await Shop.createQueryBuilder('shop')
-      .leftJoinAndSelect('shop.categories', 'category')
-      .where('category.name like :tsQuery')
-      .select('shop."userId"');
-
-    const merchants = await User.createQueryBuilder('user')
-      .where(`user.id IN (${shopQb.getQuery()})`)
-      .select(['user.id'])
-      .setParameter('tsQuery', `%${rfq.vehicleSeries}%`)
-      .getMany();
-    if (merchants.length) {
-      console.log('broadcast merchants:', merchants);
-      const devices = await Device.find({
-        select: ['deviceToken'],
-        where: {
-          userId: In(merchants.map(m => m.id)),
-        },
-      });
-      console.log('broadcast devices:', devices);
-      if (devices.length) {
-        brodcastMessage(devices.map(d => d.deviceToken), '您有一条新的询价单消息');
-      } else {
-        logger.warn('推送取消: 无匹配商家设备');
-      }
-    } else {
-      logger.warn('推送取消: 无匹配商家');
-    }
   }
 }
