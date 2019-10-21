@@ -4,7 +4,6 @@ import Logger from '../helper/logger';
 import { Transfer } from '../graphql/transfer/transfer.entity';
 import { TransferStatus, PaymentStatus } from '../helper/status';
 
-process.env.NODE_ENV = 'development';
 
 export default () => getManager().transaction(async (trx) => {
   Logger.info('开始处理转账中并且支付成功的交易');

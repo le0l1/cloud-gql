@@ -2,6 +2,7 @@ FROM node:alpine
 
 ENV NODE_ENV=development
 ENV PORT=80
+ENV TZ='‎Asia/Shanghai‎'
 
 # set our environment variable
 ENV MUSL_LOCPATH="/usr/share/i18n/locales/musl"
@@ -27,12 +28,12 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 # add file
 ADD dist /home/graphql
 ADD package.json /home/graphql
-ADD start.sh /home/graphql 
+ADD start.sh /home/graphql
 
 WORKDIR /home/graphql
 
 # npm install
 RUN npm config set registry https://registry.npm.taobao.org
-RUN npm install 
+RUN npm install
 
 ENTRYPOINT ["sh", "./start.sh"]
