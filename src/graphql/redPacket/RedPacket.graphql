@@ -5,7 +5,7 @@ type RedPacket {
   shop: Shop
   description: String
   quantity: Int
-  totalFee: Int
+  totalFee: Number
   restQuantity: Int
   createdAt: String
 }
@@ -15,7 +15,7 @@ type RedPacketRecord {
   "红包"
   redPacket: RedPacket
   "抢到的金额"
-  totalFee: Float
+  totalFee: Number
   "创建时间"
   createdAt: String
   "商户"
@@ -37,7 +37,7 @@ extend type Mutation {
   "发红包"
   sendRedPacket(input: SendRedPacketInput!): WXPayPrepare @auth(requires: MERCHANT)
   "抢红包"
-  grabRedPacket(input: GrabRedPacketInput!): Int @auth(requires: CUSTOMER)
+  grabRedPacket(input: GrabRedPacketInput!): Number @auth(requires: CUSTOMER)
 }
 
 extend type Query {
