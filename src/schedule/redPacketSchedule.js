@@ -26,10 +26,10 @@ async function doSettle(redpacketRecord) {
         await trx.save(user);
         await trx.update(RedPacketRecord, redpacketRecord.id, { hadSettled: true });
         if (user.version !== (oldVersion + 1)) {
-          throw new Error();
+          throw new Error('用户版本不一致');
         }
-      } catch {
-        logger.warn(`红包记录${redpacketRecord.id}更新用户余额失败!尝试第${time}次`);
+      } catch (e) {
+        logger.warn(`红包记录${redpacketRecord.id}更新用户余额失败!尝试第${time}次, 失败原因: ${e}`);
         if (time < 3) {
           return settleFun(time + 1);
         }
