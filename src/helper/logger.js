@@ -6,7 +6,14 @@ const { combine, timestamp, printf } = format;
 const myFormat = printf(({ level, message, timestamp: time }) => `[${level}] ${time}: ${message}`);
 
 export default createLogger({
-  format: combine(timestamp(), myFormat),
+  format: combine(timestamp({
+    format() {
+      return new Date().toLocaleString('en-US', {
+        timeZone: 'Asia/Shanghai',
+        hour12: false,
+      });
+    },
+  }), myFormat),
   transports: [
     new transports.Console(),
     new transports.File({
