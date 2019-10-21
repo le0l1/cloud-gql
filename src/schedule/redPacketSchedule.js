@@ -17,30 +17,34 @@ function getRedpacketRecords() {
 // 进行清算
 async function doSettle(redpacketRecord) {
   const user = await User.findOne(redpacketRecord.userId);
-  const settleFun = (time = 1) => getManager().transaction(async (trx) => {
-    try {
-      const { version: oldVersion } = user;
-      user.totalFee = Number(user.totalFee) + Number(redpacketRecord.totalFee);
-      await trx.save(user);
-      await trx.update(RedPacketRecord, redpacketRecord.id, { hadSettled: true });
-      if (user.version !== (oldVersion + 1)) {
-        throw new Error();
+  return getManager().transaction((trx) => {
+    // eslint-disable-next-line consistent-return
+    const settleFun = async (time = 1) => {
+      try {
+        const { version: oldVersion } = user;
+        user.totalFee = Number(user.totalFee) + Number(redpacketRecord.totalFee);
+        await trx.save(user);
+        await trx.update(RedPacketRecord, redpacketRecord.id, { hadSettled: true });
+        if (user.version !== (oldVersion + 1)) {
+          throw new Error();
+        }
+      } catch {
+        logger.warn(`红包记录${redpacketRecord.id}更新用户余额失败!尝试第${time}次`);
+        if (time < 3) {
+          return settleFun(time + 1);
+        }
+        logger.warn(`红包记录${redpacketRecord.id}更新用户余额失败! 超过最大重试次数`);
       }
-    } catch {
-      logger.warn(`红包记录${redpacketRecord.id}更新用户余额失败!尝试第${time}次`);
-      if (time < 3) {
-        return settleFun(time + 1);
-      }
-      logger.warn(`红包记录${redpacketRecord.id}更新用户余额失败! 超过最大重试次数`);
-    }
+    };
+    return settleFun();
   });
-  return settleFun();
 }
 
 export default async () => {
   logger.info('开始清算红包记录!');
   const redpacketRecords = await getRedpacketRecords();
-  Promise.all(redpacketRecords.map(doSettle))
+  logger.info(`当前清算的红包记录: ${redpacketRecords}`);
+  await Promise.all(redpacketRecords.map(doSettle))
     .then(() => {
       logger.info('完成清算红包记录!');
     }).catch((e) => {
