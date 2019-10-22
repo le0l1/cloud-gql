@@ -8,7 +8,9 @@ import {
 import { decodeTypeAndId, decodeNumberId, pipe } from '../../helper/util';
 import { Good } from '../good/good.entity';
 import { Shop } from '../shop/shop.entity';
-import { leftJoinAndSelect, getQB, where, getMany } from '../../helper/sql';
+import {
+  leftJoinAndSelect, getQB, where, getMany,
+} from '../../helper/sql';
 
 @Entity()
 export class Recommend extends BaseEntity {
@@ -73,7 +75,7 @@ export class Recommend extends BaseEntity {
     const recommends = await Recommend.find({
       where: { route },
       order: {
-        index: 'DESC',
+        index: 'ASC',
       },
     });
     if (!recommends.length) return [];
