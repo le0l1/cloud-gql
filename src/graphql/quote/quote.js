@@ -32,7 +32,7 @@ export function createQuote(user, {
       imageTypeId: quote.id,
     }));
     await trx.save(imageInstances);
-    brodcastMessage('pushvadio2.caf', '您有一条询价单信息!请注意查收');
+    brodcastMessage('pushvadio2', '您有一条询价单信息!请注意查收');
     return quote;
   });
 }

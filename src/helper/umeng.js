@@ -43,7 +43,7 @@ const broadcastIOSMessage = (sound = 'pushvadio', title) => doBroadcast(
           subtitle: '',
           body: '',
         },
-        sound,
+        sound: `${sound}.caf`,
       },
     },
   },

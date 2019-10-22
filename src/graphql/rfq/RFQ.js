@@ -34,7 +34,7 @@ export default class RFQResolver {
         rfq,
       }));
       await trx.save(banners);
-      brodcastMessage('pushvadio.caf', '您有一条求购信息!请注意查收');
+      brodcastMessage('pushvadio', '您有一条求购信息!请注意查收');
       return rfq;
     });
   }
