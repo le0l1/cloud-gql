@@ -5,7 +5,7 @@ import { RFQ } from './RFQ.entity';
 import { Accessories } from '../accessories/accessories.entity';
 import { Banner } from '../banner/banner.entity';
 import {
-  withPagination, getManyAndCount, where, orderBy,
+  withPagination, getManyAndCount, where, orderBy, getQB, getMany,
 } from '../../helper/sql';
 import { brodcastMessage } from '../../helper/umeng';
 
@@ -78,22 +78,13 @@ export default class RFQResolver {
         rfqId: rfq.id,
       });
       const accessoriesIds = accessories.map(a => a.id);
-      const banners = await Banner.createQueryBuilder('banner')
-        .where('banner.accessories in (:...accessoriesIds)', { accessoriesIds })
-        .orWhere('banner.rfq = :rfq', { rfq: rfq.id })
-        .getMany();
-      const qb = trx
-        .createQueryBuilder()
-        .delete()
-        .from(Banner)
-        .orWhere('rfq = :rfq', { rfq: rfq.id });
-      const execute = orm => orm.execute();
-      await pipe(
-        where('accessories in (:...accessories)', {
-          accessories: accessoriesIds.length ? accessoriesIds : null,
-        }),
-        execute,
-      )(qb);
+      const banners = await pipe(
+        getQB('banner'),
+        where('banner.accessories in (:...accessoriesIds)', { accessoriesIds: accessoriesIds.length ? accessoriesIds : null }),
+        where('banner.rfq = :rfq', { rfq: rfq.id }),
+        getMany,
+      )(Banner);
+
       await trx.remove(banners);
       await trx.remove(accessories);
       await trx.remove(rfq);
