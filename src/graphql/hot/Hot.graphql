@@ -1,6 +1,8 @@
 type Hot {
   id: ID
   route: HotRoute
+  title: String
+  link: String
   content: String
 }
 
@@ -12,12 +14,16 @@ enum HotRoute {
 input CreateHotInput {
   route: HotRoute!
   content: String!
+  title: String!
+  link: String
 }
 
 input UpdateHotInput {
   id: ID!
   route: HotRoute
   content: String
+  title: String
+  link: String
 }
 
 extend type Query {

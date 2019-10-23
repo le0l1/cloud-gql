@@ -18,6 +18,23 @@ export class Hot extends BaseEntity {
   })
   content;
 
+  @Column({
+    name: 'title',
+    type: 'character varying',
+    comment: '头条标题',
+    default: '',
+  })
+  title;
+
+  @Column({
+    name: 'link',
+    type: 'character varying',
+    comment: '头条关联的链接',
+    nullable: true,
+  })
+  link;
+
+
   @CreateDateColumn({
     name: 'created_at',
   })
