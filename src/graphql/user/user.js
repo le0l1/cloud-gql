@@ -115,7 +115,7 @@ export default class UserResolver {
 
   static async retrievePassword({ phone, smsCode, password }) {
     const instane = await SMSCode.findOneOrFail(phone);
-    if (instane.smsCode !== smsCode) throw new ValidSmsCodeError();
+    if (Number(instane.smsCode) !== Number(smsCode)) throw new ValidSmsCodeError();
     const user = await User.findOneOrFail({
       phone,
     });
