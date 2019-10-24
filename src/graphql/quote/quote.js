@@ -36,6 +36,16 @@ export function createQuote(user, {
     return quote;
   });
 }
+
+/**
+ * 删除询价单
+ * @param id
+ */
+export async function deleteQuote(id) {
+  const quote = await Quote.findOneOrFail(decodeNumberId(id));
+  return quote.deletedAt ? quote.remove() : Quote.merge(quote, { deletedAt: new Date() }).save();
+}
+
 /**
  * 查询询价单列表
  */
@@ -58,6 +68,7 @@ export function searchQuotes(user, { limit, offset, status }) {
     orderBy({
       'quote.createdAt': 'DESC',
     }),
+    where('quote.deletedAt is null'),
   )(Quote);
   // 未报价
   if (status === OfferStatus.WAIT_OFFER) {

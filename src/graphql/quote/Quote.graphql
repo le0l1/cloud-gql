@@ -74,4 +74,6 @@ extend type Query {
 extend type Mutation {
   "创建询价单"
   createQuote(input: CreateQuoteInput!): Quote @auth(requires: CUSTOMER)
+  "删除询价单"
+  deleteQuote(id: ID!): Quote @auth(requires: ROOT)
 }
