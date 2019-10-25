@@ -85,6 +85,7 @@ export class Recommend extends BaseEntity {
         getQB('shop'),
         leftJoinAndSelect('shop.categories', 'category'),
         where('shop.id IN (:...ids)', { ids }),
+        where('shop.deletedAt is null'),
         getMany,
       )(Shop),
     };
