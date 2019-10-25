@@ -19,8 +19,7 @@ input CreateHotInput {
 }
 
 input UpdateHotInput {
-  id: ID!
-  route: HotRoute
+  route: HotRoute!
   content: String
   title: String
   link: String

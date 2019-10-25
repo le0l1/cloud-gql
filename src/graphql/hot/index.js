@@ -10,10 +10,10 @@ const resolvers = {
   },
   Mutation: {
     createHot(_, { input }) {
-      return HotResolver.createHot(input);
+      return HotResolver.storeHot(input);
     },
     updateHot(_, { input }) {
-      return HotResolver.updateHot(input);
+      return HotResolver.storeHot(input);
     },
   },
   Hot: idResolver('hot'),
