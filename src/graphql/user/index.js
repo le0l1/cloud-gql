@@ -1,5 +1,4 @@
-import UserSchema from './User.gql';
-import { User } from './user.entity';
+import UserSchema from './User.graphql';
 import { formateID } from '../../helper/util';
 import { Role } from '../../helper/status';
 import { idResolver } from '../../helper/resolver';
@@ -35,7 +34,9 @@ const resolvers = {
     status: () => true,
   },
   UserRegisterResult: idResolver('user'),
-  UserLoginResult: idResolver('user'),
+  UserLoginResult: {
+    ...idResolver('user'),
+  },
   RetrievePasswordResult: {
     id: formateUserId,
     status: () => true,
@@ -56,6 +57,12 @@ const resolvers = {
     },
     updateUser(_, { userUpdateInput }) {
       return UserResolver.updateUser(userUpdateInput);
+    },
+    registerRoot(_, { input }) {
+      return UserResolver.registerRoot(input);
+    },
+    deleteRoot(_, { id }) {
+      return UserResolver.deleteRoot(id);
     },
   },
 };

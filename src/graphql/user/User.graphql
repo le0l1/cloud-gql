@@ -2,7 +2,7 @@
 type User implements Node {
   "用户id"
   id: ID!
-  
+
   "用户姓名"
   name: String
 
@@ -62,9 +62,32 @@ input UserRegisterInput {
 
   "用户角色"
   role: Role
-  
+
   "若用户选择角色为 MERCHANT 时, 则需要传入对应用户选择的商户类型(ShopTye)"
   shopType: ShopType
+}
+
+input RootRegisterInput {
+  "用户姓名"
+  name: String
+
+  "用户手机号"
+  phone: Number!
+
+  "用户密码"
+  password: String!
+
+  "汽修厂名称"
+  garage: String
+
+  "订货城市"
+  city: String
+
+  "地区"
+  area: String
+
+  "详细地址"
+  address: String
 }
 
 "用户登录输入"
@@ -95,6 +118,8 @@ enum Role {
   MERCHANT
   "管理员"
   ROOT
+  "超级管理员"
+  SUPER
 }
 
 "用户查询筛选条件"
@@ -121,7 +146,7 @@ type UserRegisterResult {
 type UserLoginResult {
   "用户id"
   id: ID!
-  
+
   "用户姓名"
   name: String
 
@@ -151,7 +176,7 @@ type UserLoginResult {
 
   "金币"
   gold: Number
-  
+
   "用户登陆凭证"
   token: String
 }
@@ -257,4 +282,11 @@ extend type Mutation {
 
   "升级用户信息"
   updateUser(userUpdateInput: UserUpdateInput!):UserActionResult
+
+  "注册管理员"
+  registerRoot(input: RootRegisterInput!): User
+  @auth(requires: SUPER)
+  "删除管理员"
+  deleteRoot(id: ID!): Boolean
+  @auth(requires: SUPER)
 }

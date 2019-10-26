@@ -16,6 +16,7 @@ import {
   getManyAndCount, getQB, where, withPagination, orderBy,
 } from '../../helper/sql';
 import { Shop } from '../shop/shop.entity';
+import { Role } from '../../helper/status';
 
 export default class UserResolver {
   static async searchUserPassword({ id }) {
@@ -122,5 +123,23 @@ export default class UserResolver {
     return User.merge(user, {
       password: hashPassword(password),
     }).save();
+  }
+
+  static registerRoot({
+    password,
+    ...rest
+  }) {
+    return User.save({
+      password: hashPassword(password),
+      ...rest,
+      role: Role.ROOT,
+    });
+  }
+
+  static async deleteRoot(
+    id,
+  ) {
+    await User.delete(decodeNumberId(id));
+    return true;
   }
 }

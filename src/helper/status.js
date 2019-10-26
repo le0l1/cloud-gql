@@ -73,11 +73,13 @@ export const ShopStatus = {
  * CUSTOMER: 用户
  * MERCHANT: 商户
  * ROOT: 管理员
+ * SUPER: 超级管理员
  */
 export const Role = {
   CUSTOMER: 1,
   MERCHANT: 2,
   ROOT: 3,
+  SUPER: 10,
 };
 /**
  * 订单状态
