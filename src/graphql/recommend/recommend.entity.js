@@ -75,7 +75,9 @@ export class Recommend extends BaseEntity {
 
   static async searchRecommend({ route }) {
     const recommends = await Recommend.find({
-      where: { route },
+      where: {
+        route,
+      },
       order: {
         index: 'ASC',
       },
@@ -104,15 +106,17 @@ export class Recommend extends BaseEntity {
 
   static async updateRecommend({ id, index }) {
     const recommend = await Recommend.findOneOrFail(decodeNumberId(id));
-    return Recommend.save(Recommend.merge(recommend, { index }));
+    await Recommend.merge(recommend, { index }).save();
+    return {
+      id: recommend.id,
+      status: true,
+    };
   }
 
   static async deleteRecommend({ id }) {
     try {
       const realId = decodeNumberId(id);
-      await Recommend.delete({
-        id: realId,
-      });
+      await Recommend.delete(realId);
       return {
         id: realId,
         status: true,
