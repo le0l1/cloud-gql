@@ -104,7 +104,7 @@ export class Recommend extends BaseEntity {
 
   static async updateRecommend({ id, index }) {
     const recommend = await Recommend.findOneOrFail(decodeNumberId(id));
-    await Recommend.merge(recommend, { index }).save();
+    await Recommend.update(recommend.id, { index });
     return {
       id: recommend.id,
       status: true,
