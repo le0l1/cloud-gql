@@ -4,13 +4,10 @@ import {
   Column,
   CreateDateColumn,
   BaseEntity,
-  JoinTable,
-  ManyToMany,
   OneToMany,
   Index,
   OneToOne, JoinColumn, RelationId,
 } from 'typeorm';
-import { Category } from '../category/category.entity';
 import { Banner } from '../banner/banner.entity';
 import { Phone } from '../phone/phone.entity';
 import { Image } from '../image/image.entity';
@@ -102,10 +99,6 @@ export class Shop extends BaseEntity {
     nullable: true,
   })
   phone;
-
-  @ManyToMany(type => Category)
-  @JoinTable()
-  categories;
 
   @OneToMany(type => Banner, banner => banner.shop)
   banners;

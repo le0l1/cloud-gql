@@ -12,7 +12,12 @@ const resolvers = {
       return CategoryResolver.searchCategory(query);
     },
   },
-  Category: idResolver('category'),
+  Category: {
+    ...idResolver('category'),
+    shopIndex(v) {
+      return v.shopCategory ? v.shopCategory.index : null;
+    },
+  },
   CategoryStatus,
   CategoryResult: {
     ...idResolver('category'),

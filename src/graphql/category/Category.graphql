@@ -13,7 +13,10 @@ type Category {
 
   "分类图片 用作icon展示"
   image: String
-  
+
+  "店铺排名"
+  shopIndex: Int
+
   "子分类"
   children: [Category!]
 }

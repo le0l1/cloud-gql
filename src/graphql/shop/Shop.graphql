@@ -109,7 +109,7 @@ input ShopCreateInput {
 
   "商家封面"
   cover: String
-  
+
   "商户类型"
   type: ShopType
   "商户轮播图"
@@ -167,6 +167,15 @@ type ShopResult {
   status: Boolean
 }
 
+input UpdateShopRankInput {
+  "商户id"
+  shopId: ID!
+  "分类id"
+  categoryId: ID!
+  "排名 顺序"
+  index: Int!
+}
+
 extend type Query {
     "商户列表查询 支持模糊查询 筛选条件"
     shops(query: ShopsQueryInput): ShopConnection!
@@ -185,4 +194,7 @@ extend type Mutation {
   "更新商户信息"
   updateShop(shopUpdateInput: ShopUpdateInput!): ShopResult!
     @auth(requires: MERCHANT)
+  "更新商户分类排名"
+  updateShopRank(input: UpdateShopRankInput!): Boolean
+  @auth(requires: ROOT)
 }

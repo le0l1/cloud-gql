@@ -17,7 +17,7 @@ const resolvers = {
     },
     shopCity() {
       return ShopResolver.searchShopCity();
-    }
+    },
   },
   ShopConnection: {
     edges(result) {
@@ -46,6 +46,9 @@ const resolvers = {
     },
     updateShop(_, { shopUpdateInput }) {
       return ShopResolver.updateShop(shopUpdateInput);
+    },
+    updateShopRank(_, { input }) {
+      return ShopResolver.updateShopIndex(input);
     },
   },
 };

@@ -1,4 +1,4 @@
-import { getManager, Not } from 'typeorm';
+import { getManager, In, Not } from 'typeorm';
 import { Shop } from './shop.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
 import { Category } from '../category/category.entity';
@@ -8,10 +8,13 @@ import { Image } from '../image/image.entity';
 import { User } from '../user/user.entity';
 import {
   getQB, where, withPagination, getManyAndCount,
+  leftJoinAndMapMany,
+  orderBy, getOne, leftJoinAndMapOne,
 } from '../../helper/sql';
 import { DumplicateShopNameError } from '../../helper/error';
 import { Good } from '../good/good.entity';
 import { ShopType } from '../../helper/status';
+import { ShopCategory } from './shopCategory.entity';
 
 export default class ShopResolver {
   static async storeShopRelation(trx, shop, {
@@ -21,9 +24,7 @@ export default class ShopResolver {
       phone: p,
       shop,
     }));
-    const categoryEntitles = await Promise.all(
-      categories.map(c => Category.findOneOrFail(decodeNumberId(c))),
-    );
+    const categoryEntitles = await Category.findByIds(categories.map(c => decodeNumberId(c)));
     const bannerEntities = shopBanners.map(b => Banner.create({
       path: b,
       shop,
@@ -33,20 +34,26 @@ export default class ShopResolver {
       shop,
     }));
 
+    const shopCatgories = categoryEntitles.map(
+      category => ShopCategory.create({
+        shopId: shop.id,
+        categoryId: category.id,
+      }),
+    );
+
+    await trx.save(shopCatgories);
     await trx.save(phonesEntities);
     await trx.save(bannerEntities);
     await trx.save(imageEntities);
-    await trx.save(
-      Shop.merge(shop, {
-        categories: categoryEntitles,
-      }),
-    );
   }
 
   static async rmOldRelations(trx, shop) {
     const oldPhones = await Phone.find({ shop });
     const oldBanners = await Banner.find({ shop });
     const oldImages = await Image.find({ shop });
+    await trx.delete(ShopCategory, {
+      shopId: shop.id,
+    });
     await trx.remove(oldPhones);
     await trx.remove(oldImages);
     await trx.remove(oldBanners);
@@ -116,30 +123,23 @@ export default class ShopResolver {
       await trx.save(
         Shop.merge(shop, { ...rest, phone: phones[0] || null }),
       );
-      await ShopResolver.rmOldRelations(trx, shop);
+      await ShopResolver.rmOldRelations(trx, shop, params);
       await ShopResolver.storeShopRelation(trx, shop, params);
       return shop;
     });
   }
 
   static async searchShop({ id, user }) {
-    if (!user) {
-      return Shop.findOneOrFail({
-        where: {
-          id: decodeNumberId(id),
-          deletedAt: null,
-        },
-        relations: ['categories'],
-      });
-    }
     const owner = await User.findOneOrFail(decodeNumberId(user));
-    return Shop.findOneOrFail({
-      where: {
-        user: owner.id,
-        deletedAt: null,
-      },
-      relations: ['categories'],
-    });
+    return pipe(
+      getQB('shop'),
+      leftJoinAndMapMany('shop.category', Category, 'category', 'category.id = shopCategory.id'),
+      leftJoinAndMapMany('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
+      where('shop.id = :id', { id: id ? decodeNumberId(id) : null }),
+      where('shop.user_id = :userId', { userId: owner.id }),
+      where('shop.deletedAt is null'),
+      getOne(),
+    )(Shop);
   }
 
   static async searchShops({
@@ -154,10 +154,10 @@ export default class ShopResolver {
     isPassed,
     categoryId,
   }) {
-    const withRelation = query => query.leftJoinAndSelect('shop.categories', 'category');
-
     return pipe(
       getQB('shop'),
+      leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
+      leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
       where('shop.city = :city', {
         city,
       }),
@@ -172,8 +172,10 @@ export default class ShopResolver {
         categoryId: categoryId ? decodeNumberId(categoryId) : null,
       }),
       where('shop.deletedAt is null'),
-      withRelation,
       withPagination(limit, offset),
+      orderBy({
+        'shopCategory.index': 'ASC',
+      }),
       getManyAndCount,
     )(Shop);
   }
@@ -200,5 +202,19 @@ export default class ShopResolver {
       .select(' DISTINCT city', 'city')
       .getRawMany()
       .then(res => res.reduce((a, b) => (b.city ? [...a, b.city] : a), []));
+  }
+
+  static async updateShopIndex({
+    categoryId,
+    shopId,
+    index,
+  }) {
+    const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
+    const category = await Category.findOneOrFail(decodeNumberId(categoryId));
+    ShopCategory.update({
+      shopId: shop.id,
+      categoryId: category.id,
+    }, { index });
+    return true;
   }
 }
