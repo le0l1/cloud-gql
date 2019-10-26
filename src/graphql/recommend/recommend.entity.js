@@ -2,7 +2,6 @@ import {
   BaseEntity,
   Entity,
   Column,
-  Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { decodeTypeAndId, decodeNumberId, pipe } from '../../helper/util';
@@ -19,7 +18,6 @@ export class Recommend extends BaseEntity {
   @PrimaryGeneratedColumn()
   id
 
-  @Index()
   @Column({ type: 'character varying', comment: 'the path of recommend' })
   route
 
