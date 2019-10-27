@@ -133,8 +133,8 @@ export default class ShopResolver {
     const owner = await User.findOneOrFail(decodeNumberId(user));
     return pipe(
       getQB('shop'),
-      leftJoinAndMapMany('shop.category', Category, 'category', 'category.id = shopCategory.id'),
-      leftJoinAndMapMany('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
+      leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
+      leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
       where('shop.id = :id', { id: id ? decodeNumberId(id) : null }),
       where('shop.user_id = :userId', { userId: owner.id }),
       where('shop.deletedAt is null'),
