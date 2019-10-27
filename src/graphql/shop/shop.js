@@ -130,16 +130,20 @@ export default class ShopResolver {
   }
 
   static async searchShop({ id, user }) {
-    const owner = await User.findOneOrFail(decodeNumberId(user));
-    return pipe(
+    let qb = pipe(
       getQB('shop'),
       leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
       leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
       where('shop.id = :id', { id: id ? decodeNumberId(id) : null }),
-      where('shop.user_id = :userId', { userId: owner.id }),
       where('shop.deletedAt is null'),
-      getOne,
     )(Shop);
+    if (user) {
+      const owner = await User.findOneOrFail(decodeNumberId(user));
+      qb = pipe(
+        where('shop.user_id = :userId', { userId: owner.id }),
+      )(qb);
+    }
+    return getOne(qb);
   }
 
   static async searchShops({
