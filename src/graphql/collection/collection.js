@@ -6,6 +6,8 @@ import { User } from '../user/user.entity';
 import { Good } from '../good/good.entity';
 import { Shop } from '../shop/shop.entity';
 import { withPagination, getMany } from '../../helper/sql';
+import { ShopCategory } from '../shop/shopCategory.entity';
+import { Category } from '../category/category.entity';
 
 export default class CollectionResolver {
   static async createCollection({ userId, typeId }) {
@@ -25,7 +27,8 @@ export default class CollectionResolver {
     const user = await User.findOneOrFail(decodeNumberId(userId));
     const mapType = type === 'shop' ? Shop : Good;
     const qb = mapType.createQueryBuilder('mapType')
-      .leftJoinAndSelect('mapType.categories', 'categories')
+      .leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'mapType.id = shopCategory.shopId')
+      .leftJoinAndMapMany('mapType.categories', Category, 'category', 'category.id = shopCategory.categoryId')
       .where((qb) => {
         const subQuery = qb.subQuery().select('collection.typeId').from(Collection, 'collection')
           .where('collection.userId = :userId and collection.type = :type ')
