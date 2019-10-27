@@ -138,7 +138,7 @@ export default class ShopResolver {
       where('shop.id = :id', { id: id ? decodeNumberId(id) : null }),
       where('shop.user_id = :userId', { userId: owner.id }),
       where('shop.deletedAt is null'),
-      getOne(),
+      getOne,
     )(Shop);
   }
 
