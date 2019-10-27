@@ -8,10 +8,8 @@ import { decodeTypeAndId, decodeNumberId, pipe } from '../../helper/util';
 import { Good } from '../good/good.entity';
 import { Shop } from '../shop/shop.entity';
 import {
-  getQB, where, getMany, leftJoinAndMapMany, leftJoinAndMapOne,
+  getQB, where, getMany, leftJoinAndMapOne, orderBy,
 } from '../../helper/sql';
-import { ShopCategory } from '../shop/shopCategory.entity';
-import { Category } from '../category/category.entity';
 
 @Entity()
 export class Recommend extends BaseEntity {
@@ -28,7 +26,7 @@ export class Recommend extends BaseEntity {
   recommendType
 
   @Column({
-    type: 'character varying',
+    type: 'int',
     name: 'recommend_type_id',
   })
   recommendTypeId
@@ -72,34 +70,32 @@ export class Recommend extends BaseEntity {
   }
 
   static async searchRecommend({ route }) {
-    const recommends = await Recommend.find({
+    const recommend = await Recommend.findOne({
       where: {
         route,
       },
-      order: {
-        index: 'ASC',
-      },
     });
-    if (!recommends.length) return [];
-    const recommendClass = {
-      good: ids => Good.findByIds(ids),
-      shop: ids => pipe(
-        getQB('shop'),
-        leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
-        leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
-        where('shop.id IN (:...ids)', { ids }),
-        where('shop.deletedAt is null'),
-        getMany,
-      )(Shop),
-    };
+    if (!recommend) return [];
+    let qb = pipe(
+      getQB('recommend'),
+      where('recommend.route = :route', { route }),
+      orderBy({
+        'recommend.index': 'ASC',
+      }),
+    )(Recommend);
 
-    const nodeIds = recommends.map(a => a.recommendTypeId);
-    const res = await recommendClass[recommends[0].recommendType](nodeIds);
-    return res.map((node, idx) => ({
-      ...recommends[idx],
-      route,
-      recommendNode: node,
-    }));
+    if (recommend.recommendType === 'shop') {
+      qb = pipe(
+        leftJoinAndMapOne('recommend.recommendNode', Shop, 'shop', 'shop.id = recommend.recommendTypeId'),
+        where('shop.deletedAt is null'),
+      )(qb);
+    } else {
+      qb = pipe(
+        leftJoinAndMapOne('recommend.recommendNode', Good, 'good', 'good.id = recommend.recommendTypeId'),
+        where('good.deletedAt is null'),
+      )(qb);
+    }
+    return getMany(qb);
   }
 
   static async updateRecommend({ id, index }) {
