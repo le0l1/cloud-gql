@@ -32,6 +32,9 @@ type User implements Node {
 
   "金币"
   gold: Number
+
+  "创建时间"
+  createdAt: String
 }
 
 "用户注册输入"
@@ -128,6 +131,12 @@ input UsersQueryFilter {
   area: String
   "角色"
   role: Role
+  "手机号"
+  phone: Number
+  "创建时间开始于"
+  createdStartAt: String
+  "创建时间结束于"
+  createdEndAt: String
 }
 
 "单一用户查询"

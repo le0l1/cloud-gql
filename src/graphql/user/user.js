@@ -91,13 +91,23 @@ export default class UserResolver {
   }
 
   static searchUsers({
-    tsQuery, limit = 8, filters = {}, offset = 1,
+    tsQuery, limit = 8, offset = 1, filters = {
+      phone: null,
+      area: null,
+      createdStartAt: null,
+      createdEndAt: null,
+    },
   }) {
     return pipe(
       getQB('user'),
-      where('(user.name like :tsQuery or user.phone like :tsQuery)', {
+      where('user.name like :tsQuery', {
         tsQuery: tsQuery ? `%${tsQuery}%` : null,
       }),
+      where('user.phone like :tsQuery', {
+        tsQuery: filters.phone ? `%${filters.phone}%` : null,
+      }),
+      where('user.createdAt > :createdStartAt', { createdStartAt: filters.createdStartAt }),
+      where('user.createdAt < :createdEndAt', { createdEndAt: filters.createdEndAt }),
       where('user.area = :area', { area: filters.area }),
       where('user.role = :role', { role: filters.role }),
       where('user.deletedAt is null'),
