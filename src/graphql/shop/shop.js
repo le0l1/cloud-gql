@@ -165,7 +165,7 @@ export default class ShopResolver {
       where('shop.city = :city', {
         city,
       }),
-      where('(shop.name like :tsQuery)', {
+      where('shop.name like :tsQuery or category.name like :tsQuery', {
         tsQuery: tsQuery ? `%${tsQuery}%` : null,
       }),
       where('shop.status = :status', { status: filter.status }),
