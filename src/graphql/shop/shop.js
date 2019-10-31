@@ -162,6 +162,7 @@ export default class ShopResolver {
       getQB('shop'),
       leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
       leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
+      where('shop.deletedAt is null'),
       where('shop.city = :city', {
         city,
       }),
@@ -175,7 +176,6 @@ export default class ShopResolver {
       where('category.id = :categoryId', {
         categoryId: categoryId ? decodeNumberId(categoryId) : null,
       }),
-      where('shop.deletedAt is null'),
       withPagination(limit, offset),
       orderBy({
         'shopCategory.index': 'ASC',
@@ -213,11 +213,9 @@ export default class ShopResolver {
     shopId,
     index,
   }) {
-    const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
-    const category = await Category.findOneOrFail(decodeNumberId(categoryId));
-    ShopCategory.update({
-      shopId: shop.id,
-      categoryId: category.id,
+    await ShopCategory.update({
+      shopId: decodeNumberId(shopId),
+      categoryId: decodeNumberId(categoryId),
     }, { index });
     return true;
   }
