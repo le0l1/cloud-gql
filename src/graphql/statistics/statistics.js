@@ -108,8 +108,8 @@ export default class StatisticsResolver {
     const shop = shopId ? decodeNumberId(shopId) : null;
     if (isToday(date)) {
       return shop
-        ? StatisticsResolver.searchPlatformStatistics()
-        : StatisticsResolver.countAll(shop);
+        ? StatisticsResolver.countAll(shop)
+        : StatisticsResolver.searchPlatformStatistics();
     }
     return pipe(
       getQB('statistics'),
