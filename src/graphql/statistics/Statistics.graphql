@@ -2,13 +2,15 @@ type Statistics {
   userCount: Int
   orderCount: Int
   phoneCount: Int
-  moneyCount: Int
+  moneyCount: Float
 }
 
 input StatisticsQuery {
   shopId: ID
   "统计时间 不传默认为当天"
   date: String
+  "是否为查询平台的统计数据"
+  isPlatform: Boolean
 }
 
 extend type Query {

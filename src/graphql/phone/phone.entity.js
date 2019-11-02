@@ -17,7 +17,7 @@ export class Phone extends BaseEntity {
 
   @Column({
     type: 'int',
-    default: 100,
+    default: 0,
   })
   count;
 

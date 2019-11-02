@@ -1,5 +1,5 @@
 import {
-  BaseEntity, Entity, Column, PrimaryGeneratedColumn,
+  BaseEntity, Entity, Column, PrimaryGeneratedColumn, CreateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -44,4 +44,9 @@ export class OrderDetail extends BaseEntity {
     type: 'int',
   })
   quantity;
+
+  @CreateDateColumn({
+    name: 'created_at',
+  })
+  createdAt;
 }
