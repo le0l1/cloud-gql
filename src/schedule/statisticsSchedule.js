@@ -1,5 +1,5 @@
 import { Shop } from '../graphql/shop/shop.entity';
-import StatisticsResolver from '../graphql/statistics/statistics';
+import { storeShopStatistics, storeStatistics } from '../graphql/statistics/statistics';
 import logger from '../helper/logger';
 
 export default async () => {
@@ -9,7 +9,7 @@ export default async () => {
     },
   });
   logger.info('统计商户数据');
-  shops.map(a => StatisticsResolver.storeShopStatistics(a.id));
+  shops.map(a => storeShopStatistics(a.id));
   logger.info('统计平台数据');
-  StatisticsResolver.storeStatistics();
+  storeStatistics();
 };

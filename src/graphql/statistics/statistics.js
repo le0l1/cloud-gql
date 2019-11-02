@@ -1,141 +1,135 @@
-import { isToday, format } from 'date-fns';
-import { getManager, IsNull, Raw } from 'typeorm';
-import { User } from '../user/user.entity';
-import { Order } from '../order/order.entity';
-import { decodeNumberId, pipe, isValid } from '../../helper/util';
+import { IsNull, Raw } from 'typeorm';
+import { format, isToday } from 'date-fns';
 import { OrderDetail } from '../order/orderDetail.entity';
-import { Statistics } from './statistics.entity';
-import {
-  getQB, where, getOne, leftJoinAndSelect,
-} from '../../helper/sql';
-
-import { Shop } from '../shop/shop.entity';
+import { Order } from '../order/order.entity';
+import { User } from '../user/user.entity';
 import PhoneRecord from '../phoneRecord/phoneRecord.entity';
+import { decodeNumberId, pipe } from '../../helper/util';
+import { Statistics } from './statistics.entity';
+import { getOne, getQB, where } from '../../helper/sql';
+import { Shop } from '../shop/shop.entity';
 
-export default class StatisticsResolver {
-  static countUser() {
-    return User.count({
-      where: {
-        createdAt: Raw(alias => `date(${alias}) = '${format(new Date(), 'YYYY-MM-DD')}'`),
-        deletedAt: IsNull(),
+
+const formatDate = date => format(date, 'YYYY-MM-DD');
+const getToday = () => formatDate(new Date());
+// 查询今日用户量
+function searchUserCount(today = true) {
+  return User.count({
+    where: today
+      ? { deletdAt: IsNull(), createdAt: Raw(alias => `${alias}::date = ${getToday()}`) }
+      : { deletdAt: IsNull() },
+  });
+}
+// 查询今日订单量
+function searchTodayOrder({ shopId, today }) {
+  function searchPlatformTodayOrder() {
+    return Order.count({
+      where: today ? {
+        createdAt: Raw(alias => `${alias}::date = ${getToday()}`),
+        deletdAt: IsNull(),
+      } : {
+        deletdAt: IsNull(),
       },
     });
   }
 
-  static countOrder(shopId) {
-    return shopId
-      ? getManager()
-        .createQueryBuilder()
-        .select('SUM(detail.count)', 'count')
-        .from(
-          subQuery => subQuery
-            .leftJoinAndMapMany('order.details', OrderDetail, 'orderDetail', 'orderDetail.orderId = order.id')
-            .select('COUNT(1)', 'count')
-            .where('orderDetail.shopId = :shopId', { shopId })
-            .andWhere('date(order.createdAt) = date(:today)', { today: new Date() })
-            .andWhere('order.deletedAt is null')
-            .from(Order, 'order'),
-          'detail',
-        )
-        .getRawOne()
-        .then(res => res.count || 0)
-      : Order.count({
-        where: {
-          createdAt: Raw(alias => `date(${alias}) = '${format(new Date(), 'YYYY-MM-DD')}'`),
-        },
-      });
-  }
-
-  static countPhone(shopId) {
-    return pipe(
-      getQB('phoneRecord'),
-      qb => qb.select('count(1)', 'count'),
-      where('phoneRecord.shopId = :shopId', { shopId }),
-      where('date(phoneRecord.createdAt) = date(:today)', { today: new Date() }),
-      qb => qb.getRawOne().then(res => res.count),
-    )(PhoneRecord);
-  }
-
-  static async countMoney(shopId) {
-    const countPlatform = pipe(
-      getQB('user'),
-      qb => qb.select('SUM(user.totalFee)', 'totalFee'),
-      qb => qb.getRawOne().then(res => res.totalFee),
-    ).bind(null, User);
-    const countShop = pipe(
-      getQB('shop'),
-      leftJoinAndSelect('shop.user', 'user'),
-      where('shop.id = :shopId', { shopId }),
-      getOne,
-      qb => qb.then(res => res.user.totalFee),
-    ).bind(null, Shop);
-    const yesterdayTotalFee = await pipe(
-      getQB('statistics'),
-      where('statistics.shopId = :shopId', { shopId }),
-      getOne,
-      qb => qb.then(res => (res ? res.moneyCount : 0)),
-    )(Statistics);
-    const todayTotalFee = await (shopId ? countShop() : countPlatform());
-    return todayTotalFee - yesterdayTotalFee;
-  }
-
-  static async storeShopStatistics(shopId) {
-    Statistics.save({
-      shopId,
-      ...(await StatisticsResolver.countAll(shopId)),
-      collectAt: format(new Date(), 'YYYY-MM-DD'),
-    });
-  }
-
-  static async storeStatistics() {
-    Statistics.save({
-      ...(await StatisticsResolver.searchPlatformStatistics()),
-      collectAt: format(new Date(), 'YYYY-MM-DD'),
-    });
-  }
-
-  static async countAll(shopId) {
-    const applyValid = fn => (isValid(shopId) ? fn(shopId) : fn());
-    return {
-      userCount: await StatisticsResolver.countUser(),
-      orderCount: await applyValid(StatisticsResolver.countOrder),
-      phoneCount: await applyValid(StatisticsResolver.countPhone),
-      moneyCount: await applyValid(StatisticsResolver.countMoney),
-    };
-  }
-
-  static async searchStatistics({ shopId, date = new Date() }) {
-    const shop = shopId ? decodeNumberId(shopId) : null;
-    if (isToday(date)) {
-      return shop
-        ? StatisticsResolver.countAll(shop)
-        : StatisticsResolver.searchPlatformStatistics();
+  function searchShopTodayOrder() {
+    let qb = Order
+      .createQueryBuilder('order')
+      .leftJoinAndMapMany('order.details', OrderDetail, 'detail', 'detail.orderId = order.id')
+      .select('COUNT(1)', 'count')
+      .where('detail.shopId = :shopId', { shopId });
+    if (today) {
+      qb = qb.andWhere('order.deletedAt is null and order.createdAt::date = :today', { today: getToday() });
     }
-    return pipe(
-      getQB('statistics'),
-      where('statistics.shopId = :shopId', { shopId: shop }),
-      where('statistics.collectAt = :collectAt', { collectAt: format(date, 'YYYY-MM-DD') }),
-      getOne,
-    )(Statistics);
+    return qb
+      .getRawOne()
+      .then(res => res.count);
   }
-
-  static countPlatformMoney() {
+  return shopId ? searchShopTodayOrder() : searchPlatformTodayOrder();
+}
+// 查询今日电话量
+function searchPhoneCount({ shopId, today = true }) {
+  function searchPlatformTodayPhone() {
+    return PhoneRecord.count({
+      where: today ? {
+        createdAt: Raw(alias => `${alias}::date = ${getToday()}`),
+      } : {},
+    });
+  }
+  function searchShopTodayPhone() {
+    return PhoneRecord.count({
+      where: today ? {
+        shopId,
+        createdAt: Raw(alias => `${alias}::date = ${getToday()}`),
+      } : { shopId },
+    });
+  }
+  return shopId ? searchShopTodayPhone() : searchPlatformTodayPhone();
+}
+// 查询总余额
+function searchMoneyCount(shopId) {
+  function searchPlatformMoney() {
     return User.createQueryBuilder('user')
       .select('SUM(user.totalFee)', 'totalFee')
       .getRawOne()
       .then(res => res.totalFee);
   }
+  function searchShopMoney() {
+    return Shop.createQueryBuilder('shop')
+      .leftJoinAndSelect('shop.user', 'user')
+      .where('shop.id = :shopId', { shopId })
+      .getOne()
+      .then(res => res.user.totalFee);
+  }
+  return shopId ? searchShopMoney() : searchPlatformMoney();
+}
 
-  static async searchPlatformStatistics() {
+async function getTodayStatistics(shopId) {
+  return {
+    userCount: await searchUserCount(),
+    phoneCount: await searchPhoneCount({ shopId, today: true }),
+    moneyCount: await searchMoneyCount(shopId),
+    orderCount: await searchTodayOrder({ shopId, today: true }),
+  };
+}
+
+function getSpecifyDateStatistics(shopId, date) {
+  return pipe(
+    getQB('statistics'),
+    where('statistics.shopId = :shopId', { shopId }),
+    where('statistics.collectAt = :date', { date: formatDate(date) }),
+    getOne,
+  )(Statistics);
+}
+
+export function handleStatisticsSearch({ shopId, date }) {
+  const shop = shopId ? decodeNumberId(shopId) : null;
+  function searchStatisticsByDate() {
+    if (isToday(date)) return getTodayStatistics(shop);
+    return getSpecifyDateStatistics(shop, date);
+  }
+  async function searchTotalStatistics() {
     return {
-      userCount: await StatisticsResolver.countUser(),
-      orderCount: await Order.count({
-        where: {
-          deletedAt: IsNull(),
-        },
-      }),
-      phoneCount: await PhoneRecord.count(),
-      moneyCount: await StatisticsResolver.countPlatformMoney(),
+      userCount: await searchUserCount(false),
+      phoneCount: await searchPhoneCount({ shopId: shop, today: false }),
+      moneyCount: await searchMoneyCount(shop),
+      orderCount: await searchTodayOrder({ shopId: shop, today: false }),
     };
   }
+  return date ? searchStatisticsByDate() : searchTotalStatistics();
+}
+
+export async function storeShopStatistics(shopId) {
+  return Statistics.save({
+    ...(await handleStatisticsSearch({ shopId, date: new Date() })),
+    collectAt: getToday(),
+  });
+}
+
+export async function storeStatistics() {
+  return Statistics.save({
+    ...(await handleStatisticsSearch()),
+    collectAt: getToday(),
+  });
 }
