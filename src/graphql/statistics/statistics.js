@@ -121,7 +121,7 @@ export default class StatisticsResolver {
 
   static countPlatformMoney() {
     return User.createQueryBuilder('user')
-      .select('SUM(user.totalFee', 'totalFee')
+      .select('SUM(user.totalFee)', 'totalFee')
       .getRawOne()
       .then(res => res.totalFee);
   }
