@@ -16,8 +16,8 @@ const getToday = () => formatDate(new Date());
 function searchUserCount(today = true) {
   return User.count({
     where: today
-      ? { deletdAt: IsNull(), createdAt: Raw(alias => `${alias}::date = ${getToday()}`) }
-      : { deletdAt: IsNull() },
+      ? { deletedAt: IsNull(), createdAt: Raw(alias => `${alias}::date = ${getToday()}`) }
+      : { deletedAt: IsNull() },
   });
 }
 // 查询今日订单量
@@ -26,9 +26,9 @@ function searchTodayOrder({ shopId, today }) {
     return Order.count({
       where: today ? {
         createdAt: Raw(alias => `${alias}::date = ${getToday()}`),
-        deletdAt: IsNull(),
+        deletedAt: IsNull(),
       } : {
-        deletdAt: IsNull(),
+        deletedAt: IsNull(),
       },
     });
   }
