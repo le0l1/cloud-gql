@@ -33,7 +33,10 @@ type Shop implements Node {
 
   "商户类型"
   shopType: ShopType
+  "电话次数"
+  phones: [Phone!]
 }
+
 
 "商户类型"
 enum ShopType {

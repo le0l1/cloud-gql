@@ -9,7 +9,7 @@ import { User } from '../user/user.entity';
 import {
   getQB, where, withPagination, getManyAndCount,
   leftJoinAndMapMany,
-  orderBy, getOne, leftJoinAndMapOne,
+  orderBy, getOne, leftJoinAndMapOne, leftJoinAndSelect,
 } from '../../helper/sql';
 import { DumplicateShopNameError } from '../../helper/error';
 import { Good } from '../good/good.entity';
@@ -162,6 +162,7 @@ export default class ShopResolver {
       getQB('shop'),
       leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
       leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
+      leftJoinAndSelect('shop.phones', 'phone'),
       where('shop.deletedAt is null'),
       where('shop.city = :city', {
         city,
