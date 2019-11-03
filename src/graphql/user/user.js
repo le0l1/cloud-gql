@@ -108,7 +108,9 @@ export default class UserResolver {
       }),
       where('user.createdAt > :createdStartAt', { createdStartAt: filters.createdStartAt }),
       where('user.createdAt < :createdEndAt', { createdEndAt: filters.createdEndAt }),
-      where('user.area = :area', { area: filters.area }),
+      where('user.area like :area or user.city like :area or user.address like :area', {
+        area: filters.area ? `%${filters.area}%` : null,
+      }),
       where('user.role = :role', { role: filters.role }),
       where('user.deletedAt is null'),
       where('user.phone != :phone', { phone: '888888' }),
