@@ -16,7 +16,7 @@ const getToday = () => formatDate(new Date());
 function searchUserCount(today = true) {
   return User.count({
     where: today
-      ? { deletedAt: IsNull(), createdAt: Raw(alias => `${alias}::date = ${getToday()}`) }
+      ? { deletedAt: IsNull(), createdAt: Raw(alias => `date(${alias}) = ${getToday()}`) }
       : { deletedAt: IsNull() },
   });
 }
@@ -25,7 +25,7 @@ function searchTodayOrder({ shopId, today }) {
   function searchPlatformTodayOrder() {
     return Order.count({
       where: today ? {
-        createdAt: Raw(alias => `${alias}::date = ${getToday()}`),
+        createdAt: Raw(alias => `date(${alias}) = ${getToday()}`),
         deletedAt: IsNull(),
       } : {
         deletedAt: IsNull(),
@@ -53,7 +53,7 @@ function searchPhoneCount({ shopId, today = true }) {
   function searchPlatformTodayPhone() {
     return PhoneRecord.count({
       where: today ? {
-        createdAt: Raw(alias => `${alias}::date = ${getToday()}`),
+        createdAt: Raw(alias => `date(${alias}) = ${getToday()}`),
       } : {},
     });
   }
@@ -61,7 +61,7 @@ function searchPhoneCount({ shopId, today = true }) {
     return PhoneRecord.count({
       where: today ? {
         shopId,
-        createdAt: Raw(alias => `${alias}::date = ${getToday()}`),
+        createdAt: Raw(alias => `date(${alias}) = ${getToday()}`),
       } : { shopId },
     });
   }
