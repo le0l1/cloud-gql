@@ -37,11 +37,11 @@ function searchTodayOrder({ shopId, date }) {
   function searchShopTodayOrder() {
     return pipe(
       getQB('order'),
+      leftJoinAndMapMany('order.details', OrderDetail, 'orderDetail', 'orderDetail.orderId = order.id'),
       qb => qb.select('COUNT(1)', 'count'),
-      leftJoinAndMapMany('order.details', OrderDetail, 'detail', 'detail.orderId = order.id'),
-      where('detail.shopId = :shopId', { shopId }),
       where('date(order.createdAt) = date(:date)', { date }),
       where('order.deletedAt is null'),
+      where('orderDetail.shopId = :shopId', { shopId }),
       qb => qb.getRawOne().then(res => (res ? res.count : 0)),
     )(Order);
   }
@@ -52,6 +52,7 @@ function searchPhoneCount({ shopId, date }) {
   function searchPlatformTodayPhone() {
     return pipe(
       getQB('phoneRecord'),
+      qb => qb.select('COUNT(1)', 'count'),
       where('date(phoneRecord.createdAt) = date(:date)', { date }),
       qb => qb.getRawOne().then(res => (res ? res.count : 0)),
     )(PhoneRecord);
@@ -80,7 +81,7 @@ function searchMoneyCount(shopId) {
       .leftJoinAndSelect('shop.user', 'user')
       .where('shop.id = :shopId', { shopId })
       .getOne()
-      .then(res => res.user.totalFee);
+      .then(res => res && res.user ? res.user.totalFee : 0);
   }
   return shopId ? searchShopMoney() : searchPlatformMoney();
 }
@@ -103,7 +104,7 @@ function getSpecifyDateStatistics(shopId, date) {
   )(Statistics);
 }
 
-export function handleStatisticsSearch({ shopId, date }) {
+export function handleStatisticsSearch({ shopId, date = null }) {
   const shop = shopId ? decodeNumberId(shopId) : null;
   async function searchStatisticsByDate() {
     const statistics = await getSpecifyDateStatistics(shop, date);
@@ -112,10 +113,10 @@ export function handleStatisticsSearch({ shopId, date }) {
   }
   async function searchTotalStatistics() {
     return {
-      userCount: await searchUserCount(false),
-      phoneCount: await searchPhoneCount({ shopId: shop, today: false }),
+      userCount: await searchUserCount(date),
+      phoneCount: await searchPhoneCount({ shopId: shop, date }),
       moneyCount: await searchMoneyCount(shop),
-      orderCount: await searchTodayOrder({ shopId: shop, today: false }),
+      orderCount: await searchTodayOrder({ shopId: shop, date }),
     };
   }
   return date ? searchStatisticsByDate() : searchTotalStatistics();
