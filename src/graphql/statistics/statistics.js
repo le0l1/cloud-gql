@@ -1,4 +1,3 @@
-import { IsNull, Raw } from 'typeorm';
 import { format, isToday } from 'date-fns';
 import { OrderDetail } from '../order/orderDetail.entity';
 import { Order } from '../order/order.entity';
@@ -6,7 +5,9 @@ import { User } from '../user/user.entity';
 import PhoneRecord from '../phoneRecord/phoneRecord.entity';
 import { decodeNumberId, pipe } from '../../helper/util';
 import { Statistics } from './statistics.entity';
-import { getOne, getQB, where } from '../../helper/sql';
+import {
+  getOne, getQB, leftJoinAndMapMany, where,
+} from '../../helper/sql';
 import { Shop } from '../shop/shop.entity';
 
 
@@ -14,56 +15,55 @@ const formatDate = date => format(date, 'YYYY-MM-DD');
 const getToday = () => formatDate(new Date());
 // 查询今日用户量
 function searchUserCount(today = true) {
-  return User.count({
-    where: today
-      ? { deletedAt: IsNull(), createdAt: Raw(alias => `date(${alias}) = ${getToday()}`) }
-      : { deletedAt: IsNull() },
-  });
+  return pipe(
+    getQB('user'),
+    qb => qb.select('COUNT(1)', 'count'),
+    where('date(user.createdAt) = :today', { today: today ? getToday() : null }),
+    qb => qb.getRawOne().then(res => (res ? res.count : 0)),
+  )(User);
 }
 // 查询今日订单量
 function searchTodayOrder({ shopId, today }) {
   function searchPlatformTodayOrder() {
-    return Order.count({
-      where: today ? {
-        createdAt: Raw(alias => `date(${alias}) = ${getToday()}`),
-        deletedAt: IsNull(),
-      } : {
-        deletedAt: IsNull(),
-      },
-    });
+    return pipe(
+      getQB('order'),
+      qb => qb.select('COUNT(1)', 'count'),
+      where('date(order.createdAt) = :today', { today: today ? getToday() : null }),
+      where('order.deletedAt is null'),
+      qb => qb.getRawOne().then(res => (res ? res.count : 0)),
+    )(Order);
   }
 
   function searchShopTodayOrder() {
-    let qb = Order
-      .createQueryBuilder('order')
-      .leftJoinAndMapMany('order.details', OrderDetail, 'detail', 'detail.orderId = order.id')
-      .select('COUNT(1)', 'count')
-      .where('detail.shopId = :shopId', { shopId });
-    if (today) {
-      qb = qb.andWhere('order.deletedAt is null and order.createdAt::date = :today', { today: getToday() });
-    }
-    return qb
-      .getRawOne()
-      .then(res => res.count);
+    return pipe(
+      getQB('order'),
+      qb => qb.select('COUNT(1)', 'count'),
+      leftJoinAndMapMany('order.details', OrderDetail, 'detail', 'detail.orderId = order.id'),
+      where('detail.shopId = :shopId', { shopId }),
+      where('date(order.createdAt) = :today', { today: today ? getToday() : null }),
+      where('order.deletedAt is null'),
+      qb => qb.getRawOne().then(res => (res ? res.count : 0)),
+    )(Order);
   }
   return shopId ? searchShopTodayOrder() : searchPlatformTodayOrder();
 }
 // 查询今日电话量
 function searchPhoneCount({ shopId, today = true }) {
   function searchPlatformTodayPhone() {
-    return PhoneRecord.count({
-      where: today ? {
-        createdAt: Raw(alias => `date(${alias}) = ${getToday()}`),
-      } : {},
-    });
+    return pipe(
+      getQB('phoneRecord'),
+      where('date(phoneRecord.createdAt) = :today', { today: today ? getToday() : null }),
+      qb => qb.getRawOne().then(res => (res ? res.count : 0)),
+    )(PhoneRecord);
   }
   function searchShopTodayPhone() {
-    return PhoneRecord.count({
-      where: today ? {
-        shopId,
-        createdAt: Raw(alias => `date(${alias}) = ${getToday()}`),
-      } : { shopId },
-    });
+    return pipe(
+      getQB('phoneRecord'),
+      qb => qb.select('COUNT(1)', 'count'),
+      where('date(phoneRecord.createdAt) = :today', { today: today ? getToday() : null }),
+      where('phoneRecord.shopId = :shopId', { shopId }),
+      qb => qb.getRawOne().then(res => (res ? res.count : 0)),
+    )(PhoneRecord);
   }
   return shopId ? searchShopTodayPhone() : searchPlatformTodayPhone();
 }
