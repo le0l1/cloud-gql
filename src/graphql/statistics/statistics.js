@@ -14,21 +14,21 @@ import { Shop } from '../shop/shop.entity';
 const formatDate = date => format(date, 'YYYY-MM-DD');
 const getToday = () => formatDate(new Date());
 // 查询今日用户量
-function searchUserCount(today = true) {
+function searchUserCount(date) {
   return pipe(
     getQB('user'),
     qb => qb.select('COUNT(1)', 'count'),
-    where('date(user.createdAt) = :today', { today: today ? getToday() : null }),
+    where('date(user.createdAt) = date(:date)', { date }),
     qb => qb.getRawOne().then(res => (res ? res.count : 0)),
   )(User);
 }
 // 查询今日订单量
-function searchTodayOrder({ shopId, today }) {
+function searchTodayOrder({ shopId, date }) {
   function searchPlatformTodayOrder() {
     return pipe(
       getQB('order'),
       qb => qb.select('COUNT(1)', 'count'),
-      where('date(order.createdAt) = :today', { today: today ? getToday() : null }),
+      where('date(order.createdAt) = date(:date)', { date }),
       where('order.deletedAt is null'),
       qb => qb.getRawOne().then(res => (res ? res.count : 0)),
     )(Order);
@@ -40,7 +40,7 @@ function searchTodayOrder({ shopId, today }) {
       qb => qb.select('COUNT(1)', 'count'),
       leftJoinAndMapMany('order.details', OrderDetail, 'detail', 'detail.orderId = order.id'),
       where('detail.shopId = :shopId', { shopId }),
-      where('date(order.createdAt) = :today', { today: today ? getToday() : null }),
+      where('date(order.createdAt) = date(:date)', { date }),
       where('order.deletedAt is null'),
       qb => qb.getRawOne().then(res => (res ? res.count : 0)),
     )(Order);
@@ -48,11 +48,11 @@ function searchTodayOrder({ shopId, today }) {
   return shopId ? searchShopTodayOrder() : searchPlatformTodayOrder();
 }
 // 查询今日电话量
-function searchPhoneCount({ shopId, today = true }) {
+function searchPhoneCount({ shopId, date }) {
   function searchPlatformTodayPhone() {
     return pipe(
       getQB('phoneRecord'),
-      where('date(phoneRecord.createdAt) = :today', { today: today ? getToday() : null }),
+      where('date(phoneRecord.createdAt) = date(:date)', { date }),
       qb => qb.getRawOne().then(res => (res ? res.count : 0)),
     )(PhoneRecord);
   }
@@ -60,7 +60,7 @@ function searchPhoneCount({ shopId, today = true }) {
     return pipe(
       getQB('phoneRecord'),
       qb => qb.select('COUNT(1)', 'count'),
-      where('date(phoneRecord.createdAt) = :today', { today: today ? getToday() : null }),
+      where('date(phoneRecord.createdAt) = date(:date)', { date }),
       where('phoneRecord.shopId = :shopId', { shopId }),
       qb => qb.getRawOne().then(res => (res ? res.count : 0)),
     )(PhoneRecord);
@@ -85,12 +85,12 @@ function searchMoneyCount(shopId) {
   return shopId ? searchShopMoney() : searchPlatformMoney();
 }
 
-async function getTodayStatistics(shopId) {
+async function getTodayStatistics(shopId, date) {
   return {
-    userCount: await searchUserCount(),
-    phoneCount: await searchPhoneCount({ shopId, today: true }),
+    userCount: await searchUserCount(date),
+    phoneCount: await searchPhoneCount({ shopId, date }),
     moneyCount: await searchMoneyCount(shopId),
-    orderCount: await searchTodayOrder({ shopId, today: true }),
+    orderCount: await searchTodayOrder({ shopId, date }),
   };
 }
 
@@ -105,9 +105,10 @@ function getSpecifyDateStatistics(shopId, date) {
 
 export function handleStatisticsSearch({ shopId, date }) {
   const shop = shopId ? decodeNumberId(shopId) : null;
-  function searchStatisticsByDate() {
-    if (isToday(date)) return getTodayStatistics(shop);
-    return getSpecifyDateStatistics(shop, date);
+  async function searchStatisticsByDate() {
+    const statistics = await getSpecifyDateStatistics(shop, date);
+    if (statistics) return statistics;
+    return getTodayStatistics(shop, date);
   }
   async function searchTotalStatistics() {
     return {
