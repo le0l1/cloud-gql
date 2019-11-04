@@ -137,11 +137,17 @@ export default class UserResolver {
     }).save();
   }
 
-  static registerRoot({
+  static async registerRoot({
     password,
+    phone,
     ...rest
   }) {
+    const hasRegisterd = await User.findOne({ phone });
+    if (hasRegisterd && !hasRegisterd.deletedAt) {
+      throw new UserHasRegisterdError();
+    }
     return User.save({
+      phone,
       password: hashPassword(password),
       ...rest,
       role: Role.ROOT,
