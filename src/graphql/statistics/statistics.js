@@ -18,6 +18,7 @@ function searchUserCount(date) {
   return pipe(
     getQB('user'),
     qb => qb.select('COUNT(1)', 'count'),
+    where('user.deletedAt is null'),
     where('date(user.createdAt) = date(:date)', { date }),
     qb => qb.getRawOne().then(res => (res ? res.count : 0)),
   )(User);
