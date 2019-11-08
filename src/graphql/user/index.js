@@ -28,6 +28,9 @@ const resolvers = {
   },
   User: {
     id: formateUserId,
+    phoneCount(v) {
+      return v.phoneRecord ? v.phoneRecord.length : 0;
+    },
   },
   UserActionResult: {
     id: formateUserId,

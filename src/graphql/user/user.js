@@ -13,10 +13,11 @@ import {
   ValidSmsCodeError,
 } from '../../helper/error';
 import {
-  getManyAndCount, getQB, where, withPagination, orderBy,
+  getManyAndCount, getQB, where, withPagination, orderBy, leftJoinAndMapMany,
 } from '../../helper/sql';
 import { Shop } from '../shop/shop.entity';
 import { Role } from '../../helper/status';
+import PhoneRecord from '../phoneRecord/phoneRecord.entity';
 
 export default class UserResolver {
   static async searchUserPassword({ id }) {
@@ -100,6 +101,7 @@ export default class UserResolver {
   }) {
     return pipe(
       getQB('user'),
+      leftJoinAndMapMany('user.phoneRecord', PhoneRecord, 'phoneRecord', 'phoneRecord.userId = user.id'),
       where('user.name like :tsQuery', {
         tsQuery: tsQuery ? `%${tsQuery}%` : null,
       }),

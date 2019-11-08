@@ -33,6 +33,9 @@ type User implements Node {
   "金币"
   gold: Number
 
+  "拨打次数"
+  phoneCount: Int
+
   "创建时间"
   createdAt: String
 }
