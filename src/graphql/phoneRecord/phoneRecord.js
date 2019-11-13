@@ -20,12 +20,21 @@ export function createPhoneRecord({ phone, userId, shopId }) {
   return getManager().transaction(async (trx) => {
     const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
     const user = await User.findOneOrFail(decodeNumberId(userId));
-    const phoneRecord = await trx.save(PhoneRecord.create({
+    const phoneRecord = await trx.create(PhoneRecord, {
       phone,
       userId: user.id,
       shopId: shop.id,
-    }));
-    await trx.update(Phone, { shop, phone }, { count: () => 'count + 1' });
+    }).save();
+    const phones = await Phone.find({
+      where: {
+        shop,
+      },
+    });
+    if (phones.length) {
+      const currentPhone = phones.find(a => a.phone === phone) || phones[0];
+      currentPhone.count += 1;
+      await trx.save(currentPhone);
+    }
     return {
       ...phoneRecord,
       shop,
