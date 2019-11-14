@@ -15,7 +15,7 @@ export default class PhoneResolver {
    * @returns {Promise<UpdateResult>}
    */
   static async updatePhone({ id, ...rest }) {
-    const phone = await Phone.findOneOrFail(decodeNumberId(id));
-    return Phone.merge(phone, rest).save();
+    // const phone = await Phone.findOneOrFail(decodeNumberId(id));
+    // return Phone.merge(phone, rest).save();
   }
 }
