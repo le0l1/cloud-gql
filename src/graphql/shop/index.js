@@ -38,7 +38,9 @@ const resolvers = {
     async phones(v) {
       if (!v.phones.length) return v.phones;
       const phoneCount = await PhoneRecord.count({
-        shop: v,
+        where: {
+          shopId: v.id,
+        },
       });
       const firstPhone = v.phones[0].phone;
       v.phones.splice(0, 1, {
