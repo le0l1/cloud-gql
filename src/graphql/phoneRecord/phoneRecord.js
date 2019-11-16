@@ -11,36 +11,23 @@ import {
 } from '../../helper/sql';
 import { Shop } from '../shop/shop.entity';
 import { User } from '../user/user.entity';
-import { Phone } from '../phone/phone.entity';
 
 /**
  * 创建电话记录
  */
-export function createPhoneRecord({ phone, userId, shopId }) {
-  return getManager().transaction(async (trx) => {
-    const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
-    const user = await User.findOneOrFail(decodeNumberId(userId));
-    const phoneRecord = await trx.create(PhoneRecord, {
-      phone,
-      userId: user.id,
-      shopId: shop.id,
-    }).save();
-    const phones = await Phone.find({
-      where: {
-        shop,
-      },
-    });
-    if (phones.length) {
-      const currentPhone = phones.find(a => a.phone === phone) || phones[0];
-      currentPhone.count += 1;
-      await trx.save(currentPhone);
-    }
-    return {
-      ...phoneRecord,
-      shop,
-      user,
-    };
+export async function createPhoneRecord({ phone, userId, shopId }) {
+  const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
+  const user = await User.findOneOrFail(decodeNumberId(userId));
+  const phoneRecord = await PhoneRecord.save({
+    phone,
+    userId: user.id,
+    shopId: shop.id,
   });
+  return {
+    ...phoneRecord,
+    shop,
+    user,
+  };
 }
 
 /**

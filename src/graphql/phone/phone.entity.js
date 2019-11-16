@@ -1,5 +1,5 @@
 import {
-  BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne,
+  BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, UpdateDateColumn,
 } from 'typeorm';
 import { Shop } from '../shop/shop.entity';
 
