@@ -1,11 +1,21 @@
 import { Shop } from '../shop/shop.entity';
 import { Phone } from './phone.entity';
 import { decodeNumberId } from '../../helper/util';
+import PhoneRecord from '../phoneRecord/phoneRecord.entity';
 
 export default class PhoneResolver {
   static async searchPhones({ shopId }) {
     const shop = await Shop.findOneOrFail(decodeNumberId(shopId));
-    return Phone.find({ shop });
+    const phones = await Phone.find({ shop });
+    const phoneCount = await PhoneRecord.count({
+      where: {
+        shopId: shop.id,
+      },
+    });
+    if (phones.length) {
+      phones.splice(0, 1, Phone.merge(phones[0], { count: phoneCount }));
+    }
+    return phones;
   }
 
   /**

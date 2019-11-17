@@ -35,20 +35,6 @@ const resolvers = {
     belongto(v) {
       return formateID('user', v.belongto);
     },
-    async phones(v) {
-      if (!v.phones.length) return v.phones;
-      const phoneCount = await PhoneRecord.count({
-        where: {
-          shopId: v.id,
-        },
-      });
-      const firstPhone = v.phones[0].phone;
-      v.phones.splice(0, 1, {
-        phone: firstPhone,
-        count: phoneCount,
-      });
-      return v.phones;
-    },
   },
   ShopStatus,
   ShopResult: idResolver('shop'),
