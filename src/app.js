@@ -47,6 +47,7 @@ import video from './graphql/video';
 import quote from './graphql/quote';
 import offer from './graphql/offer';
 import paymentRouter from './payment';
+import { BasicLoggin, BasicLogging } from './helper/logger';
 
 const app = new Koa();
 
@@ -166,6 +167,7 @@ export const makeServer = context => new ApolloServer({
       'request.credentials': 'include',
     },
   },
+  extensions: [() => new BasicLogging()],
 });
 
 export { app };
