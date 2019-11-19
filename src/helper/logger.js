@@ -9,7 +9,7 @@ const myFormat = printf(({ level, message, timestamp: time }) => `[${level}] ${t
 
 const transport = new (transports.DailyRotateFile)({
   filename: 'graphql-%DATE%.log',
-  datePattern: 'YYYY-MM-DD-HH',
+  datePattern: 'YYYY-MM-DD',
   zippedArchive: true,
   maxSize: '20m',
   maxFiles: '30d',
