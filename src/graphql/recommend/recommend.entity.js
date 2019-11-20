@@ -8,8 +8,10 @@ import { decodeTypeAndId, decodeNumberId, pipe } from '../../helper/util';
 import { Good } from '../good/good.entity';
 import { Shop } from '../shop/shop.entity';
 import {
-  getQB, where, getMany, leftJoinAndMapOne, orderBy,
+  getQB, where, getMany, leftJoinAndMapOne, orderBy, leftJoinAndMapMany,
 } from '../../helper/sql';
+import { ShopCategory } from '../shop/shopCategory.entity';
+import { Category } from '../category/category.entity';
 
 @Entity()
 export class Recommend extends BaseEntity {
@@ -87,6 +89,8 @@ export class Recommend extends BaseEntity {
     if (recommend.recommendType === 'shop') {
       qb = pipe(
         leftJoinAndMapOne('recommend.recommendNode', Shop, 'shop', 'shop.id = recommend.recommendTypeId'),
+        leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
+        leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
         where('shop.deletedAt is null'),
       )(qb);
     } else {
