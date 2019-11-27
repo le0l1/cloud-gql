@@ -24,7 +24,11 @@ export default class ShopResolver {
       phone: p,
       shop,
     }));
-    const categoryEntitles = await Category.findByIds(categories.map(c => decodeNumberId(c)));
+    const categoryIds = categories.map(c => decodeNumberId(c));
+    const oldShopCategories = await ShopCategory.find({
+      select: ['id'],
+      shop: shop.id,
+    });
     const bannerEntities = shopBanners.map(b => Banner.create({
       path: b,
       shop,
@@ -34,12 +38,17 @@ export default class ShopResolver {
       shop,
     }));
 
-    const shopCatgories = categoryEntitles.map(
-      category => ShopCategory.create({
-        shopId: shop.id,
-        categoryId: category.id,
-      }),
-    );
+    const shopCatgories = categoryIds.reduce((a, category) => {
+      if (oldShopCategories.includes(category)) {
+        a.push(
+          ShopCategory.create({
+            shopId: shop.id,
+            categoryId: category,
+          }),
+        );
+      }
+      return a;
+    }, []);
 
     await trx.save(shopCatgories);
     await trx.save(phonesEntities);
@@ -47,12 +56,13 @@ export default class ShopResolver {
     await trx.save(imageEntities);
   }
 
-  static async rmOldRelations(trx, shop) {
+  static async rmOldRelations(trx, shop, { categories }) {
     const oldPhones = await Phone.find({ shop });
     const oldBanners = await Banner.find({ shop });
     const oldImages = await Image.find({ shop });
     await trx.delete(ShopCategory, {
       shopId: shop.id,
+      categoryId: Not(In(categories.map(c => decodeNumberId(c)))),
     });
     await trx.remove(oldPhones);
     await trx.remove(oldImages);
