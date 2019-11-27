@@ -26,8 +26,10 @@ export default class ShopResolver {
     }));
     const categoryIds = categories.map(c => decodeNumberId(c));
     const oldShopCategories = await ShopCategory.find({
-      select: ['id'],
-      shop: shop.id,
+      select: ['categoryId'],
+      where: {
+        shopId: shop.id,
+      },
     });
     const bannerEntities = shopBanners.map(b => Banner.create({
       path: b,
@@ -37,9 +39,8 @@ export default class ShopResolver {
       path: i,
       shop,
     }));
-
     const shopCatgories = categoryIds.reduce((a, category) => {
-      if (!oldShopCategories.find(o => o.id === category)) {
+      if (!oldShopCategories.find(o => o.categoryId === category)) {
         a.push(
           ShopCategory.create({
             shopId: shop.id,
