@@ -39,7 +39,7 @@ export default class ShopResolver {
     }));
 
     const shopCatgories = categoryIds.reduce((a, category) => {
-      if (oldShopCategories.find(o => o.id === category)) {
+      if (!oldShopCategories.find(o => o.id === category)) {
         a.push(
           ShopCategory.create({
             shopId: shop.id,
