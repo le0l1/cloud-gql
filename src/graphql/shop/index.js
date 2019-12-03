@@ -35,7 +35,8 @@ const resolvers = {
       return formateID('user', v.belongto);
     },
     phoneCount(v) {
-      return v.phoneCount ? v.phoneCount.count : 0;
+      console.log(v)
+      return v.phoneRecords.length;
     },
   },
   ShopStatus,

@@ -175,13 +175,8 @@ export default class ShopResolver {
       getQB('shop'),
       leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
       leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
+      leftJoinAndMapMany('shop.phoneRecords', PhoneRecord, 'phoneRecord', 'phoneRecord.shopId = shop.id'),
       leftJoinAndSelect('shop.phones', 'phone'),
-      leftJoinAndMapOne('shop.phoneCount', subQuery => subQuery
-        .select('shop_id', 'phone_record_shop_id')
-        .addSelect('COUNT(1)', 'count')
-        .groupBy('phone_record_shop_id')
-        .from(PhoneRecord, 'phoneRecord'),
-      'record', 'record.phone_record_shop_id = shop.id'),
       where('shop.deletedAt is null'),
       where('shop.city = :city', {
         city,

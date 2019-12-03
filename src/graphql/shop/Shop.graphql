@@ -36,7 +36,7 @@ type Shop implements Node {
   "电话"
   phones: [Phone!]
   "电话拨打次数总的"
-  phoneCount: String
+  phoneCount: Int
 }
 
 
