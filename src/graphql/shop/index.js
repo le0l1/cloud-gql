@@ -3,7 +3,6 @@ import { formateID } from '../../helper/util';
 import { ShopStatus } from '../../helper/status';
 import ShopResolver from './shop';
 import { idResolver } from '../../helper/resolver';
-import PhoneRecord from '../phoneRecord/phoneRecord.entity';
 
 const resolvers = {
   Query: {
@@ -34,6 +33,9 @@ const resolvers = {
     },
     belongto(v) {
       return formateID('user', v.belongto);
+    },
+    phoneCount(v) {
+      return v.phoneCount ? v.phoneCount.count : 0;
     },
   },
   ShopStatus,
