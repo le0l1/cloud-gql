@@ -15,6 +15,7 @@ import { DumplicateShopNameError } from '../../helper/error';
 import { Good } from '../good/good.entity';
 import { ShopType } from '../../helper/status';
 import { ShopCategory } from './shopCategory.entity';
+import PhoneRecord from '../phoneRecord/phoneRecord.entity';
 
 export default class ShopResolver {
   static async storeShopRelation(trx, shop, {
@@ -174,6 +175,12 @@ export default class ShopResolver {
       leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
       leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
       leftJoinAndSelect('shop.phones', 'phone'),
+      leftJoinAndMapOne('shop.phoneCount', subQuery => subQuery
+        .select('shop_id', 'phone_record_shop_id')
+        .addSelect('COUNT(1)', 'count')
+        .groupBy('phone_record_shop_id')
+        .from(PhoneRecord, 'phoneRecord'),
+      'record', 'record.phone_record_shop_id = shop.id'),
       where('shop.deletedAt is null'),
       where('shop.city = :city', {
         city,
