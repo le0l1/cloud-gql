@@ -132,7 +132,10 @@ export default class UserResolver {
     const instane = await SMSCode.findOneOrFail(phone);
     if (Number(instane.smsCode) !== Number(smsCode)) throw new ValidSmsCodeError();
     const user = await User.findOneOrFail({
-      phone,
+      where: {
+        phone,
+        deletedAt: null,
+      },
     });
     return User.merge(user, {
       password: hashPassword(password),
