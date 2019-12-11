@@ -164,7 +164,7 @@ export default class ShopResolver {
     city,
     filter = {
       status: null,
-      shopType: ShopType.NORMAL_VEHICLE,
+      shopType: null,
     },
     limit,
     offset,
