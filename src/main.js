@@ -7,9 +7,13 @@ import { env } from './helper/util';
 
 makeServer(setGraphqlContext).applyMiddleware({ app });
 
-// orm connection
-export default createConnection().then(() => {
-  app.listen({ port: env('PORT') }, () => {
-    console.log(`🚀 Server ready at http://localhost:${env('PORT')}/graphql`);
+try {
+  // orm connection
+  createConnection().then(() => {
+    app.listen({ port: env('PORT') }, () => {
+      console.log(`🚀 Server ready at http://localhost:${env('PORT')}/graphql`);
+    });
   });
-});
+} catch (e) {
+  console.error('Serve Crashed:', e);
+}
