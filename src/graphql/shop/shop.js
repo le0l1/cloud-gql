@@ -64,7 +64,8 @@ export default class ShopResolver {
     const oldImages = await Image.find({ shop });
     await trx.delete(ShopCategory, {
       shopId: shop.id,
-      categoryId: Not(In(categories.map(c => decodeNumberId(c)))),
+      // for empty category
+      categoryId: Not(In([null, ...categories.map(c => decodeNumberId(c))])),
     });
     await trx.remove(oldPhones);
     await trx.remove(oldImages);

@@ -15,8 +15,8 @@ jobs:
             - v1-dependencies-
       - run:
           command: |
-            yarn install
-            yarn build
+            npm ci 
+            npm run build
             echo $CIRCLE_TAG
 
       - save_cache:
