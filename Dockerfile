@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:13.3.0-alpine
 
 ENV NODE_ENV=development
 ENV PORT=80
@@ -19,4 +19,4 @@ WORKDIR /home/graphql
 RUN npm config set registry https://registry.npm.taobao.org
 RUN npm install
 
-ENTRYPOINT ["sh", "./start.sh"]
+#ENTRYPOINT ["sh", "./start.sh"]
