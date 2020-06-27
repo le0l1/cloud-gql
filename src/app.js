@@ -47,7 +47,7 @@ import video from './graphql/video';
 import quote from './graphql/quote';
 import offer from './graphql/offer';
 import paymentRouter from './payment';
-import { BasicLoggin, BasicLogging } from './helper/logger';
+import { BasicLogging } from './helper/logger';
 
 const app = new Koa();
 
