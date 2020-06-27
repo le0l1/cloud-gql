@@ -29,6 +29,7 @@ jobs:
           paths:
             - dist
             - package.json
+            - package-lock.json
             - start.sh
             - Dockerfile
 
