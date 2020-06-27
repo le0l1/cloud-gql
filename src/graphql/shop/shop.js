@@ -38,7 +38,8 @@ export default class ShopResolver {
     await trx.save(imageEntities);
     await trx.save(
       Shop.merge(shop, {
-        categories: categoryEntitles,
+        // for empty category arr
+        categories: [null, ...categoryEntitles], 
       }),
     );
   }
