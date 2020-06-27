@@ -11,6 +11,7 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 # add file
 ADD dist /home/graphql
 ADD package.json /home/graphql
+ADD package-lock.json /home/graphql
 ADD start.sh /home/graphql
 
 WORKDIR /home/graphql
