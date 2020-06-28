@@ -116,15 +116,15 @@ export default class ShopResolver {
     ...rest
   }) {
     const realId = decodeNumberId(id);
-    if (
-      rest.name
-      && (await Shop.findOne({
+    if (rest.name && await Shop.findOne({
+      where: {
         name: rest.name,
         id: Not(realId),
-      }))
-    ) {
+      },
+    })) {
       throw new DumplicateShopNameError();
     }
+
     const shop = await Shop.findOneOrFail(realId);
     return getManager().transaction(async (trx) => {
       const params = {
