@@ -13,7 +13,6 @@ import {
 } from '../../helper/sql';
 import { DumplicateShopNameError } from '../../helper/error';
 import { Good } from '../good/good.entity';
-import { ShopType } from '../../helper/status';
 import { ShopCategory } from './shopCategory.entity';
 import PhoneRecord from '../phoneRecord/phoneRecord.entity';
 
@@ -83,7 +82,10 @@ export default class ShopResolver {
     if (
       rest.name
       && (await Shop.findOne({
-        name: rest.name,
+        where: {
+          name: rest.name,
+          deletedAt: null,
+        },
       }))
     ) {
       throw new DumplicateShopNameError();
@@ -120,6 +122,7 @@ export default class ShopResolver {
       where: {
         name: rest.name,
         id: Not(realId),
+        deletedAt: null,
       },
     })) {
       throw new DumplicateShopNameError();
