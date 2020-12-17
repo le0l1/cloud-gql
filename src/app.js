@@ -1,4 +1,5 @@
 import Koa from 'koa';
+import Router from ''koa-router';
 import parameter from 'koa-parameter';
 import bodyparser from 'koa-bodyparser';
 import xmlParser from 'koa-xml-body';
@@ -50,6 +51,16 @@ import paymentRouter from './payment';
 import { BasicLogging } from './helper/logger';
 
 const app = new Koa();
+
+// For Healty Check
+const router = new Router();
+router.get('/', (ctx, next) => {
+  return 'OK'
+});
+app
+  .use(router.routes())
+  .use(router.allowedMethods());
+
 
 app.keys = ['asdqwdqwdqqwdqdqwd'];
 
