@@ -20,4 +20,7 @@ WORKDIR /home/graphql
 RUN npm config set registry https://registry.npm.taobao.org
 RUN npm ci
 
+## healthy check
+HEALTHCHECK --interval=5s --timeout=2s CMD curl --fail http://localhost || kill 1
+
 ENTRYPOINT ["sh", "./start.sh"]
