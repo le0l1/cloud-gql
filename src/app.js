@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import Router from ''koa-router';
+import Router from 'koa-router';
 import parameter from 'koa-parameter';
 import bodyparser from 'koa-bodyparser';
 import xmlParser from 'koa-xml-body';
