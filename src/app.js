@@ -55,7 +55,7 @@ const app = new Koa();
 // For Healty Check
 const router = new Router();
 router.get('/', (ctx, next) => {
-  return 'OK'
+  ctx.body = 'OK';
 });
 app
   .use(router.routes())
