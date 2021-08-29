@@ -178,6 +178,7 @@ export const makeServer = context => new ApolloServer({
       'request.credentials': 'include',
     },
   },
+  introspection: true,
   extensions: [() => new BasicLogging()],
 });
 
