@@ -27,3 +27,5 @@ export const orderBy = obj => (orm) => {
   const valid = mergeIfValid(obj, {});
   return isEmpty(obj) ? orm : orm.orderBy(valid);
 };
+
+export const getCount = orm => orm.getCount();

@@ -150,7 +150,6 @@ export default class ShopResolver {
       getQB('shop'),
       leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
       leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
-      leftJoinAndMapMany('shop.phoneRecords', PhoneRecord, 'phoneRecord', 'phoneRecord.shopId = shop.id'),
       leftJoinAndSelect('shop.phones', 'phone'),
       where('shop.id = :id', { id: id ? decodeNumberId(id) : null }),
       where('shop.deletedAt is null'),
@@ -181,7 +180,6 @@ export default class ShopResolver {
       where('shop.deletedAt is null'),
       leftJoinAndMapOne('category.shopCategory', ShopCategory, 'shopCategory', 'shop.id = shopCategory.shopId'),
       leftJoinAndMapMany('shop.categories', Category, 'category', 'category.id = shopCategory.categoryId'),
-      leftJoinAndMapMany('shop.phoneRecords', PhoneRecord, 'phoneRecord', 'phoneRecord.shopId = shop.id'),
       leftJoinAndSelect('shop.phones', 'phone'),
       where('shop.city = :city', {
         city,

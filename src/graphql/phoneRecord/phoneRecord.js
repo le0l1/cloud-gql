@@ -1,4 +1,3 @@
-import { getManager } from 'typeorm';
 import { decodeNumberId, pipe } from '../../helper/util';
 import PhoneRecord from './phoneRecord.entity';
 import {
@@ -7,7 +6,7 @@ import {
   withPagination,
   getManyAndCount,
   leftJoinAndMapOne,
-  orderBy,
+  orderBy, getCount,
 } from '../../helper/sql';
 import { Shop } from '../shop/shop.entity';
 import { User } from '../user/user.entity';
@@ -56,3 +55,10 @@ export async function searchPhoneRecords(user, { limit, offset }) {
     getManyAndCount,
   )(PhoneRecord);
 }
+
+// 获取商店的拨打记录次数
+export const getShopPhoneRecordsCount = shopId => pipe(
+  getQB('phoneRecord'),
+  where('phoneRecord.shopId = :shopId', { shopId }),
+  getCount,
+)(PhoneRecord);

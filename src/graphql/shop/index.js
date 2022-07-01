@@ -3,6 +3,7 @@ import { formateID } from '../../helper/util';
 import { ShopStatus } from '../../helper/status';
 import ShopResolver from './shop';
 import { idResolver } from '../../helper/resolver';
+import {getShopPhoneRecordsCount} from "../phoneRecord/phoneRecord";
 
 const resolvers = {
   Query: {
@@ -35,8 +36,7 @@ const resolvers = {
       return formateID('user', v.belongto);
     },
     phoneCount(v) {
-      console.log(v)
-      return v.phoneRecords.length;
+      return getShopPhoneRecordsCount(v.id);
     },
   },
   ShopStatus,
